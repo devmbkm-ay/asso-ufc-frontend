@@ -6,26 +6,12 @@ import Link from 'next/link'
 import { members, cotisations } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Clock } from 'lucide-react'
-
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  inactive:  { label: 'Inactif',    className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
-}
+import { MEMBER_STATUS_LABEL, fmtDate, fmtEur } from '@/lib/utils'
 
 const PAYMENT_STATUS: Record<string, { label: string; className: string }> = {
   confirmed: { label: 'Confirmé',   className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
   pending:   { label: 'En attente', className: 'bg-amber-900/40 text-amber-400 border-amber-800/50' },
   cancelled: { label: 'Annulé',    className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function fmtEur(n: number) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 }
 
 export default function MembrePage() {
@@ -52,7 +38,7 @@ export default function MembrePage() {
 
   if (!member) return null
 
-  const st = STATUS_LABEL[member.status]
+  const st = MEMBER_STATUS_LABEL[member.status]
   const totalPaid = payments?.filter(p => p.status === 'confirmed').reduce((s, p) => s + p.amount, 0) ?? 0
 
   return (
@@ -68,7 +54,7 @@ export default function MembrePage() {
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
           <span className="text-lg font-bold text-white">
-            {member.first_name[0]}{member.last_name[0]}
+            {member.first_name?.[0] ?? '?'}{member.last_name?.[0] ?? '?'}
           </span>
         </div>
         <div className="flex-1 min-w-0">

@@ -6,34 +6,18 @@ import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CalendarDays, Users } from 'lucide-react'
-
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  inactive:  { label: 'Inactif',    className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
-}
-
-const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
-
-function fmtEur(n: number) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-}
+import { MEMBER_STATUS_LABEL, MONTH_FR, fmtDate, fmtEur } from '@/lib/utils'
 
 export default function DashboardPage() {
   const { user } = useAuth()
   const today = new Date()
 
-  const { data: kpis }    = useQuery({ queryKey: ['dashboard'], queryFn: dashboard.treasurer })
-  const { data: membersData } = useQuery({
+  const { data: kpis, isError: kpisError }             = useQuery({ queryKey: ['dashboard'], queryFn: dashboard.treasurer })
+  const { data: membersData, isError: membersError }   = useQuery({
     queryKey: ['members', 'recent'],
     queryFn: () => members.list({ page: 1, size: 5 }),
   })
-  const { data: upcomingEvents } = useQuery({
+  const { data: upcomingEvents, isError: eventsError } = useQuery({
     queryKey: ['events', 'upcoming'],
     queryFn: () => events.list({ upcoming_only: true, status: 'published' }),
   })
@@ -42,7 +26,6 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">
           {greeting}, {user?.first_name} 👋
@@ -52,7 +35,12 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* KPIs */}
+      {(kpisError || membersError || eventsError) && (
+        <div className="text-sm text-red-400 bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+          Certaines données n'ont pas pu être chargées. Vérifiez votre connexion.
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Membres actifs"
@@ -78,7 +66,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Derniers membres */}
         <div className="lg:col-span-2 bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -89,12 +76,12 @@ export default function DashboardPage() {
           </div>
           <ul className="space-y-3">
             {membersData?.items.map(m => {
-              const st = STATUS_LABEL[m.status]
+              const st = MEMBER_STATUS_LABEL[m.status]
               return (
                 <li key={m.id} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
                     <span className="text-xs font-semibold text-white">
-                      {m.first_name[0]}{m.last_name[0]}
+                      {m.first_name?.[0] ?? '?'}{m.last_name?.[0] ?? '?'}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -113,9 +100,7 @@ export default function DashboardPage() {
           </ul>
         </div>
 
-        {/* Événements + Alertes */}
         <div className="space-y-4">
-          {/* Alertes */}
           {kpis && kpis.unpaid_this_month > 0 && (
             <div className="bg-amber-950/30 border border-amber-800/40 rounded-xl p-4 space-y-1">
               <div className="flex items-center gap-2">
@@ -128,7 +113,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Événements à venir */}
           <div className="bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] p-5">
             <div className="flex items-center gap-2 mb-4">
               <CalendarDays size={15} className="text-[#C8A96E]" />

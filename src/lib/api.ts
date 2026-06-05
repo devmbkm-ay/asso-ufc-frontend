@@ -32,6 +32,7 @@ async function tryRefresh(): Promise<string | null> {
       })
       if (!res.ok) return null
       const data = await res.json()
+      if (!data.access_token) return null
       localStorage.setItem('access_token', data.access_token)
       if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token)
       return data.access_token as string

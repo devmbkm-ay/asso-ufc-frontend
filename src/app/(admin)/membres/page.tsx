@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, MEMBER_STATUS_LABEL, fmtDate } from '@/lib/utils'
 
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
@@ -18,22 +18,11 @@ const STATUS_TABS = [
   { value: 'honorary',  label: 'Honoraires' },
 ]
 
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  inactive:  { label: 'Inactif',    className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
 export default function MembresPage() {
-  const [search, setSearch]   = useState('')
+  const [search, setSearch]               = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [status, setStatus]   = useState('')
-  const [page, setPage]       = useState(1)
+  const [status, setStatus]               = useState('')
+  const [page, setPage]                   = useState(1)
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300)
@@ -115,14 +104,14 @@ export default function MembresPage() {
               </tr>
             )}
             {data?.items.map(m => {
-              const st = STATUS_LABEL[m.status]
+              const st = MEMBER_STATUS_LABEL[m.status]
               return (
                 <tr key={m.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
                   <td className="px-5 py-3.5">
                     <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
                         <span className="text-xs font-semibold text-white">
-                          {m.first_name[0]}{m.last_name[0]}
+                          {m.first_name?.[0] ?? '?'}{m.last_name?.[0] ?? '?'}
                         </span>
                       </div>
                       <span className="font-medium text-white group-hover:text-[#C8A96E] transition-colors">

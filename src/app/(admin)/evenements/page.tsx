@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { events } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Users, Ticket } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, MONTH_FR, fmtEur } from '@/lib/utils'
 
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
@@ -20,12 +20,6 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   published: { label: 'Publié',    className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
   cancelled: { label: 'Annulé',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
   completed: { label: 'Terminé',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
-}
-
-const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
-
-function fmtEur(n: number) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 }
 
 export default function EvenementsPage() {
