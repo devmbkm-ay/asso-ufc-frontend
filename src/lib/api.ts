@@ -1,0 +1,168 @@
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL!
+
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('access_token')
+}
+
+function getRefreshToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('refresh_token')
+}
+
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message)
+  }
+}
+
+// Mutex so concurrent 401s only trigger one refresh
+let refreshInFlight: Promise<string | null> | null = null
+
+async function tryRefresh(): Promise<string | null> {
+  if (refreshInFlight) return refreshInFlight
+  refreshInFlight = (async () => {
+    const refresh = getRefreshToken()
+    if (!refresh) return null
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refresh }),
+      })
+      if (!res.ok) return null
+      const data = await res.json()
+      localStorage.setItem('access_token', data.access_token)
+      if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token)
+      return data.access_token as string
+    } catch {
+      return null
+    }
+  })().finally(() => { refreshInFlight = null })
+  return refreshInFlight
+}
+
+function handleAuthFailure() {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  // Soft logout via event so AuthProvider can update state without hard reload
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('auth:logout'))
+  }
+}
+
+export async function apiRequest<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T> {
+  const doFetch = (token: string | null) =>
+    fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options?.headers,
+      },
+    })
+
+  let res = await doFetch(getToken())
+
+  // On 401, attempt one token refresh then retry
+  if (res.status === 401) {
+    const newToken = await tryRefresh()
+    if (newToken) {
+      res = await doFetch(newToken)
+    }
+    if (res.status === 401) {
+      handleAuthFailure()
+      throw new ApiError(401, 'Session expirée')
+    }
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
+    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+  }
+
+  if (res.status === 204) return undefined as T
+  return res.json()
+}
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+
+export const auth = {
+  login: (email: string, password: string) =>
+    apiRequest<{ access_token: string; refresh_token: string; token_type: string }>(
+      '/api/v1/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      },
+    ),
+  me: () => apiRequest<import('./types').Member>('/api/v1/auth/me'),
+  setup: (data: { first_name: string; last_name: string; email: string; password: string }) =>
+    apiRequest<{ message: string }>('/api/v1/auth/setup', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+}
+
+// ── Members ─────────────────────────────────────────────────────────────────
+
+export const members = {
+  list: (params?: { page?: number; size?: number; status?: string; search?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.page)   q.set('page', String(params.page))
+    if (params?.size)   q.set('size', String(params.size))
+    if (params?.status) q.set('status', params.status)
+    if (params?.search) q.set('search', params.search)
+    return apiRequest<import('./types').PaginatedMembers>(`/api/v1/members?${q}`)
+  },
+  get: (id: string) => apiRequest<import('./types').Member>(`/api/v1/members/${id}`),
+  create: (data: {
+    first_name: string
+    last_name: string
+    email: string
+    password: string
+    phone?: string
+    address?: string
+    birth_date?: string
+  }) => apiRequest<import('./types').Member>('/api/v1/members', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+
+export const dashboard = {
+  treasurer: () =>
+    apiRequest<import('./types').TreasurerDashboard>('/api/v1/dashboard/treasurer'),
+}
+
+// ── Cotisations ──────────────────────────────────────────────────────────────
+
+export const cotisations = {
+  plans: () => apiRequest<import('./types').CotisationPlan[]>('/api/v1/cotisation-plans'),
+  grid: (year: number) =>
+    apiRequest<import('./types').PaymentGridRow[]>(`/api/v1/payments/grid?year=${year}`),
+  payments: (params?: { page?: number; size?: number; member_id?: string; year?: number }) => {
+    const q = new URLSearchParams()
+    if (params?.page)      q.set('page', String(params.page))
+    if (params?.size)      q.set('size', String(params.size))
+    if (params?.member_id) q.set('member_id', params.member_id)
+    if (params?.year)      q.set('year', String(params.year))
+    return apiRequest<import('./types').Payment[]>(`/api/v1/payments?${q}`)
+  },
+}
+
+// ── Events ───────────────────────────────────────────────────────────────────
+
+export const events = {
+  list: (params?: { upcoming_only?: boolean; status?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.upcoming_only) q.set('upcoming_only', 'true')
+    if (params?.status)        q.set('status', params.status)
+    return apiRequest<import('./types').EventRead[]>(`/api/v1/events?${q}`)
+  },
+}
