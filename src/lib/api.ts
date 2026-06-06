@@ -230,6 +230,25 @@ export const cotisations = {
     if (params?.year)      q.set('year', String(params.year))
     return apiRequest<import('./types').PaginatedPayments>(`/api/v1/payments?${q}`)
   },
+  createPlan: (data: {
+    label:       string
+    amount:      number
+    frequency:   'monthly' | 'annual' | 'one_time'
+    valid_from:  string
+    valid_until?: string
+  }) => apiRequest<import('./types').CotisationPlan>('/api/v1/cotisation-plans', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updatePlan: (id: string, data: {
+    label?:       string
+    amount?:      number
+    valid_until?: string
+    is_active?:   boolean
+  }) => apiRequest<import('./types').CotisationPlan>(`/api/v1/cotisation-plans/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
   exportCSV: (year: number) =>
     apiDownload(`/api/v1/payments/export?year=${year}`, `cotisations-${year}.csv`),
   record: (data: {

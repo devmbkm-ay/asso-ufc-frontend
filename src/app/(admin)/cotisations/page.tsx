@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MONTHS      = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
@@ -59,6 +59,24 @@ const EMPTY_FORM = {
 
 const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
 
+const FREQ_LABELS: Record<string, string> = {
+  monthly:  'Mensuelle',
+  annual:   'Annuelle',
+  one_time: 'Ponctuelle',
+}
+
+const EMPTY_PLAN = {
+  label:       '',
+  amount:      '',
+  frequency:   'annual' as 'monthly' | 'annual' | 'one_time',
+  valid_from:  new Date().toISOString().split('T')[0],
+  valid_until: '',
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 export default function CotisationsPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -68,6 +86,11 @@ export default function CotisationsPage() {
   const [selected, setSelected] = useState<SelectedCell | null>(null)
   const [form, setForm]         = useState(EMPTY_FORM)
   const [formError, setFormError] = useState<string | null>(null)
+
+  // Plan management
+  const [planOpen, setPlanOpen] = useState(false)
+  const [planForm, setPlanForm] = useState(EMPTY_PLAN)
+  const [planError, setPlanError] = useState<string | null>(null)
 
   const canWrite = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
   const canAdmin = user?.roles.includes('super_admin')
@@ -82,6 +105,35 @@ export default function CotisationsPage() {
     queryFn:  () => cotisations.plans(),
     enabled:  !!canWrite,
   })
+
+  const { mutate: createPlan, isPending: isCreatingPlan } = useMutation({
+    mutationFn: cotisations.createPlan,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cotisations-plans'] })
+      setPlanOpen(false)
+      setPlanForm(EMPTY_PLAN)
+      setPlanError(null)
+    },
+    onError: (err: unknown) =>
+      setPlanError(err instanceof ApiError ? err.message : 'Erreur inattendue'),
+  })
+
+  const { mutate: deactivatePlan } = useMutation({
+    mutationFn: (id: string) => cotisations.updatePlan(id, { is_active: false }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cotisations-plans'] }),
+  })
+
+  function handlePlanSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setPlanError(null)
+    createPlan({
+      label:       planForm.label,
+      amount:      Number(planForm.amount),
+      frequency:   planForm.frequency,
+      valid_from:  planForm.valid_from,
+      valid_until: planForm.valid_until || undefined,
+    })
+  }
 
   const { mutate: record, isPending: isRecording } = useMutation({
     mutationFn: cotisations.record,
@@ -194,6 +246,54 @@ export default function CotisationsPage() {
           </button>
         </div>
       </div>
+
+      {/* Plans de cotisation */}
+      {canWrite && (
+        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <h2 className="text-xs font-semibold tracking-wider text-[#9B928B] uppercase">Plans de cotisation</h2>
+            <button
+              onClick={() => { setPlanOpen(true); setPlanError(null); setPlanForm(EMPTY_PLAN) }}
+              className="flex items-center gap-1 text-xs text-[#C8A96E] hover:text-[#b8994e] transition-colors font-medium"
+            >
+              <Plus size={13} />
+              Nouveau plan
+            </button>
+          </div>
+
+          {!plans?.length && (
+            <p className="text-xs text-[#9B928B] italic">
+              Aucun plan actif — créez un plan pour pouvoir enregistrer des paiements.
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            {plans?.map(p => (
+              <div
+                key={p.id}
+                className="flex items-center gap-2 bg-[#F0EBE2] border border-[rgba(200,169,110,0.25)] rounded-lg px-3 py-2"
+              >
+                <div>
+                  <p className="text-xs font-semibold text-[#1a1a1a]">{p.label}</p>
+                  <p className="text-[11px] text-[#6B6560]">
+                    {fmtEur(Number(p.amount))} · {FREQ_LABELS[p.frequency] ?? p.frequency}
+                    {p.valid_until && ` · jusqu'au ${fmtDate(p.valid_until)}`}
+                  </p>
+                </div>
+                {canWrite && (
+                  <button
+                    onClick={() => deactivatePlan(p.id)}
+                    title="Désactiver ce plan"
+                    className="ml-1 text-[#B0A9A2] hover:text-red-400 transition-colors"
+                  >
+                    <ToggleLeft size={14} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Grid */}
       <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-x-auto">
@@ -465,6 +565,101 @@ export default function CotisationsPage() {
             </div>
           )}
 
+        </DialogContent>
+      </Dialog>
+
+      {/* Plan creation dialog */}
+      <Dialog open={planOpen} onOpenChange={open => { if (!open) { setPlanOpen(false); setPlanError(null) } }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a] text-base">Nouveau plan de cotisation</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handlePlanSubmit} className="space-y-3 mt-1">
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Libellé</label>
+              <Input
+                value={planForm.label}
+                onChange={e => setPlanForm(f => ({ ...f, label: e.target.value }))}
+                required
+                placeholder="Cotisation annuelle 2026"
+                className={FIELD}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Montant (€)</label>
+                <Input
+                  type="number"
+                  min={1}
+                  step="0.01"
+                  value={planForm.amount}
+                  onChange={e => setPlanForm(f => ({ ...f, amount: e.target.value }))}
+                  required
+                  className={FIELD}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Fréquence</label>
+                <select
+                  value={planForm.frequency}
+                  onChange={e => setPlanForm(f => ({ ...f, frequency: e.target.value as typeof f.frequency }))}
+                  className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                >
+                  <option value="annual">Annuelle</option>
+                  <option value="monthly">Mensuelle</option>
+                  <option value="one_time">Ponctuelle</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Valide à partir du</label>
+                <Input
+                  type="date"
+                  value={planForm.valid_from}
+                  onChange={e => setPlanForm(f => ({ ...f, valid_from: e.target.value }))}
+                  required
+                  className={FIELD}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Expire le <span className="text-[#B0A9A2]">(optionnel)</span></label>
+                <Input
+                  type="date"
+                  value={planForm.valid_until}
+                  onChange={e => setPlanForm(f => ({ ...f, valid_until: e.target.value }))}
+                  className={FIELD}
+                />
+              </div>
+            </div>
+
+            {planError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {planError}
+              </p>
+            )}
+
+            <DialogFooter className="gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => { setPlanOpen(false); setPlanError(null) }}
+                className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent"
+              >
+                Annuler
+              </Button>
+              <Button
+                type="submit"
+                disabled={isCreatingPlan}
+                className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+              >
+                {isCreatingPlan ? 'Création…' : 'Créer le plan'}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
