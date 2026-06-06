@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { members } from '@/lib/api'
+import { members, ApiError } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
+import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const STATUS_TABS = [
@@ -29,11 +32,28 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+const EMPTY_FORM = {
+  first_name: '',
+  last_name: '',
+  email: '',
+  password: '',
+  phone: '',
+  address: '',
+  birth_date: '',
+}
+
+const FIELD_CLASS = 'bg-[#252525] border-[rgba(255,255,255,0.1)] text-white placeholder:text-[#555]'
+
 export default function MembresPage() {
-  const [search, setSearch]   = useState('')
+  const [search, setSearch]               = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [status, setStatus]   = useState('')
-  const [page, setPage]       = useState(1)
+  const [status, setStatus]               = useState('')
+  const [page, setPage]                   = useState(1)
+  const [open, setOpen]                   = useState(false)
+  const [form, setForm]                   = useState(EMPTY_FORM)
+  const [formError, setFormError]         = useState<string | null>(null)
+
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300)
@@ -50,6 +70,47 @@ export default function MembresPage() {
     }),
   })
 
+  const { mutate: createMember, isPending } = useMutation({
+    mutationFn: members.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      closeModal()
+    },
+    onError: (err: unknown) => {
+      setFormError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  function closeModal() {
+    setOpen(false)
+    setForm(EMPTY_FORM)
+    setFormError(null)
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (!next) closeModal()
+    else setOpen(true)
+  }
+
+  function field(key: keyof typeof EMPTY_FORM) {
+    return (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(f => ({ ...f, [key]: e.target.value }))
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setFormError(null)
+    createMember({
+      first_name: form.first_name,
+      last_name:  form.last_name,
+      email:      form.email,
+      password:   form.password,
+      phone:      form.phone      || undefined,
+      address:    form.address    || undefined,
+      birth_date: form.birth_date || undefined,
+    })
+  }
+
   function handleStatus(v: string) {
     setStatus(v)
     setPage(1)
@@ -57,13 +118,106 @@ export default function MembresPage() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">Membres</h1>
-        <p className="text-sm text-[#888] mt-0.5">
-          {data ? `${data.total} membre${data.total > 1 ? 's' : ''}` : '—'}
-        </p>
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Membres</h1>
+          <p className="text-sm text-[#888] mt-0.5">
+            {data ? `${data.total} membre${data.total > 1 ? 's' : ''}` : '—'}
+          </p>
+        </div>
+
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+          <Button
+            onClick={() => setOpen(true)}
+            className="bg-[#C8A96E] hover:bg-[#b8994e] text-black text-sm font-medium gap-1.5 shrink-0"
+          >
+            <Plus size={14} />
+            Nouveau membre
+          </Button>
+
+          <DialogContent className="bg-[#1a1a1a] border-[rgba(255,255,255,0.08)] sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-white">Nouveau membre</DialogTitle>
+            </DialogHeader>
+
+            <form onSubmit={handleSubmit} className="space-y-4 mt-1">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#888]">Prénom *</label>
+                  <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#888]">Nom *</label>
+                  <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#888]">Email *</label>
+                <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#888]">
+                  Mot de passe *{' '}
+                  <span className="text-[#555]">8 car. min, 1 chiffre requis</span>
+                </label>
+                <Input
+                  type="password"
+                  value={form.password}
+                  onChange={field('password')}
+                  required
+                  minLength={8}
+                  className={FIELD_CLASS}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#888]">Téléphone</label>
+                <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#888]">Adresse</label>
+                <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#888]">Date de naissance</label>
+                <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
+              </div>
+
+              {formError && (
+                <p className="text-xs text-red-400 bg-red-900/20 border border-red-800/30 rounded-lg px-3 py-2">
+                  {formError}
+                </p>
+              )}
+
+              <DialogFooter className="gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={closeModal}
+                  className="border-[rgba(255,255,255,0.1)] text-[#888] hover:text-white bg-transparent"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-black"
+                >
+                  {isPending ? 'Création…' : 'Créer le membre'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
+      {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#555]" />
@@ -92,6 +246,7 @@ export default function MembresPage() {
         </div>
       </div>
 
+      {/* Tableau */}
       <div className="bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
@@ -151,6 +306,7 @@ export default function MembresPage() {
         </table>
       </div>
 
+      {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
           <p className="text-[#555]">
