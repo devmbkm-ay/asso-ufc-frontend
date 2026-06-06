@@ -203,7 +203,7 @@ export const cotisations = {
     if (params?.size)      q.set('size', String(params.size))
     if (params?.member_id) q.set('member_id', params.member_id)
     if (params?.year)      q.set('year', String(params.year))
-    return apiRequest<import('./types').Payment[]>(`/api/v1/payments?${q}`)
+    return apiRequest<import('./types').PaginatedPayments>(`/api/v1/payments?${q}`)
   },
   exportCSV: (year: number) =>
     apiDownload(`/api/v1/payments/export?year=${year}`, `cotisations-${year}.csv`),

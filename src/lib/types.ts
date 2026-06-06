@@ -57,6 +57,14 @@ export interface Payment {
   notes?: string
 }
 
+export interface PaginatedPayments {
+  items: Payment[]
+  total: number
+  page:  number
+  size:  number
+  pages: number
+}
+
 export interface MonthCell {
   month: number
   status: 'confirmed' | 'pending' | 'cancelled' | 'none'
