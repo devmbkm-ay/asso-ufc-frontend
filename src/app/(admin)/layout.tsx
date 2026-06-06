@@ -24,9 +24,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null
 
   return (
-    <div className="dark flex h-screen overflow-hidden">
+    <div className="dark flex h-screen overflow-hidden mboka-bg">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto mboka-bg">
+      <main className="flex-1 overflow-y-auto">
         {children}
       </main>
     </div>
