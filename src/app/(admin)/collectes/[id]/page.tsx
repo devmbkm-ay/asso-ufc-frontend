@@ -1,17 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { collectes, ApiError } from '@/lib/api'
+import { collectes, upload, ApiError } from '@/lib/api'
+import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ArrowLeft, Heart, Users, Clock, HandCoins } from 'lucide-react'
+import { ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X } from 'lucide-react'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -33,14 +34,33 @@ function daysLeft(endDate: string) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
+const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+
 export default function CollecteDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+
+  // ── Contribution state ────────────────────────────────────────────────────
   const [openContrib, setOpenContrib] = useState(false)
   const [amount, setAmount] = useState('')
   const [contribError, setContribError] = useState<string | null>(null)
 
-  // Rafraîchissement automatique toutes les 30s pour le total en "temps réel"
+  // ── Edit state ────────────────────────────────────────────────────────────
+  const [openEdit, setOpenEdit] = useState(false)
+  const [editForm, setEditForm] = useState({
+    title: '', beneficiary_name: '', description: '', min_amount: '',
+  })
+  const [editPhotoFile, setEditPhotoFile] = useState<File | null>(null)
+  const [editPhotoPreview, setEditPhotoPreview] = useState<string | null>(null)
+  const [editPhotoUrl, setEditPhotoUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
+
+  // ── Queries ───────────────────────────────────────────────────────────────
   const { data: collecte, isLoading } = useQuery({
     queryKey: ['collecte', id],
     queryFn: () => collectes.get(id),
@@ -54,7 +74,8 @@ export default function CollecteDetailPage() {
     enabled: !!id,
   })
 
-  const { mutate: contribute, isPending } = useMutation({
+  // ── Contribute mutation ───────────────────────────────────────────────────
+  const { mutate: contribute, isPending: contribPending } = useMutation({
     mutationFn: (amt: number) => collectes.contribute(id, amt),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collecte', id] })
@@ -68,7 +89,92 @@ export default function CollecteDetailPage() {
     },
   })
 
-  function handleContrib(e: React.FormEvent) {
+  // ── Edit mutation ─────────────────────────────────────────────────────────
+  const { mutate: updateCollecte, isPending: editPending } = useMutation({
+    mutationFn: (data: Parameters<typeof collectes.update>[1]) => collectes.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collectes'] })
+      closeEditModal()
+    },
+    onError: (err: unknown) => {
+      setEditError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  function openEditModal() {
+    if (!collecte) return
+    setEditForm({
+      title: collecte.title,
+      beneficiary_name: collecte.beneficiary_name,
+      description: collecte.description ?? '',
+      min_amount: String(collecte.min_amount),
+    })
+    setEditPhotoFile(null)
+    setEditPhotoPreview(collecte.photo_url ?? null)
+    setEditPhotoUrl(collecte.photo_url ?? null)
+    setEditError(null)
+    setOpenEdit(true)
+  }
+
+  function closeEditModal() {
+    setOpenEdit(false)
+    setEditPhotoFile(null)
+    setEditPhotoPreview(null)
+    setEditPhotoUrl(null)
+    setEditError(null)
+  }
+
+  function editField(key: keyof typeof editForm) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setEditForm(f => ({ ...f, [key]: e.target.value }))
+  }
+
+  function handleEditFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setEditPhotoFile(file)
+    setEditPhotoPreview(URL.createObjectURL(file))
+    setEditPhotoUrl(null)
+  }
+
+  function removeEditPhoto() {
+    setEditPhotoFile(null)
+    setEditPhotoPreview(null)
+    setEditPhotoUrl('')
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  async function handleEditSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setEditError(null)
+
+    let photo_url = editPhotoUrl ?? undefined
+
+    if (editPhotoFile) {
+      setUploading(true)
+      try {
+        const res = await upload.image(editPhotoFile)
+        photo_url = res.url
+      } catch (err) {
+        setEditError(err instanceof ApiError ? err.message : 'Échec de l\'upload photo')
+        setUploading(false)
+        return
+      }
+      setUploading(false)
+    }
+
+    updateCollecte({
+      title:            editForm.title || undefined,
+      beneficiary_name: editForm.beneficiary_name || undefined,
+      photo_url:        photo_url,
+      description:      editForm.description || undefined,
+      min_amount:       Number(editForm.min_amount) || undefined,
+    })
+  }
+
+  function handleContrib(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setContribError(null)
     const amt = parseFloat(amount)
@@ -85,6 +191,7 @@ export default function CollecteDetailPage() {
     setContribError(null)
   }
 
+  // ── Render ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -111,7 +218,6 @@ export default function CollecteDetailPage() {
       {/* Header */}
       <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-6">
         <div className="flex gap-5">
-          {/* Photo */}
           <div className="w-20 h-20 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
             {collecte.photo_url
               ? <img src={collecte.photo_url} alt={collecte.beneficiary_name} className="w-full h-full object-cover" />
@@ -125,13 +231,24 @@ export default function CollecteDetailPage() {
                 <h1 className="text-xl font-semibold text-[#1a1a1a]">{collecte.title}</h1>
                 <p className="text-sm text-[#9B928B] mt-0.5">En mémoire de {collecte.beneficiary_name}</p>
               </div>
-              <Badge className={
-                collecte.is_active
-                  ? 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200'
-              }>
-                {collecte.is_closed ? 'Clôturée' : collecte.is_active ? 'En cours' : 'Expirée'}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className={
+                  collecte.is_active
+                    ? 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200'
+                }>
+                  {collecte.is_closed ? 'Clôturée' : collecte.is_active ? 'En cours' : 'Expirée'}
+                </Badge>
+                {canEdit && (
+                  <button
+                    onClick={openEditModal}
+                    className="p-1.5 rounded-md text-[#9B928B] hover:text-[#C8A96E] hover:bg-[#F0EBE2] transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {collecte.description && (
@@ -223,16 +340,117 @@ export default function CollecteDetailPage() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  disabled={contribPending}
                   className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
                 >
-                  {isPending ? 'Envoi…' : 'Confirmer'}
+                  {contribPending ? 'Envoi…' : 'Confirmer'}
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Modal édition */}
+      <Dialog open={openEdit} onOpenChange={next => { if (!next) closeEditModal(); else setOpenEdit(true) }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a]">Modifier la collecte</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleEditSubmit} className="space-y-4 mt-1">
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Titre</label>
+              <Input value={editForm.title} onChange={editField('title')} required className={FIELD} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Nom du défunt</label>
+              <Input value={editForm.beneficiary_name} onChange={editField('beneficiary_name')} required className={FIELD} />
+            </div>
+
+            {/* Photo */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">
+                Photo <span className="text-[#B0A9A2]">(JPEG, PNG, WEBP · max 5 Mo)</span>
+              </label>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleEditFileChange}
+              />
+              {editPhotoPreview ? (
+                <div className="relative w-20 h-20 rounded-full overflow-hidden bg-[#F0EBE2] group">
+                  <img src={editPhotoPreview} alt="Aperçu" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={removeEditPhoto}
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  >
+                    <X size={16} className="text-white" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-[rgba(0,0,0,0.15)] text-xs text-[#9B928B] hover:border-[#C8A96E] hover:text-[#C8A96E] transition-colors"
+                >
+                  <ImagePlus size={14} />
+                  Choisir une photo
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Message</label>
+              <textarea
+                value={editForm.description}
+                onChange={editField('description')}
+                rows={3}
+                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Montant minimum (€)</label>
+              <Input
+                type="number"
+                min={1}
+                value={editForm.min_amount}
+                onChange={editField('min_amount')}
+                className={FIELD}
+              />
+            </div>
+
+            {editError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {editError}
+              </p>
+            )}
+
+            <DialogFooter className="gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={closeEditModal}
+                className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent"
+              >
+                Annuler
+              </Button>
+              <Button
+                type="submit"
+                disabled={editPending || uploading}
+                className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+              >
+                {uploading ? 'Upload…' : editPending ? 'Sauvegarde…' : 'Enregistrer'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Liste contributions */}
       <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">

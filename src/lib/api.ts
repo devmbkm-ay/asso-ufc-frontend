@@ -88,6 +88,28 @@ export async function apiRequest<T>(
   return res.json()
 }
 
+export async function apiUpload(path: string, file: File): Promise<{ url: string }> {
+  const token = getToken()
+  const form = new FormData()
+  form.append('file', file)
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+    body: form,
+  })
+
+  if (res.status === 401) {
+    handleAuthFailure()
+    throw new ApiError(401, 'Session expirée')
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
+    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function apiDownload(path: string, filename: string): Promise<void> {
   const token = getToken()
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -198,6 +220,12 @@ export const events = {
   },
 }
 
+// ── Upload ────────────────────────────────────────────────────────────────────
+
+export const upload = {
+  image: (file: File) => apiUpload('/api/v1/upload/image', file),
+}
+
 // ── Collectes ─────────────────────────────────────────────────────────────────
 
 export const collectes = {
@@ -226,6 +254,16 @@ export const collectes = {
     }),
   contributions: (id: string) =>
     apiRequest<import('./types').ContributionRead[]>(`/api/v1/collectes/${id}/contributions`),
+  update: (id: string, data: {
+    title?: string
+    beneficiary_name?: string
+    photo_url?: string
+    description?: string
+    min_amount?: number
+  }) => apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
   close: (id: string) =>
     apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}/close`, {
       method: 'PATCH',

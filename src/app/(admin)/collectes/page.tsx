@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { collectes, ApiError } from '@/lib/api'
+import { collectes, upload, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Plus, Heart, Users, Calendar } from 'lucide-react'
+import { Plus, Heart, Users, Calendar, ImagePlus, X } from 'lucide-react'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -29,7 +29,6 @@ function daysLeft(endDate: string) {
 const EMPTY_FORM = {
   title: '',
   beneficiary_name: '',
-  photo_url: '',
   description: '',
   min_amount: '20',
   start_date: new Date().toISOString().split('T')[0],
@@ -40,8 +39,13 @@ const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:tex
 export default function CollectesPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
+  const fileRef = useRef<HTMLInputElement>(null)
+
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
   const canCreate = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
@@ -65,6 +69,8 @@ export default function CollectesPage() {
   function closeModal() {
     setOpen(false)
     setForm(EMPTY_FORM)
+    setPhotoFile(null)
+    setPhotoPreview(null)
     setFormError(null)
   }
 
@@ -73,13 +79,41 @@ export default function CollectesPage() {
       setForm(f => ({ ...f, [key]: e.target.value }))
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
+  }
+
+  function removePhoto() {
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setFormError(null)
+
+    let photo_url: string | undefined
+    if (photoFile) {
+      setUploading(true)
+      try {
+        const res = await upload.image(photoFile)
+        photo_url = res.url
+      } catch (err) {
+        setFormError(err instanceof ApiError ? err.message : 'Échec de l\'upload photo')
+        setUploading(false)
+        return
+      }
+      setUploading(false)
+    }
+
     create({
       title:            form.title,
       beneficiary_name: form.beneficiary_name,
-      photo_url:        form.photo_url   || undefined,
+      photo_url,
       description:      form.description || undefined,
       min_amount:       Number(form.min_amount) || 20,
       start_date:       form.start_date,
@@ -139,17 +173,39 @@ export default function CollectesPage() {
                   />
                 </div>
 
+                {/* Photo upload */}
                 <div className="space-y-1.5">
                   <label className="text-xs text-[#6B6560]">
-                    URL de la photo <span className="text-[#B0A9A2]">(optionnel)</span>
+                    Photo <span className="text-[#B0A9A2]">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
                   </label>
-                  <Input
-                    type="url"
-                    value={form.photo_url}
-                    onChange={field('photo_url')}
-                    placeholder="https://…"
-                    className={FIELD}
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    onChange={handleFileChange}
                   />
+                  {photoPreview ? (
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden bg-[#F0EBE2] group">
+                      <img src={photoPreview} alt="Aperçu" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={removePhoto}
+                        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                      >
+                        <X size={16} className="text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-[rgba(0,0,0,0.15)] text-xs text-[#9B928B] hover:border-[#C8A96E] hover:text-[#C8A96E] transition-colors"
+                    >
+                      <ImagePlus size={14} />
+                      Choisir une photo
+                    </button>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -188,9 +244,7 @@ export default function CollectesPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-[#9B928B]">
-                  La collecte durera 14 jours à partir de la date de début.
-                </p>
+                <p className="text-xs text-[#9B928B]">La collecte durera 14 jours à partir de la date de début.</p>
 
                 {formError && (
                   <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -209,10 +263,10 @@ export default function CollectesPage() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={isPending}
+                    disabled={isPending || uploading}
                     className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
                   >
-                    {isPending ? 'Création…' : 'Lancer la collecte'}
+                    {uploading ? 'Upload…' : isPending ? 'Création…' : 'Lancer la collecte'}
                   </Button>
                 </DialogFooter>
               </form>
@@ -230,9 +284,7 @@ export default function CollectesPage() {
         <section className="space-y-3">
           <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">En cours</h2>
           <div className="space-y-3">
-            {active.map(c => (
-              <CollecteCard key={c.id} collecte={c} />
-            ))}
+            {active.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
         </section>
       )}
@@ -242,9 +294,7 @@ export default function CollectesPage() {
         <section className="space-y-3">
           <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">Terminées</h2>
           <div className="space-y-3">
-            {past.map(c => (
-              <CollecteCard key={c.id} collecte={c} />
-            ))}
+            {past.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
         </section>
       )}
@@ -268,7 +318,6 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
       className="block bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 hover:border-[rgba(200,169,110,0.4)] transition-colors"
     >
       <div className="flex gap-4">
-        {/* Photo ou placeholder */}
         <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
           {c.photo_url
             ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />

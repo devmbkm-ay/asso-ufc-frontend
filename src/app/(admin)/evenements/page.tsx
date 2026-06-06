@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { events } from '@/lib/api'
+import Link from 'next/link'
+import { events, collectes } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Users, Ticket } from 'lucide-react'
+import { MapPin, Users, Ticket, Heart, HandCoins } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const STATUS_TABS = [
@@ -25,7 +26,12 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
 function fmtEur(n: number) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
+}
+
+function daysLeft(endDate: string) {
+  const diff = new Date(endDate).getTime() - Date.now()
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
 export default function EvenementsPage() {
@@ -34,6 +40,11 @@ export default function EvenementsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['events', status],
     queryFn: () => events.list({ status: status || undefined }),
+  })
+
+  const { data: activeCollectes } = useQuery({
+    queryKey: ['collectes', 'active'],
+    queryFn: () => collectes.list({ active_only: true }),
   })
 
   return (
@@ -45,6 +56,53 @@ export default function EvenementsPage() {
         </p>
       </div>
 
+      {/* Widget collectes actives */}
+      {activeCollectes && activeCollectes.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Heart size={13} className="text-[#C8A96E]" />
+            <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">
+              Annonces en cours
+            </h2>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {activeCollectes.map(c => {
+              const remaining = daysLeft(c.end_date)
+              return (
+                <Link
+                  key={c.id}
+                  href={`/collectes/${c.id}`}
+                  className="shrink-0 w-56 bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 hover:border-[rgba(200,169,110,0.4)] transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
+                      {c.photo_url
+                        ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
+                        : <Heart size={16} className="text-[#C8A96E]" />
+                      }
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-[#1a1a1a] truncate">{c.title}</p>
+                      <p className="text-[10px] text-[#9B928B] truncate">{c.beneficiary_name}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-xs text-[#C8A96E] font-semibold">
+                      <HandCoins size={11} />
+                      {fmtEur(c.total_collected)}
+                    </div>
+                    <span className="text-[10px] text-[#9B928B]">
+                      {remaining}j restant{remaining > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Filtres */}
       <div className="flex gap-1 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg p-1 w-fit">
         {STATUS_TABS.map(t => (
           <button
@@ -62,6 +120,7 @@ export default function EvenementsPage() {
         ))}
       </div>
 
+      {/* Liste événements */}
       <div className="space-y-3">
         {isLoading && (
           <div className="py-12 text-center text-[#9B928B] text-sm">Chargement…</div>
