@@ -102,6 +102,7 @@ export interface CollecteRead {
   end_date: string
   is_closed: boolean
   is_active: boolean
+  status: 'upcoming' | 'active' | 'expired' | 'closed'
   total_collected: number
   contributors_count: number
   created_at: string

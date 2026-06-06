@@ -26,6 +26,13 @@ function daysLeft(endDate: string) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
+const STATUS_BADGE: Record<string, { label: string; className: string }> = {
+  upcoming: { label: 'À venir',  className: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200' },
+  active:   { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
+  expired:  { label: 'Expirée',  className: 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200' },
+  closed:   { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
+}
+
 const EMPTY_FORM = {
   title: '',
   beneficiary_name: '',
@@ -331,12 +338,8 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
               <h3 className="text-sm font-semibold text-[#1a1a1a]">{c.title}</h3>
               <p className="text-xs text-[#9B928B] mt-0.5">En mémoire de {c.beneficiary_name}</p>
             </div>
-            <Badge className={
-              c.is_active
-                ? 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200'
-            }>
-              {c.is_closed ? 'Clôturée' : c.is_active ? 'En cours' : 'Expirée'}
+            <Badge className={STATUS_BADGE[c.status]?.className ?? STATUS_BADGE.expired.className}>
+              {STATUS_BADGE[c.status]?.label ?? 'Expirée'}
             </Badge>
           </div>
 

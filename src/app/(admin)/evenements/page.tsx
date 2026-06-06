@@ -16,6 +16,11 @@ const STATUS_TABS = [
   { value: 'cancelled', label: 'Annulés' },
 ]
 
+const COLLECTE_STATUS_BADGE: Record<string, string> = {
+  upcoming: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200',
+  active:   'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200',
+}
+
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   draft:     { label: 'Brouillon', className: 'bg-gray-100 text-gray-500 border-gray-200' },
   published: { label: 'Publié',    className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -42,10 +47,12 @@ export default function EvenementsPage() {
     queryFn: () => events.list({ status: status || undefined }),
   })
 
-  const { data: activeCollectes } = useQuery({
-    queryKey: ['collectes', 'active'],
-    queryFn: () => collectes.list({ active_only: true }),
+  const { data: allCollectes } = useQuery({
+    queryKey: ['collectes'],
+    queryFn: () => collectes.list(),
   })
+  // Afficher upcoming + active (les annonces en cours ou à venir)
+  const activeCollectes = allCollectes?.filter(c => c.status === 'active' || c.status === 'upcoming')
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-6">
@@ -91,9 +98,15 @@ export default function EvenementsPage() {
                       <HandCoins size={11} />
                       {fmtEur(c.total_collected)}
                     </div>
-                    <span className="text-[10px] text-[#9B928B]">
-                      {remaining}j restant{remaining > 1 ? 's' : ''}
-                    </span>
+                    {c.status === 'active' ? (
+                      <span className="text-[10px] text-[#9B928B]">
+                        {remaining}j restant{remaining > 1 ? 's' : ''}
+                      </span>
+                    ) : (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${COLLECTE_STATUS_BADGE[c.status] ?? ''}`}>
+                        À venir
+                      </span>
+                    )}
                   </div>
                 </Link>
               )

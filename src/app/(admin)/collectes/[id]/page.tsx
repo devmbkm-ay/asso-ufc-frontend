@@ -34,6 +34,13 @@ function daysLeft(endDate: string) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
+const STATUS_BADGE: Record<string, { label: string; className: string }> = {
+  upcoming: { label: 'À venir',  className: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200' },
+  active:   { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
+  expired:  { label: 'Expirée',  className: 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200' },
+  closed:   { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
+}
+
 const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
 
 export default function CollecteDetailPage() {
@@ -232,12 +239,8 @@ export default function CollecteDetailPage() {
                 <p className="text-sm text-[#9B928B] mt-0.5">En mémoire de {collecte.beneficiary_name}</p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge className={
-                  collecte.is_active
-                    ? 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200'
-                }>
-                  {collecte.is_closed ? 'Clôturée' : collecte.is_active ? 'En cours' : 'Expirée'}
+                <Badge className={STATUS_BADGE[collecte.status]?.className ?? STATUS_BADGE.expired.className}>
+                  {STATUS_BADGE[collecte.status]?.label ?? 'Expirée'}
                 </Badge>
                 {canEdit && (
                   <button
