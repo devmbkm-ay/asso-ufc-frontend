@@ -197,3 +197,37 @@ export const events = {
     return apiRequest<import('./types').EventRead[]>(`/api/v1/events?${q}`)
   },
 }
+
+// ── Collectes ─────────────────────────────────────────────────────────────────
+
+export const collectes = {
+  list: (params?: { active_only?: boolean }) => {
+    const q = new URLSearchParams()
+    if (params?.active_only) q.set('active_only', 'true')
+    return apiRequest<import('./types').CollecteRead[]>(`/api/v1/collectes?${q}`)
+  },
+  get: (id: string) =>
+    apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}`),
+  create: (data: {
+    title: string
+    beneficiary_name: string
+    photo_url?: string
+    description?: string
+    min_amount?: number
+    start_date: string
+  }) => apiRequest<import('./types').CollecteRead>('/api/v1/collectes', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  contribute: (id: string, amount: number) =>
+    apiRequest<import('./types').ContributionRead>(`/api/v1/collectes/${id}/contributions`, {
+      method: 'POST',
+      body: JSON.stringify({ amount }),
+    }),
+  contributions: (id: string) =>
+    apiRequest<import('./types').ContributionRead[]>(`/api/v1/collectes/${id}/contributions`),
+  close: (id: string) =>
+    apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}/close`, {
+      method: 'PATCH',
+    }),
+}

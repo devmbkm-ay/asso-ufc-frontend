@@ -90,3 +90,28 @@ export interface AuthTokens {
   refresh_token: string
   token_type: string
 }
+
+export interface CollecteRead {
+  id: string
+  title: string
+  beneficiary_name: string
+  photo_url?: string
+  description?: string
+  min_amount: number
+  start_date: string
+  end_date: string
+  is_closed: boolean
+  is_active: boolean
+  total_collected: number
+  contributors_count: number
+  created_at: string
+}
+
+export interface ContributionRead {
+  id: string
+  collecte_id: string
+  member_id: string
+  member_name: string
+  amount: number
+  contributed_at: string
+}
