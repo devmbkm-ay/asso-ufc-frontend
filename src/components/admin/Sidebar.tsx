@@ -37,12 +37,12 @@ const NAV = [
   },
 ]
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
 
   return (
-    <aside className="flex flex-col w-56 h-screen bg-[#2D5016] border-r border-[rgba(255,255,255,0.10)] shrink-0">
+    <aside className="flex flex-col w-56 h-full bg-[#2D5016] border-r border-[rgba(255,255,255,0.10)] shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
         <div className="w-8 h-8 rounded-full bg-[#C8A96E] flex items-center justify-center shrink-0">
@@ -68,6 +68,7 @@ export function Sidebar() {
                   <li key={href}>
                     <Link
                       href={href}
+                      onClick={onClose}
                       className={cn(
                         'flex items-center gap-2.5 px-2 py-2 rounded-md text-sm transition-colors',
                         active
