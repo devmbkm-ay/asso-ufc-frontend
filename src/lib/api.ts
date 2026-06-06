@@ -207,6 +207,27 @@ export const cotisations = {
   },
   exportCSV: (year: number) =>
     apiDownload(`/api/v1/payments/export?year=${year}`, `cotisations-${year}.csv`),
+  record: (data: {
+    member_id: string
+    cotisation_plan_id: string
+    amount: number
+    payment_date: string
+    period_month: number
+    period_year: number
+    method: string
+    reference?: string
+    notes?: string
+  }) => apiRequest<import('./types').Payment>('/api/v1/payments', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  confirm: (id: string) =>
+    apiRequest<import('./types').Payment>(`/api/v1/payments/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'confirmed' }),
+    }),
+  cancelPayment: (id: string) =>
+    apiRequest<void>(`/api/v1/payments/${id}`, { method: 'DELETE' }),
 }
 
 // ── Events ───────────────────────────────────────────────────────────────────
