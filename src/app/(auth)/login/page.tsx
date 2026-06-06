@@ -35,7 +35,7 @@ function LoginForm() {
   const inputCls = 'bg-[#1e1e1e] border-[rgba(255,255,255,0.1)] text-white placeholder:text-[#555] focus:border-[#C8A96E] focus:ring-[#C8A96E]'
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414]">
+    <div className="min-h-screen flex items-center justify-center mboka-bg">
       <div className="w-full max-w-sm space-y-8 px-6">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#C8A96E] mb-4">

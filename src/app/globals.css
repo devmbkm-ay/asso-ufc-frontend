@@ -128,3 +128,18 @@
 .text-gold   { color: #C8A96E; }
 .bg-gold     { background-color: #C8A96E; }
 .border-gold { border-color: #C8A96E; }
+
+/* ── Background géométrique Mboka (grille diamant + vignette) ─────────────── */
+.mboka-bg {
+  background-color: #141414;
+  background-image:
+    radial-gradient(ellipse 130% 90% at 62% 28%, transparent 28%, rgba(0,0,0,0.42) 82%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cline x1='0' y1='0' x2='60' y2='0' stroke='rgba(200,169,110,0.09)' stroke-width='0.5'/%3E%3Cline x1='0' y1='0' x2='0' y2='60' stroke='rgba(200,169,110,0.09)' stroke-width='0.5'/%3E%3Cpolygon points='30,0 60,30 30,60 0,30' fill='none' stroke='rgba(200,169,110,0.07)' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='0.8' fill='rgba(200,169,110,0.13)'/%3E%3C/svg%3E");
+  background-size: cover, 60px 60px;
+  background-attachment: fixed, fixed;
+}
+
+/* Cards avec bordure or subtile */
+.mboka-card {
+  border-color: rgba(200, 169, 110, 0.14) !important;
+}

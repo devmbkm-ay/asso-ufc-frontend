@@ -88,6 +88,30 @@ export async function apiRequest<T>(
   return res.json()
 }
 
+export async function apiDownload(path: string, filename: string): Promise<void> {
+  const token = getToken()
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+  })
+  if (res.status === 401) {
+    handleAuthFailure()
+    throw new ApiError(401, 'Session expirée')
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
+    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+  }
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
 // ── Auth ────────────────────────────────────────────────────────────────────
 
 export const auth = {
@@ -131,6 +155,11 @@ export const members = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
+  update: (id: string, data: Partial<{ first_name: string; last_name: string; phone: string; address: string }>) =>
+    apiRequest<import('./types').Member>(`/api/v1/members/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
 }
 
 // ── Dashboard ────────────────────────────────────────────────────────────────
@@ -154,6 +183,8 @@ export const cotisations = {
     if (params?.year)      q.set('year', String(params.year))
     return apiRequest<import('./types').Payment[]>(`/api/v1/payments?${q}`)
   },
+  exportCSV: (year: number) =>
+    apiDownload(`/api/v1/payments/export?year=${year}`, `cotisations-${year}.csv`),
 }
 
 // ── Events ───────────────────────────────────────────────────────────────────
