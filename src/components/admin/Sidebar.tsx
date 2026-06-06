@@ -40,15 +40,15 @@ export function Sidebar() {
   const { user, logout } = useAuth()
 
   return (
-    <aside className="flex flex-col w-56 h-screen bg-[#181818] border-r border-[rgba(255,255,255,0.06)] shrink-0">
+    <aside className="flex flex-col w-56 h-screen bg-[#2D5016] border-r border-[rgba(255,255,255,0.10)] shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.06)]">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
         <div className="w-8 h-8 rounded-full bg-[#C8A96E] flex items-center justify-center shrink-0">
-          <span className="text-sm font-bold text-[#141414]">M</span>
+          <span className="text-sm font-bold text-[#1a1a1a]">M</span>
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white truncate">Mboka</p>
-          <p className="text-xs text-[#888] truncate">{user?.roles?.[0] ?? 'Membre'}</p>
+          <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">{user?.roles?.[0] ?? 'Membre'}</p>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto py-4 space-y-5 px-3">
         {NAV.map(({ section, items }) => (
           <div key={section}>
-            <p className="text-[10px] font-semibold tracking-widest text-[#555] px-2 mb-1">
+            <p className="text-[10px] font-semibold tracking-widest text-[rgba(255,255,255,0.35)] px-2 mb-1">
               {section}
             </p>
             <ul className="space-y-0.5">
@@ -69,8 +69,8 @@ export function Sidebar() {
                       className={cn(
                         'flex items-center gap-2.5 px-2 py-2 rounded-md text-sm transition-colors',
                         active
-                          ? 'bg-[#C8A96E]/15 text-[#C8A96E] font-medium'
-                          : 'text-[#888] hover:text-[#c8c4bc] hover:bg-[#252525]',
+                          ? 'bg-[rgba(255,255,255,0.15)] text-white font-medium'
+                          : 'text-[rgba(255,255,255,0.65)] hover:text-white hover:bg-[rgba(255,255,255,0.08)]',
                       )}
                     >
                       <Icon size={15} />
@@ -85,9 +85,9 @@ export function Sidebar() {
       </nav>
 
       {/* User footer */}
-      <div className="border-t border-[rgba(255,255,255,0.06)] p-3">
+      <div className="border-t border-[rgba(255,255,255,0.10)] p-3">
         <div className="flex items-center gap-2.5 px-2 py-2">
-          <div className="w-7 h-7 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-full bg-[rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
             <span className="text-xs font-semibold text-white">
               {user?.first_name?.[0]}{user?.last_name?.[0]}
             </span>
@@ -99,7 +99,7 @@ export function Sidebar() {
           </div>
           <button
             onClick={logout}
-            className="text-[#555] hover:text-red-400 transition-colors"
+            className="text-[rgba(255,255,255,0.40)] hover:text-red-300 transition-colors"
             title="Déconnexion"
           >
             <LogOut size={14} />

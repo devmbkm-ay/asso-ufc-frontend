@@ -22,10 +22,10 @@ const STATUS_TABS = [
 ]
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  inactive:  { label: 'Inactif',    className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
+  active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  inactive:  { label: 'Inactif',    className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  suspended: { label: 'Suspendu',   className: 'bg-red-50 text-red-600 border-red-200' },
+  honorary:  { label: 'Honoraire',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 function fmtDate(iso: string) {
@@ -42,7 +42,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-[#252525] border-[rgba(255,255,255,0.1)] text-white placeholder:text-[#555]'
+const FIELD_CLASS = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
 
 export default function MembresPage() {
   const [search, setSearch]               = useState('')
@@ -122,8 +122,8 @@ export default function MembresPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Membres</h1>
-          <p className="text-sm text-[#888] mt-0.5">
+          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Membres</h1>
+          <p className="text-sm text-[#6B6560] mt-0.5">
             {data ? `${data.total} membre${data.total > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -131,38 +131,38 @@ export default function MembresPage() {
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <Button
             onClick={() => setOpen(true)}
-            className="bg-[#C8A96E] hover:bg-[#b8994e] text-black text-sm font-medium gap-1.5 shrink-0"
+            className="bg-[#C8A96E] hover:bg-[#b8994e] text-white text-sm font-medium gap-1.5 shrink-0"
           >
             <Plus size={14} />
             Nouveau membre
           </Button>
 
-          <DialogContent className="bg-[#1a1a1a] border-[rgba(255,255,255,0.08)] sm:max-w-md">
+          <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white">Nouveau membre</DialogTitle>
+              <DialogTitle className="text-[#1a1a1a]">Nouveau membre</DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-4 mt-1">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#888]">Prénom *</label>
+                  <label className="text-xs text-[#6B6560]">Prénom *</label>
                   <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#888]">Nom *</label>
+                  <label className="text-xs text-[#6B6560]">Nom *</label>
                   <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#888]">Email *</label>
+                <label className="text-xs text-[#6B6560]">Email *</label>
                 <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#888]">
+                <label className="text-xs text-[#6B6560]">
                   Mot de passe *{' '}
-                  <span className="text-[#555]">8 car. min, 1 chiffre requis</span>
+                  <span className="text-[#B0A9A2]">8 car. min, 1 chiffre requis</span>
                 </label>
                 <Input
                   type="password"
@@ -175,22 +175,22 @@ export default function MembresPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#888]">Téléphone</label>
+                <label className="text-xs text-[#6B6560]">Téléphone</label>
                 <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#888]">Adresse</label>
+                <label className="text-xs text-[#6B6560]">Adresse</label>
                 <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#888]">Date de naissance</label>
+                <label className="text-xs text-[#6B6560]">Date de naissance</label>
                 <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
               </div>
 
               {formError && (
-                <p className="text-xs text-red-400 bg-red-900/20 border border-red-800/30 rounded-lg px-3 py-2">
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                   {formError}
                 </p>
               )}
@@ -200,14 +200,14 @@ export default function MembresPage() {
                   type="button"
                   variant="outline"
                   onClick={closeModal}
-                  className="border-[rgba(255,255,255,0.1)] text-[#888] hover:text-white bg-transparent"
+                  className="border-[rgba(0,0,0,0.12)] text-[#6B6560] hover:text-[#1a1a1a] bg-transparent"
                 >
                   Annuler
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-black"
+                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
                 >
                   {isPending ? 'Création…' : 'Créer le membre'}
                 </Button>
@@ -220,15 +220,15 @@ export default function MembresPage() {
       {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#555]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B928B]" />
           <Input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Rechercher un membre…"
-            className="pl-9 bg-[#1e1e1e] border-[rgba(255,255,255,0.1)] text-white placeholder:text-[#555]"
+            className="pl-9 bg-white border-[rgba(0,0,0,0.10)] text-[#1a1a1a] placeholder:text-[#B0A9A2]"
           />
         </div>
-        <div className="flex gap-1 bg-[#1e1e1e] border border-[rgba(255,255,255,0.08)] rounded-lg p-1">
+        <div className="flex gap-1 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg p-1">
           {STATUS_TABS.map(t => (
             <button
               key={t.value}
@@ -236,8 +236,8 @@ export default function MembresPage() {
               className={cn(
                 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 status === t.value
-                  ? 'bg-[#C8A96E]/15 text-[#C8A96E]'
-                  : 'text-[#666] hover:text-[#aaa]',
+                  ? 'bg-[#C8A96E]/20 text-[#8B6B30]'
+                  : 'text-[#7A726B] hover:text-[#1a1a1a]',
               )}
             >
               {t.label}
@@ -247,32 +247,32 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] overflow-hidden">
+      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[rgba(255,255,255,0.06)]">
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#555] uppercase">Membre</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#555] uppercase hidden md:table-cell">Email</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#555] uppercase hidden lg:table-cell">Téléphone</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#555] uppercase hidden sm:table-cell">Inscrit le</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#555] uppercase">Statut</th>
+            <tr className="border-b border-[rgba(0,0,0,0.06)]">
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Membre</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden md:table-cell">Email</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden lg:table-cell">Téléphone</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Inscrit le</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+          <tbody className="divide-y divide-[rgba(0,0,0,0.04)]">
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-[#555]">Chargement…</td>
+                <td colSpan={5} className="px-5 py-12 text-center text-[#9B928B]">Chargement…</td>
               </tr>
             )}
             {!isLoading && data?.items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-[#555]">Aucun membre trouvé</td>
+                <td colSpan={5} className="px-5 py-12 text-center text-[#9B928B]">Aucun membre trouvé</td>
               </tr>
             )}
             {data?.items.map(m => {
               const st = STATUS_LABEL[m.status]
               return (
-                <tr key={m.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                <tr key={m.id} className="hover:bg-[rgba(0,0,0,0.02)] transition-colors group">
                   <td className="px-5 py-3.5">
                     <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
@@ -280,18 +280,18 @@ export default function MembresPage() {
                           {m.first_name[0]}{m.last_name[0]}
                         </span>
                       </div>
-                      <span className="font-medium text-white group-hover:text-[#C8A96E] transition-colors">
+                      <span className="font-medium text-[#1a1a1a] group-hover:text-[#C8A96E] transition-colors">
                         {m.first_name} {m.last_name}
                       </span>
                     </Link>
                   </td>
-                  <td className="px-5 py-3.5 text-[#888] hidden md:table-cell">
+                  <td className="px-5 py-3.5 text-[#6B6560] hidden md:table-cell">
                     <Link href={`/membres/${m.id}`} className="block">{m.email}</Link>
                   </td>
-                  <td className="px-5 py-3.5 text-[#888] hidden lg:table-cell">
+                  <td className="px-5 py-3.5 text-[#6B6560] hidden lg:table-cell">
                     <Link href={`/membres/${m.id}`} className="block">{m.phone ?? '—'}</Link>
                   </td>
-                  <td className="px-5 py-3.5 text-[#888] hidden sm:table-cell">
+                  <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
                     <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
                   </td>
                   <td className="px-5 py-3.5">
@@ -309,7 +309,7 @@ export default function MembresPage() {
       {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <p className="text-[#555]">
+          <p className="text-[#9B928B]">
             Page {data.page} sur {data.pages}
           </p>
           <div className="flex gap-2">
@@ -318,7 +318,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
-              className="bg-[#1e1e1e] border-[rgba(255,255,255,0.1)] text-[#888] hover:text-white hover:bg-[#252525]"
+              className="bg-white border-[rgba(0,0,0,0.10)] text-[#6B6560] hover:text-[#1a1a1a] hover:bg-[#F0EBE2]"
             >
               <ChevronLeft size={14} />
             </Button>
@@ -327,7 +327,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === data.pages}
               onClick={() => setPage(p => p + 1)}
-              className="bg-[#1e1e1e] border-[rgba(255,255,255,0.1)] text-[#888] hover:text-white hover:bg-[#252525]"
+              className="bg-white border-[rgba(0,0,0,0.10)] text-[#6B6560] hover:text-[#1a1a1a] hover:bg-[#F0EBE2]"
             >
               <ChevronRight size={14} />
             </Button>

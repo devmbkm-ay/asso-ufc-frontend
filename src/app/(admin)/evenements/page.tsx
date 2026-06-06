@@ -16,10 +16,10 @@ const STATUS_TABS = [
 ]
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  draft:     { label: 'Brouillon', className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  published: { label: 'Publié',    className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  cancelled: { label: 'Annulé',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  completed: { label: 'Terminé',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
+  draft:     { label: 'Brouillon', className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  published: { label: 'Publié',    className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  cancelled: { label: 'Annulé',   className: 'bg-red-50 text-red-600 border-red-200' },
+  completed: { label: 'Terminé',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
@@ -39,13 +39,13 @@ export default function EvenementsPage() {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Événements</h1>
-        <p className="text-sm text-[#888] mt-0.5">
+        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Événements</h1>
+        <p className="text-sm text-[#6B6560] mt-0.5">
           {data ? `${data.length} événement${data.length > 1 ? 's' : ''}` : '—'}
         </p>
       </div>
 
-      <div className="flex gap-1 bg-[#1e1e1e] border border-[rgba(255,255,255,0.08)] rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg p-1 w-fit">
         {STATUS_TABS.map(t => (
           <button
             key={t.value}
@@ -53,8 +53,8 @@ export default function EvenementsPage() {
             className={cn(
               'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
               status === t.value
-                ? 'bg-[#C8A96E]/15 text-[#C8A96E]'
-                : 'text-[#666] hover:text-[#aaa]',
+                ? 'bg-[#C8A96E]/20 text-[#8B6B30]'
+                : 'text-[#7A726B] hover:text-[#1a1a1a]',
             )}
           >
             {t.label}
@@ -64,42 +64,42 @@ export default function EvenementsPage() {
 
       <div className="space-y-3">
         {isLoading && (
-          <div className="py-12 text-center text-[#555] text-sm">Chargement…</div>
+          <div className="py-12 text-center text-[#9B928B] text-sm">Chargement…</div>
         )}
         {!isLoading && data?.length === 0 && (
-          <div className="py-12 text-center text-[#555] text-sm">Aucun événement</div>
+          <div className="py-12 text-center text-[#9B928B] text-sm">Aucun événement</div>
         )}
         {data?.map(ev => {
           const d = new Date(ev.event_date)
-          const st = STATUS_LABEL[ev.status] ?? { label: ev.status, className: 'bg-zinc-800 text-zinc-400 border-zinc-700' }
+          const st = STATUS_LABEL[ev.status] ?? { label: ev.status, className: 'bg-gray-100 text-gray-500 border-gray-200' }
           const capacityFull = ev.capacity != null && ev.registrations_count >= ev.capacity
           return (
             <div
               key={ev.id}
-              className="bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] p-5 flex gap-5 hover:border-[rgba(255,255,255,0.1)] transition-colors"
+              className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 flex gap-5 hover:border-[rgba(200,169,110,0.35)] transition-colors"
             >
               <div className="text-center w-12 shrink-0 pt-0.5">
                 <p className="text-2xl font-bold text-[#C8A96E] leading-none">{d.getDate()}</p>
-                <p className="text-[10px] text-[#555] uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
-                <p className="text-[10px] text-[#444] mt-0.5">{d.getFullYear()}</p>
+                <p className="text-[10px] text-[#9B928B] uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
+                <p className="text-[10px] text-[#B0A9A2] mt-0.5">{d.getFullYear()}</p>
               </div>
 
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <h3 className="text-sm font-semibold text-white">{ev.title}</h3>
+                  <h3 className="text-sm font-semibold text-[#1a1a1a]">{ev.title}</h3>
                   <Badge className={`text-[10px] border shrink-0 ${st.className}`}>{st.label}</Badge>
                 </div>
                 {ev.description && (
-                  <p className="text-xs text-[#666] line-clamp-2">{ev.description}</p>
+                  <p className="text-xs text-[#7A726B] line-clamp-2">{ev.description}</p>
                 )}
-                <div className="flex flex-wrap gap-4 text-xs text-[#555]">
+                <div className="flex flex-wrap gap-4 text-xs text-[#9B928B]">
                   {ev.location && (
                     <div className="flex items-center gap-1.5">
                       <MapPin size={11} className="text-[#C8A96E]" />
                       {ev.location}
                     </div>
                   )}
-                  <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-500')}>
+                  <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-600')}>
                     <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-[#C8A96E]'} />
                     {ev.registrations_count} inscrit{ev.registrations_count > 1 ? 's' : ''}
                     {ev.capacity && ` / ${ev.capacity}`}

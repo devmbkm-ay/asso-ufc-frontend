@@ -30,8 +30,8 @@ const ROLE_META: Record<string, {
   admin: {
     label: 'Administrateur',
     icon: Shield,
-    color: 'text-blue-400',
-    bg: 'bg-blue-900/20',
+    color: 'text-blue-600',
+    bg: 'bg-blue-50',
     description: 'Accès étendu à la gestion des membres et des cotisations.',
     permissions: [
       'Gérer tous les membres',
@@ -44,8 +44,8 @@ const ROLE_META: Record<string, {
   secretary: {
     label: 'Secrétaire',
     icon: BookOpen,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-900/20',
+    color: 'text-emerald-700',
+    bg: 'bg-emerald-50',
     description: 'Gestion des membres et de leurs informations.',
     permissions: [
       'Ajouter et modifier les membres',
@@ -56,8 +56,8 @@ const ROLE_META: Record<string, {
   treasurer: {
     label: 'Trésorier',
     icon: Shield,
-    color: 'text-purple-400',
-    bg: 'bg-purple-900/20',
+    color: 'text-purple-700',
+    bg: 'bg-purple-50',
     description: 'Accès aux finances et aux rapports de cotisations.',
     permissions: [
       'Gérer les cotisations et paiements',
@@ -68,8 +68,8 @@ const ROLE_META: Record<string, {
   member: {
     label: 'Membre',
     icon: Eye,
-    color: 'text-[#888]',
-    bg: 'bg-[#252525]',
+    color: 'text-gray-500',
+    bg: 'bg-gray-100',
     description: 'Accès en lecture aux informations de l\'association.',
     permissions: [
       'Consulter les événements',
@@ -87,14 +87,13 @@ export default function RolesPage() {
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Rôles & accès</h1>
-        <p className="text-sm text-[#888] mt-1">Permissions associées à chaque rôle dans la plateforme.</p>
+        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Rôles & accès</h1>
+        <p className="text-sm text-[#6B6560] mt-1">Permissions associées à chaque rôle dans la plateforme.</p>
       </div>
 
-      {/* Current user's roles */}
       {userRoles.length > 0 && (
-        <div className="mboka-card bg-[#1e1e1e] border rounded-xl p-5 space-y-3">
-          <p className="text-xs font-semibold tracking-widest text-[#555] uppercase">Vos rôles actuels</p>
+        <div className="bg-white mboka-card border rounded-xl p-5 space-y-3 shadow-sm">
+          <p className="text-xs font-semibold tracking-widest text-[#9B928B] uppercase">Vos rôles actuels</p>
           <div className="flex flex-wrap gap-2">
             {userRoles.map(role => {
               const meta = ROLE_META[role]
@@ -114,7 +113,6 @@ export default function RolesPage() {
         </div>
       )}
 
-      {/* Role matrix */}
       <div className="space-y-3">
         {ALL_ROLES.map(role => {
           const meta = ROLE_META[role]
@@ -125,7 +123,7 @@ export default function RolesPage() {
           return (
             <div
               key={role}
-              className={`mboka-card bg-[#1e1e1e] border rounded-xl p-5 space-y-3 transition-all ${isOwned ? 'ring-1 ring-[#C8A96E]/20' : ''}`}
+              className={`bg-white mboka-card border rounded-xl p-5 space-y-3 shadow-sm transition-all ${isOwned ? 'ring-1 ring-[#C8A96E]/30' : ''}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -133,14 +131,14 @@ export default function RolesPage() {
                     <Icon size={16} className={meta.color} />
                   </div>
                   <div>
-                    <p className={`text-sm font-semibold ${isOwned ? 'text-white' : 'text-[#c8c4bc]'}`}>
+                    <p className={`text-sm font-semibold ${isOwned ? 'text-[#1a1a1a]' : 'text-[#4a4540]'}`}>
                       {meta.label}
                     </p>
-                    <p className="text-xs text-[#555]">{meta.description}</p>
+                    <p className="text-xs text-[#9B928B]">{meta.description}</p>
                   </div>
                 </div>
                 {isOwned && (
-                  <span className="text-[10px] font-semibold tracking-wider text-[#C8A96E] bg-[#C8A96E]/10 px-2 py-1 rounded-full uppercase">
+                  <span className="text-[10px] font-semibold tracking-wider text-[#8B6B30] bg-[#C8A96E]/15 px-2 py-1 rounded-full uppercase">
                     Votre rôle
                   </span>
                 )}
@@ -148,7 +146,7 @@ export default function RolesPage() {
 
               <ul className="space-y-1 pl-12">
                 {meta.permissions.map(perm => (
-                  <li key={perm} className="flex items-center gap-2 text-xs text-[#777]">
+                  <li key={perm} className="flex items-center gap-2 text-xs text-[#7A726B]">
                     <span className={`w-1 h-1 rounded-full shrink-0 ${meta.color}`} />
                     {perm}
                   </li>
@@ -159,7 +157,7 @@ export default function RolesPage() {
         })}
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-[#555] border-t border-[rgba(255,255,255,0.06)] pt-4">
+      <div className="flex items-center gap-2 text-xs text-[#B0A9A2] border-t border-[rgba(0,0,0,0.06)] pt-4">
         <Lock size={12} />
         La gestion des rôles (attribution, révocation) sera disponible dans une prochaine version.
       </div>

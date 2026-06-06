@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CalendarDays, Users } from 'lucide-react'
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-900/40 text-emerald-400 border-emerald-800/50' },
-  inactive:  { label: 'Inactif',    className: 'bg-zinc-800 text-zinc-400 border-zinc-700' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-900/40 text-red-400 border-red-800/50' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-900/40 text-purple-400 border-purple-800/50' },
+  active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  inactive:  { label: 'Inactif',    className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  suspended: { label: 'Suspendu',   className: 'bg-red-50 text-red-600 border-red-200' },
+  honorary:  { label: 'Honoraire',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
@@ -44,10 +44,10 @@ export default function DashboardPage() {
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-[#1a1a1a]">
           {greeting}, {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-[#888] mt-0.5">
+        <p className="text-sm text-[#6B6560] mt-0.5">
           {today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
@@ -79,11 +79,11 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Derniers membres */}
-        <div className="lg:col-span-2 bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] p-5">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Users size={15} className="text-[#C8A96E]" />
-              <h2 className="text-sm font-semibold text-white">Derniers membres</h2>
+              <h2 className="text-sm font-semibold text-[#1a1a1a]">Derniers membres</h2>
             </div>
             <a href="/membres" className="text-xs text-[#C8A96E] hover:underline">Voir tous</a>
           </div>
@@ -98,41 +98,39 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
+                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
                       {m.first_name} {m.last_name}
                     </p>
-                    <p className="text-xs text-[#555]">Inscrit le {fmtDate(m.joined_at)}</p>
+                    <p className="text-xs text-[#9B928B]">Inscrit le {fmtDate(m.joined_at)}</p>
                   </div>
                   <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
                 </li>
               )
             })}
             {!membersData && (
-              <li className="text-sm text-[#555] text-center py-4">Chargement…</li>
+              <li className="text-sm text-[#9B928B] text-center py-4">Chargement…</li>
             )}
           </ul>
         </div>
 
         {/* Événements + Alertes */}
         <div className="space-y-4">
-          {/* Alertes */}
           {kpis && kpis.unpaid_this_month > 0 && (
-            <div className="bg-amber-950/30 border border-amber-800/40 rounded-xl p-4 space-y-1">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1">
               <div className="flex items-center gap-2">
-                <AlertTriangle size={14} className="text-amber-400" />
-                <p className="text-xs font-semibold text-amber-400">Alertes</p>
+                <AlertTriangle size={14} className="text-amber-600" />
+                <p className="text-xs font-semibold text-amber-700">Alertes</p>
               </div>
-              <p className="text-xs text-[#888]">
+              <p className="text-xs text-amber-600">
                 {kpis.unpaid_this_month} membre{kpis.unpaid_this_month > 1 ? 's' : ''} sans cotisation ce mois
               </p>
             </div>
           )}
 
-          {/* Événements à venir */}
-          <div className="bg-[#1e1e1e] rounded-xl border border-[rgba(255,255,255,0.06)] p-5">
+          <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
             <div className="flex items-center gap-2 mb-4">
               <CalendarDays size={15} className="text-[#C8A96E]" />
-              <h2 className="text-sm font-semibold text-white">Événements à venir</h2>
+              <h2 className="text-sm font-semibold text-[#1a1a1a]">Événements à venir</h2>
             </div>
             <ul className="space-y-3">
               {upcomingEvents?.slice(0, 3).map(ev => {
@@ -141,20 +139,20 @@ export default function DashboardPage() {
                   <li key={ev.id} className="flex gap-3">
                     <div className="text-center w-10 shrink-0">
                       <p className="text-lg font-bold text-[#C8A96E] leading-none">{d.getDate()}</p>
-                      <p className="text-[10px] text-[#555] uppercase">{MONTH_FR[d.getMonth()]}</p>
+                      <p className="text-[10px] text-[#9B928B] uppercase">{MONTH_FR[d.getMonth()]}</p>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm text-white truncate">{ev.title}</p>
-                      <p className="text-xs text-[#555]">{ev.registrations_count} inscrits</p>
+                      <p className="text-sm text-[#1a1a1a] truncate">{ev.title}</p>
+                      <p className="text-xs text-[#9B928B]">{ev.registrations_count} inscrits</p>
                     </div>
                   </li>
                 )
               })}
               {upcomingEvents?.length === 0 && (
-                <li className="text-xs text-[#555]">Aucun événement à venir</li>
+                <li className="text-xs text-[#9B928B]">Aucun événement à venir</li>
               )}
               {!upcomingEvents && (
-                <li className="text-xs text-[#555]">Chargement…</li>
+                <li className="text-xs text-[#9B928B]">Chargement…</li>
               )}
             </ul>
           </div>
