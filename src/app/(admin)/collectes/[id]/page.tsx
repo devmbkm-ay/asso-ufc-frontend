@@ -12,7 +12,15 @@ import { Badge } from '@/components/ui/badge'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X } from 'lucide-react'
+import { ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle } from 'lucide-react'
+
+const CATEGORY_LABEL: Record<string, string> = {
+  deces:     'Décès',
+  mariage:   'Mariage',
+  naissance: 'Naissance',
+  maladie:   'Maladie',
+  autre:     'Autre',
+}
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -49,12 +57,17 @@ export default function CollecteDetailPage() {
   const queryClient = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canEdit  = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
 
   // ── Contribution state ────────────────────────────────────────────────────
   const [openContrib, setOpenContrib] = useState(false)
   const [amount, setAmount] = useState('')
   const [contribError, setContribError] = useState<string | null>(null)
+
+  // ── Admin actions state ───────────────────────────────────────────────────
+  const [closeOpen, setCloseOpen]     = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
 
   // ── Edit state ────────────────────────────────────────────────────────────
   const [openEdit, setOpenEdit] = useState(false)
@@ -93,6 +106,25 @@ export default function CollecteDetailPage() {
     },
     onError: (err: unknown) => {
       setContribError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  // ── Admin mutations ───────────────────────────────────────────────────────
+  const { mutate: closeCollecte, isPending: closePending } = useMutation({
+    mutationFn: () => collectes.close(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collectes'] })
+      setCloseOpen(false)
+    },
+  })
+
+  const { mutate: archiveCollecte, isPending: archivePending } = useMutation({
+    mutationFn: () => collectes.archive(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collectes'] })
+      setArchiveOpen(false)
     },
   })
 
@@ -237,12 +269,17 @@ export default function CollecteDetailPage() {
               <div>
                 <h1 className="text-xl font-semibold text-[#1a1a1a]">{collecte.title}</h1>
                 <p className="text-sm text-[#9B928B] mt-0.5">En mémoire de {collecte.beneficiary_name}</p>
+                {collecte.category && (
+                  <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-[#F0EBE2] text-[#8B6B30] border border-[rgba(200,169,110,0.3)]">
+                    {CATEGORY_LABEL[collecte.category] ?? collecte.category}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <Badge className={STATUS_BADGE[collecte.status]?.className ?? STATUS_BADGE.expired.className}>
                   {STATUS_BADGE[collecte.status]?.label ?? 'Expirée'}
                 </Badge>
-                {canEdit && (
+                {canEdit && !collecte.is_archived && (
                   <button
                     onClick={openEditModal}
                     className="p-1.5 rounded-md text-[#9B928B] hover:text-[#C8A96E] hover:bg-[#F0EBE2] transition-colors"
@@ -260,6 +297,32 @@ export default function CollecteDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Actions admin */}
+      {canAdmin && !collecte.is_archived && (
+        <div className="flex gap-2 flex-wrap">
+          {collecte.status !== 'closed' && (
+            <Button
+              variant="outline"
+              onClick={() => setCloseOpen(true)}
+              className="gap-1.5 text-xs border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent hover:border-orange-300 hover:text-orange-600"
+            >
+              <Lock size={13} />
+              Clôturer la collecte
+            </Button>
+          )}
+          {(collecte.status === 'closed' || collecte.status === 'expired') && (
+            <Button
+              variant="outline"
+              onClick={() => setArchiveOpen(true)}
+              className="gap-1.5 text-xs border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent hover:border-purple-300 hover:text-purple-600"
+            >
+              <Archive size={13} />
+              Archiver
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
@@ -452,6 +515,48 @@ export default function CollecteDetailPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Dialog clôture ───────────────────────────────────────────────────── */}
+      <Dialog open={closeOpen} onOpenChange={open => { if (!open) setCloseOpen(false) }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a] flex items-center gap-2">
+              <AlertTriangle size={16} className="text-amber-500" />
+              Clôturer la collecte
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-[#6B6560] mt-1">
+            La collecte sera clôturée immédiatement. Plus aucune contribution ne sera acceptée.
+          </p>
+          <DialogFooter className="gap-2 mt-4">
+            <Button variant="outline" onClick={() => setCloseOpen(false)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
+            <Button disabled={closePending} onClick={() => closeCollecte()} className="bg-orange-500 hover:bg-orange-600 text-white">
+              {closePending ? 'Clôture…' : 'Confirmer la clôture'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Dialog archivage ─────────────────────────────────────────────────── */}
+      <Dialog open={archiveOpen} onOpenChange={open => { if (!open) setArchiveOpen(false) }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a] flex items-center gap-2">
+              <Archive size={16} className="text-purple-500" />
+              Archiver la collecte
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-[#6B6560] mt-1">
+            La collecte sera déplacée vers l'historique. Elle restera consultable mais n'apparaîtra plus dans la liste principale.
+          </p>
+          <DialogFooter className="gap-2 mt-4">
+            <Button variant="outline" onClick={() => setArchiveOpen(false)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
+            <Button disabled={archivePending} onClick={() => archiveCollecte()} className="bg-purple-500 hover:bg-purple-600 text-white">
+              {archivePending ? 'Archivage…' : 'Confirmer l\'archivage'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

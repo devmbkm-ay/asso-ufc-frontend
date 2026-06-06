@@ -1,12 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { events, collectes } from '@/lib/api'
+import { events, collectes, ApiError } from '@/lib/api'
+import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Users, Ticket, Heart, HandCoins } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
+import { MapPin, Users, Ticket, Heart, HandCoins, Plus, Pencil, X, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { EventRead } from '@/lib/types'
 
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
@@ -16,11 +23,6 @@ const STATUS_TABS = [
   { value: 'cancelled', label: 'Annulés' },
 ]
 
-const COLLECTE_STATUS_BADGE: Record<string, string> = {
-  upcoming: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200',
-  active:   'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200',
-}
-
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   draft:     { label: 'Brouillon', className: 'bg-gray-100 text-gray-500 border-gray-200' },
   published: { label: 'Publié',    className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -28,7 +30,14 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   completed: { label: 'Terminé',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
+const COLLECTE_STATUS_BADGE: Record<string, string> = {
+  upcoming: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200',
+  active:   'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200',
+}
+
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
+
+const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -39,28 +48,155 @@ function daysLeft(endDate: string) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
-export default function EvenementsPage() {
-  const [status, setStatus] = useState('')
+const EMPTY_CREATE = {
+  title:        '',
+  event_date:   new Date(Date.now() + 86400000).toISOString().split('T')[0],
+  location:     '',
+  description:  '',
+  capacity:     '',
+  ticket_price: '0',
+}
 
+type EditForm = typeof EMPTY_CREATE & { status: string }
+
+export default function EvenementsPage() {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  const [statusFilter, setStatusFilter] = useState('')
+
+  const [createOpen, setCreateOpen]   = useState(false)
+  const [createForm, setCreateForm]   = useState(EMPTY_CREATE)
+  const [createError, setCreateError] = useState<string | null>(null)
+
+  const [editTarget, setEditTarget] = useState<EventRead | null>(null)
+  const [editForm, setEditForm]     = useState<EditForm>({ ...EMPTY_CREATE, status: 'draft' })
+  const [editError, setEditError]   = useState<string | null>(null)
+
+  const [cancelTarget, setCancelTarget] = useState<EventRead | null>(null)
+
+  const canWrite = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
+
+  // ── Queries ──────────────────────────────────────────────────────────────
   const { data, isLoading } = useQuery({
-    queryKey: ['events', status],
-    queryFn: () => events.list({ status: status || undefined }),
+    queryKey: ['events', statusFilter],
+    queryFn: () => events.list({ status: statusFilter || undefined }),
   })
 
   const { data: allCollectes } = useQuery({
     queryKey: ['collectes'],
     queryFn: () => collectes.list(),
   })
-  // Afficher upcoming + active (les annonces en cours ou à venir)
   const activeCollectes = allCollectes?.filter(c => c.status === 'active' || c.status === 'upcoming')
+
+  // ── Mutations ────────────────────────────────────────────────────────────
+  const { mutate: create, isPending: creating } = useMutation({
+    mutationFn: events.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] })
+      setCreateOpen(false)
+      setCreateForm(EMPTY_CREATE)
+      setCreateError(null)
+    },
+    onError: (err: unknown) => setCreateError(err instanceof ApiError ? err.message : 'Erreur inattendue'),
+  })
+
+  const { mutate: update, isPending: updating } = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof events.update>[1] }) =>
+      events.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] })
+      setEditTarget(null)
+      setEditError(null)
+    },
+    onError: (err: unknown) => setEditError(err instanceof ApiError ? err.message : 'Erreur inattendue'),
+  })
+
+  const { mutate: cancelEvent, isPending: cancelling } = useMutation({
+    mutationFn: (id: string) => events.cancel(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] })
+      setCancelTarget(null)
+    },
+  })
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  function openEdit(ev: EventRead) {
+    setEditTarget(ev)
+    setEditForm({
+      title:        ev.title,
+      event_date:   ev.event_date,
+      location:     ev.location ?? '',
+      description:  ev.description ?? '',
+      capacity:     ev.capacity ? String(ev.capacity) : '',
+      ticket_price: String(ev.ticket_price),
+      status:       ev.status,
+    })
+    setEditError(null)
+  }
+
+  function handleCreate(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setCreateError(null)
+    create({
+      title:        createForm.title,
+      event_date:   createForm.event_date,
+      location:     createForm.location || undefined,
+      description:  createForm.description || undefined,
+      capacity:     createForm.capacity ? Number(createForm.capacity) : undefined,
+      ticket_price: Number(createForm.ticket_price) || 0,
+    })
+  }
+
+  function handleEdit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!editTarget) return
+    setEditError(null)
+    update({
+      id: editTarget.id,
+      data: {
+        title:        editForm.title || undefined,
+        event_date:   editForm.event_date || undefined,
+        location:     editForm.location || undefined,
+        description:  editForm.description || undefined,
+        capacity:     editForm.capacity ? Number(editForm.capacity) : undefined,
+        ticket_price: Number(editForm.ticket_price),
+        status:       editForm.status || undefined,
+      },
+    })
+  }
+
+  function cf(key: keyof typeof EMPTY_CREATE) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setCreateForm(f => ({ ...f, [key]: e.target.value }))
+  }
+
+  function ef(key: keyof EditForm) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setEditForm(f => ({ ...f, [key]: e.target.value }))
+  }
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Événements</h1>
-        <p className="text-sm text-[#6B6560] mt-0.5">
-          {data ? `${data.length} événement${data.length > 1 ? 's' : ''}` : '—'}
-        </p>
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Événements</h1>
+          <p className="text-sm text-[#6B6560] mt-0.5">
+            {data ? `${data.length} événement${data.length > 1 ? 's' : ''}` : '—'}
+          </p>
+        </div>
+        {canWrite && (
+          <Button
+            onClick={() => { setCreateOpen(true); setCreateError(null) }}
+            className="bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-1.5 shrink-0"
+          >
+            <Plus size={14} />
+            Nouvel événement
+          </Button>
+        )}
       </div>
 
       {/* Widget collectes actives */}
@@ -120,10 +256,10 @@ export default function EvenementsPage() {
         {STATUS_TABS.map(t => (
           <button
             key={t.value}
-            onClick={() => setStatus(t.value)}
+            onClick={() => setStatusFilter(t.value)}
             className={cn(
               'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-              status === t.value
+              statusFilter === t.value
                 ? 'bg-[#C8A96E]/20 text-[#8B6B30]'
                 : 'text-[#7A726B] hover:text-[#1a1a1a]',
             )}
@@ -159,7 +295,27 @@ export default function EvenementsPage() {
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <h3 className="text-sm font-semibold text-[#1a1a1a]">{ev.title}</h3>
-                  <Badge className={`text-[10px] border shrink-0 ${st.className}`}>{st.label}</Badge>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+                    {canWrite && ev.status !== 'cancelled' && (
+                      <button
+                        onClick={() => openEdit(ev)}
+                        className="p-1.5 rounded-md text-[#B0A9A2] hover:text-[#C8A96E] hover:bg-[#F0EBE2] transition-colors"
+                        title="Modifier"
+                      >
+                        <Pencil size={12} />
+                      </button>
+                    )}
+                    {canAdmin && ev.status !== 'cancelled' && (
+                      <button
+                        onClick={() => setCancelTarget(ev)}
+                        className="p-1.5 rounded-md text-[#B0A9A2] hover:text-red-500 hover:bg-red-50 transition-colors"
+                        title="Annuler l'événement"
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {ev.description && (
                   <p className="text-xs text-[#7A726B] line-clamp-2">{ev.description}</p>
@@ -189,6 +345,148 @@ export default function EvenementsPage() {
           )
         })}
       </div>
+
+      {/* ── Modale création ─────────────────────────────────────────────────── */}
+      <Dialog open={createOpen} onOpenChange={open => { if (!open) { setCreateOpen(false); setCreateForm(EMPTY_CREATE); setCreateError(null) } }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a]">Nouvel événement</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreate} className="space-y-4 mt-1">
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Titre *</label>
+              <Input value={createForm.title} onChange={cf('title')} required placeholder="Tournoi de judo — juin 2026" className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Date *</label>
+              <Input type="date" value={createForm.event_date} onChange={cf('event_date')} required className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Lieu <span className="text-[#B0A9A2]">(optionnel)</span></label>
+              <Input value={createForm.location} onChange={cf('location')} placeholder="Salle Mboka, Bordeaux" className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Description <span className="text-[#B0A9A2]">(optionnel)</span></label>
+              <textarea
+                value={createForm.description}
+                onChange={cf('description')}
+                rows={3}
+                placeholder="Décrivez l'événement…"
+                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Capacité max</label>
+                <Input type="number" min={1} value={createForm.capacity} onChange={cf('capacity')} placeholder="—" className={FIELD} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Prix billet (€)</label>
+                <Input type="number" min={0} step="0.01" value={createForm.ticket_price} onChange={cf('ticket_price')} className={FIELD} />
+              </div>
+            </div>
+            <p className="text-xs text-[#9B928B]">L'événement sera créé en brouillon. Publiez-le depuis la liste pour ouvrir les inscriptions.</p>
+            {createError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{createError}</p>
+            )}
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={creating} className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+                {creating ? 'Création…' : 'Créer'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Modale édition ──────────────────────────────────────────────────── */}
+      <Dialog open={!!editTarget} onOpenChange={open => { if (!open) setEditTarget(null) }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a]">Modifier l'événement</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEdit} className="space-y-4 mt-1">
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Titre *</label>
+              <Input value={editForm.title} onChange={ef('title')} required className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Date *</label>
+              <Input type="date" value={editForm.event_date} onChange={ef('event_date')} required className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Lieu</label>
+              <Input value={editForm.location} onChange={ef('location')} className={FIELD} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Description</label>
+              <textarea
+                value={editForm.description}
+                onChange={ef('description')}
+                rows={3}
+                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Capacité max</label>
+                <Input type="number" min={1} value={editForm.capacity} onChange={ef('capacity')} placeholder="—" className={FIELD} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-[#6B6560]">Prix billet (€)</label>
+                <Input type="number" min={0} step="0.01" value={editForm.ticket_price} onChange={ef('ticket_price')} className={FIELD} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#6B6560]">Statut</label>
+              <select
+                value={editForm.status}
+                onChange={ef('status')}
+                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+              >
+                <option value="draft">Brouillon</option>
+                <option value="published">Publié</option>
+                <option value="completed">Terminé</option>
+              </select>
+            </div>
+            {editError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{editError}</p>
+            )}
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={updating} className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+                {updating ? 'Sauvegarde…' : 'Enregistrer'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Confirmation annulation ─────────────────────────────────────────── */}
+      <Dialog open={!!cancelTarget} onOpenChange={open => { if (!open) setCancelTarget(null) }}>
+        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-[#1a1a1a] flex items-center gap-2">
+              <AlertTriangle size={16} className="text-amber-500" />
+              Annuler l'événement
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-[#6B6560] mt-1">
+            L'événement <span className="font-semibold text-[#1a1a1a]">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
+          </p>
+          <DialogFooter className="gap-2 mt-4">
+            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Retour</Button>
+            <Button
+              disabled={cancelling}
+              onClick={() => cancelTarget && cancelEvent(cancelTarget.id)}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {cancelling ? 'Annulation…' : "Confirmer l'annulation"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   )
 }

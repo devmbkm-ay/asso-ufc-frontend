@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
 import {
   LayoutDashboard, Users, CreditCard, Calendar,
-  Bell, Download, Shield, Settings, LogOut, Heart,
+  Bell, Download, Shield, Settings, LogOut, Heart, History,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -23,6 +23,7 @@ const NAV = [
   {
     section: 'GESTION',
     items: [
+      { href: '/historique',    label: 'Historique',    icon: History },
       { href: '/notifications', label: 'Notifications', icon: Bell },
       { href: '/exports',       label: 'Exports',       icon: Download },
     ],

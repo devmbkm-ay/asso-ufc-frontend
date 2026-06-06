@@ -218,6 +218,31 @@ export const events = {
     if (params?.status)        q.set('status', params.status)
     return apiRequest<import('./types').EventRead[]>(`/api/v1/events?${q}`)
   },
+  create: (data: {
+    title: string
+    event_date: string
+    description?: string
+    location?: string
+    capacity?: number
+    ticket_price?: number
+  }) => apiRequest<import('./types').EventRead>('/api/v1/events', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  update: (id: string, data: Partial<{
+    title: string
+    event_date: string
+    description: string
+    location: string
+    capacity: number
+    ticket_price: number
+    status: string
+  }>) => apiRequest<import('./types').EventRead>(`/api/v1/events/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  cancel: (id: string) =>
+    apiRequest<void>(`/api/v1/events/${id}`, { method: 'DELETE' }),
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────
@@ -229,9 +254,10 @@ export const upload = {
 // ── Collectes ─────────────────────────────────────────────────────────────────
 
 export const collectes = {
-  list: (params?: { active_only?: boolean }) => {
+  list: (params?: { active_only?: boolean; include_archived?: boolean }) => {
     const q = new URLSearchParams()
-    if (params?.active_only) q.set('active_only', 'true')
+    if (params?.active_only)     q.set('active_only',     'true')
+    if (params?.include_archived) q.set('include_archived', 'true')
     return apiRequest<import('./types').CollecteRead[]>(`/api/v1/collectes?${q}`)
   },
   get: (id: string) =>
@@ -243,6 +269,7 @@ export const collectes = {
     description?: string
     min_amount?: number
     start_date: string
+    category?: string
   }) => apiRequest<import('./types').CollecteRead>('/api/v1/collectes', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -266,6 +293,10 @@ export const collectes = {
   }),
   close: (id: string) =>
     apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}/close`, {
+      method: 'PATCH',
+    }),
+  archive: (id: string) =>
+    apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}/archive`, {
       method: 'PATCH',
     }),
 }

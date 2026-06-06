@@ -33,12 +33,22 @@ const STATUS_BADGE: Record<string, { label: string; className: string }> = {
   closed:   { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
 }
 
+const CATEGORIES = [
+  { value: '',          label: 'Non précisé' },
+  { value: 'deces',     label: 'Décès' },
+  { value: 'mariage',   label: 'Mariage' },
+  { value: 'naissance', label: 'Naissance' },
+  { value: 'maladie',   label: 'Maladie' },
+  { value: 'autre',     label: 'Autre' },
+]
+
 const EMPTY_FORM = {
   title: '',
   beneficiary_name: '',
   description: '',
   min_amount: '20',
   start_date: new Date().toISOString().split('T')[0],
+  category: '',
 }
 
 const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
@@ -124,11 +134,12 @@ export default function CollectesPage() {
       description:      form.description || undefined,
       min_amount:       Number(form.min_amount) || 20,
       start_date:       form.start_date,
+      category:         form.category || undefined,
     })
   }
 
-  const active = data?.filter(c => c.is_active) ?? []
-  const past   = data?.filter(c => !c.is_active) ?? []
+  const active = data?.filter(c => c.status === 'active' || c.status === 'upcoming') ?? []
+  const past   = data?.filter(c => c.status === 'expired' || c.status === 'closed') ?? []
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
@@ -213,6 +224,19 @@ export default function CollectesPage() {
                       Choisir une photo
                     </button>
                   )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#6B6560]">Catégorie</label>
+                  <select
+                    value={form.category}
+                    onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                    className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                  >
+                    {CATEGORIES.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-1.5">
