@@ -93,6 +93,23 @@ export interface EventRead {
   registrations_count: number
 }
 
+export interface NotificationRead {
+  id:         string
+  member_id:  string
+  type:       'welcome' | 'cotisation_reminder' | 'event_invitation'
+  subject:    string
+  sent:       boolean
+  sent_at?:   string
+  created_at: string
+}
+
+export interface ReminderResult {
+  total_targeted: number
+  sent_count:     number
+  failed_count:   number
+  skipped_count:  number
+}
+
 export interface AuthTokens {
   access_token: string
   refresh_token: string

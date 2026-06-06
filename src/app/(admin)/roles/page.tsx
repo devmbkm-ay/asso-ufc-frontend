@@ -1,166 +1,218 @@
 'use client'
 
-import { Shield, Crown, BookOpen, Eye, Lock } from 'lucide-react'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { members as membersApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Shield, Crown, BookOpen, Wallet, User, X, Plus } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const ROLE_META: Record<string, {
   label: string
   icon: React.ElementType
   color: string
   bg: string
-  description: string
-  permissions: string[]
+  border: string
 }> = {
-  super_admin: {
-    label: 'Super Administrateur',
-    icon: Crown,
-    color: 'text-[#C8A96E]',
-    bg: 'bg-[#C8A96E]/10',
-    description: 'Accès complet à toutes les fonctionnalités de la plateforme.',
-    permissions: [
-      'Gérer tous les membres',
-      'Gérer les cotisations et paiements',
-      'Exporter les données',
-      'Gérer les rôles et accès',
-      'Configurer les paramètres',
-      'Accès aux événements',
-      'Accès au tableau de bord trésorier',
-    ],
-  },
-  admin: {
-    label: 'Administrateur',
-    icon: Shield,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-    description: 'Accès étendu à la gestion des membres et des cotisations.',
-    permissions: [
-      'Gérer tous les membres',
-      'Gérer les cotisations et paiements',
-      'Exporter les données',
-      'Accès aux événements',
-      'Accès au tableau de bord trésorier',
-    ],
-  },
-  secretary: {
-    label: 'Secrétaire',
-    icon: BookOpen,
-    color: 'text-emerald-700',
-    bg: 'bg-emerald-50',
-    description: 'Gestion des membres et de leurs informations.',
-    permissions: [
-      'Ajouter et modifier les membres',
-      'Consulter les cotisations',
-      'Accès aux événements',
-    ],
-  },
-  treasurer: {
-    label: 'Trésorier',
-    icon: Shield,
-    color: 'text-purple-700',
-    bg: 'bg-purple-50',
-    description: 'Accès aux finances et aux rapports de cotisations.',
-    permissions: [
-      'Gérer les cotisations et paiements',
-      'Exporter les données financières',
-      'Accès au tableau de bord trésorier',
-    ],
-  },
-  member: {
-    label: 'Membre',
-    icon: Eye,
-    color: 'text-gray-500',
-    bg: 'bg-gray-100',
-    description: 'Accès en lecture aux informations de l\'association.',
-    permissions: [
-      'Consulter les événements',
-      'Accéder à son profil',
-    ],
-  },
+  super_admin: { label: 'Super admin', icon: Crown,    color: 'text-[#8B6B30]',  bg: 'bg-[#C8A96E]/15', border: 'border-[#C8A96E]/40' },
+  treasurer:   { label: 'Trésorier',   icon: Wallet,   color: 'text-purple-700', bg: 'bg-purple-50',    border: 'border-purple-200' },
+  secretary:   { label: 'Secrétaire',  icon: BookOpen, color: 'text-emerald-700',bg: 'bg-emerald-50',   border: 'border-emerald-200' },
+  member:      { label: 'Membre',      icon: User,     color: 'text-gray-500',   bg: 'bg-gray-100',     border: 'border-gray-200' },
 }
 
-const ALL_ROLES = ['super_admin', 'admin', 'secretary', 'treasurer', 'member']
+const ALL_ROLES = ['super_admin', 'treasurer', 'secretary', 'member']
 
 export default function RolesPage() {
   const { user } = useAuth()
-  const userRoles: string[] = (user?.roles ?? []) as string[]
+  const queryClient = useQueryClient()
+
+  const [addingFor, setAddingFor]     = useState<string | null>(null)
+  const [selectedRole, setSelectedRole] = useState('')
+  const [error, setError]             = useState<string | null>(null)
+
+  const canAdmin = user?.roles.includes('super_admin')
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['members-all'],
+    queryFn:  () => membersApi.list({ size: 500 }),
+  })
+
+  const { mutate: assign, isPending: isAssigning } = useMutation({
+    mutationFn: ({ id, role }: { id: string; role: string }) =>
+      membersApi.assignRole(id, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members-all'] })
+      setAddingFor(null)
+      setSelectedRole('')
+      setError(null)
+    },
+    onError: (err: unknown) =>
+      setError(err instanceof ApiError ? err.message : 'Erreur inattendue'),
+  })
+
+  const { mutate: revoke } = useMutation({
+    mutationFn: ({ id, role }: { id: string; role: string }) =>
+      membersApi.revokeRole(id, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members-all'] })
+    },
+  })
+
+  const membersWithRoles = data?.items.filter(m => m.roles.some(r => r !== 'member')) ?? []
+  const membersOnly      = data?.items.filter(m => m.roles.every(r => r === 'member')) ?? []
 
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-[#1a1a1a]">Rôles & accès</h1>
-        <p className="text-sm text-[#6B6560] mt-1">Permissions associées à chaque rôle dans la plateforme.</p>
+        <p className="text-sm text-[#6B6560] mt-1">
+          Attribuez et révoquez les rôles des membres de l'association.
+        </p>
       </div>
 
-      {userRoles.length > 0 && (
-        <div className="bg-white mboka-card border rounded-xl p-5 space-y-3 shadow-sm">
-          <p className="text-xs font-semibold tracking-widest text-[#9B928B] uppercase">Vos rôles actuels</p>
-          <div className="flex flex-wrap gap-2">
-            {userRoles.map(role => {
-              const meta = ROLE_META[role]
-              if (!meta) return null
-              const Icon = meta.icon
-              return (
-                <span
-                  key={role}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${meta.bg} ${meta.color}`}
-                >
-                  <Icon size={12} />
-                  {meta.label}
-                </span>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
+      {/* Legend */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {ALL_ROLES.map(role => {
-          const meta = ROLE_META[role]
-          if (!meta) return null
-          const Icon = meta.icon
-          const isOwned = userRoles.includes(role)
-
+          const m = ROLE_META[role]
+          const Icon = m.icon
           return (
-            <div
-              key={role}
-              className={`bg-white mboka-card border rounded-xl p-5 space-y-3 shadow-sm transition-all ${isOwned ? 'ring-1 ring-[#C8A96E]/30' : ''}`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-lg ${meta.bg} flex items-center justify-center`}>
-                    <Icon size={16} className={meta.color} />
-                  </div>
-                  <div>
-                    <p className={`text-sm font-semibold ${isOwned ? 'text-[#1a1a1a]' : 'text-[#4a4540]'}`}>
-                      {meta.label}
-                    </p>
-                    <p className="text-xs text-[#9B928B]">{meta.description}</p>
-                  </div>
-                </div>
-                {isOwned && (
-                  <span className="text-[10px] font-semibold tracking-wider text-[#8B6B30] bg-[#C8A96E]/15 px-2 py-1 rounded-full uppercase">
-                    Votre rôle
-                  </span>
-                )}
+            <div key={role} className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-3 flex items-center gap-2.5">
+              <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0', m.bg)}>
+                <Icon size={13} className={m.color} />
               </div>
-
-              <ul className="space-y-1 pl-12">
-                {meta.permissions.map(perm => (
-                  <li key={perm} className="flex items-center gap-2 text-xs text-[#7A726B]">
-                    <span className={`w-1 h-1 rounded-full shrink-0 ${meta.color}`} />
-                    {perm}
-                  </li>
-                ))}
-              </ul>
+              <span className="text-xs font-medium text-[#1a1a1a]">{m.label}</span>
             </div>
           )
         })}
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-[#B0A9A2] border-t border-[rgba(0,0,0,0.06)] pt-4">
-        <Lock size={12} />
-        La gestion des rôles (attribution, révocation) sera disponible dans une prochaine version.
+      {/* Members list */}
+      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
+          <h2 className="text-sm font-semibold text-[#1a1a1a]">Membres & rôles</h2>
+        </div>
+
+        {isLoading && (
+          <div className="px-5 py-10 text-center text-sm text-[#9B928B]">Chargement…</div>
+        )}
+
+        {!isLoading && (
+          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+            {[...membersWithRoles, ...membersOnly].map(m => {
+              const isAdding = addingFor === m.id
+              const availableRoles = ALL_ROLES.filter(r => !m.roles.includes(r))
+
+              return (
+                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-[rgba(0,0,0,0.015)]">
+                  {/* Avatar */}
+                  <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
+                    <span className="text-[11px] font-bold text-white">
+                      {m.first_name[0]}{m.last_name[0]}
+                    </span>
+                  </div>
+
+                  {/* Name */}
+                  <div className="w-40 shrink-0">
+                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                      {m.first_name} {m.last_name}
+                    </p>
+                  </div>
+
+                  {/* Role chips */}
+                  <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                    {m.roles.map(role => {
+                      const meta = ROLE_META[role]
+                      if (!meta) return null
+                      const Icon = meta.icon
+                      const isSelf = m.id === user?.id
+                      const isLastRole = m.roles.length === 1
+                      return (
+                        <span
+                          key={role}
+                          className={cn(
+                            'inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-medium border',
+                            meta.bg, meta.color, meta.border,
+                          )}
+                        >
+                          <Icon size={10} />
+                          {meta.label}
+                          {canAdmin && !isSelf && !isLastRole && (
+                            <button
+                              onClick={() => revoke({ id: m.id, role })}
+                              className="ml-0.5 hover:opacity-70 transition-opacity"
+                              title={`Révoquer ${meta.label}`}
+                            >
+                              <X size={10} />
+                            </button>
+                          )}
+                        </span>
+                      )
+                    })}
+                  </div>
+
+                  {/* Add role */}
+                  {canAdmin && m.id !== user?.id && availableRoles.length > 0 && (
+                    <div className="shrink-0">
+                      {isAdding ? (
+                        <div className="flex items-center gap-1.5">
+                          <select
+                            value={selectedRole}
+                            onChange={e => { setSelectedRole(e.target.value); setError(null) }}
+                            className="text-xs rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-2 py-1 focus:outline-none focus:border-[#C8A96E]"
+                          >
+                            <option value="">Choisir…</option>
+                            {availableRoles.map(r => (
+                              <option key={r} value={r}>{ROLE_META[r]?.label ?? r}</option>
+                            ))}
+                          </select>
+                          <Button
+                            size="sm"
+                            disabled={!selectedRole || isAssigning}
+                            onClick={() => assign({ id: m.id, role: selectedRole })}
+                            className="h-6 px-2 text-[11px] bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                          >
+                            OK
+                          </Button>
+                          <button
+                            onClick={() => { setAddingFor(null); setSelectedRole(''); setError(null) }}
+                            className="text-[#9B928B] hover:text-[#1a1a1a]"
+                          >
+                            <X size={13} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setAddingFor(m.id); setSelectedRole('') }}
+                          className="flex items-center gap-1 text-[11px] text-[#9B928B] hover:text-[#C8A96E] transition-colors"
+                          title="Attribuer un rôle"
+                        >
+                          <Plus size={12} />
+                          Ajouter
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
+
+      {/* Error toast */}
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {error}
+        </p>
+      )}
+
+      {/* Bottom note */}
+      <p className="flex items-center gap-2 text-xs text-[#B0A9A2] border-t border-[rgba(0,0,0,0.06)] pt-4">
+        <Shield size={12} />
+        Un membre doit toujours conserver au moins un rôle. Le rôle super_admin ne peut pas être révoqué par lui-même.
+      </p>
     </div>
   )
 }

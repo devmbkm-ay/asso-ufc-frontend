@@ -182,6 +182,31 @@ export const members = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+  assignRole: (id: string, role_name: string) =>
+    apiRequest<import('./types').Member>(`/api/v1/members/${id}/roles`, {
+      method: 'POST',
+      body: JSON.stringify({ role_name }),
+    }),
+  revokeRole: (id: string, role_name: string) =>
+    apiRequest<import('./types').Member>(`/api/v1/members/${id}/roles/${role_name}`, {
+      method: 'DELETE',
+    }),
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export const notifications = {
+  list: (params?: { sent?: boolean; limit?: number }) => {
+    const q = new URLSearchParams()
+    if (params?.sent !== undefined) q.set('sent', String(params.sent))
+    if (params?.limit)              q.set('limit', String(params.limit))
+    return apiRequest<import('./types').NotificationRead[]>(`/api/v1/notifications?${q}`)
+  },
+  remindOverdue: (month: number, year: number) =>
+    apiRequest<import('./types').ReminderResult>(
+      `/api/v1/notifications/remind-overdue?month=${month}&year=${year}`,
+      { method: 'POST' },
+    ),
 }
 
 // ── Dashboard ────────────────────────────────────────────────────────────────
