@@ -308,6 +308,17 @@ export const events = {
   }),
   cancel: (id: string) =>
     apiRequest<void>(`/api/v1/events/${id}`, { method: 'DELETE' }),
+  myRegistrations: () =>
+    apiRequest<import('./types').EventRegistration[]>('/api/v1/events/my-registrations'),
+  myRegistration: (eventId: string) =>
+    apiRequest<import('./types').EventRegistration | null>(`/api/v1/events/${eventId}/my-registration`),
+  register: (eventId: string, memberId: string, amount_paid = 0) =>
+    apiRequest<import('./types').EventRegistration>(`/api/v1/events/${eventId}/registrations`, {
+      method: 'POST',
+      body: JSON.stringify({ member_id: memberId, amount_paid }),
+    }),
+  unregister: (eventId: string, registrationId: string) =>
+    apiRequest<void>(`/api/v1/events/${eventId}/registrations/${registrationId}`, { method: 'DELETE' }),
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────
@@ -339,10 +350,10 @@ export const collectes = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  contribute: (id: string, amount: number) =>
+  contribute: (id: string, amount: number, is_anonymous = false) =>
     apiRequest<import('./types').ContributionRead>(`/api/v1/collectes/${id}/contributions`, {
       method: 'POST',
-      body: JSON.stringify({ amount }),
+      body: JSON.stringify({ amount, is_anonymous }),
     }),
   contributions: (id: string) =>
     apiRequest<import('./types').ContributionRead[]>(`/api/v1/collectes/${id}/contributions`),

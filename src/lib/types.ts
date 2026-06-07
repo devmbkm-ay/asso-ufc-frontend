@@ -142,5 +142,16 @@ export interface ContributionRead {
   member_id: string
   member_name: string
   amount: number
+  is_anonymous: boolean
   contributed_at: string
+}
+
+export interface EventRegistration {
+  id: string
+  event_id: string
+  member_id: string
+  member_name: string
+  attended: boolean
+  amount_paid: number
+  registered_at: string
 }

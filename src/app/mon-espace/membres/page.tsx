@@ -1,0 +1,172 @@
+'use client'
+
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { members as membersApi, cotisations } from '@/lib/api'
+import { useAuth } from '@/providers/AuthProvider'
+import { Search, Crown, BookOpen, Wallet, User, CheckCircle2, XCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+const CURRENT_YEAR  = new Date().getFullYear()
+const CURRENT_MONTH = new Date().getMonth() + 1
+
+const ROLE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
+  super_admin: { label: 'Admin',      icon: Crown,    color: 'text-[#8B6B30]',   bg: 'bg-[#C8A96E]/15', border: 'border-[#C8A96E]/40' },
+  treasurer:   { label: 'Trésorier', icon: Wallet,   color: 'text-purple-700',  bg: 'bg-purple-50',     border: 'border-purple-200' },
+  secretary:   { label: 'Secrétaire',icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50',    border: 'border-emerald-200' },
+  member:      { label: 'Membre',     icon: User,     color: 'text-gray-500',    bg: 'bg-gray-100',      border: 'border-gray-200' },
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+}
+
+export default function MembresPage() {
+  const { user } = useAuth()
+  const [search, setSearch] = useState('')
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['members-list-public'],
+    queryFn: () => membersApi.list({ size: 500, status: 'active' }),
+  })
+
+  // Fetch the payment grid to derive "is up to date" per member
+  const { data: grid } = useQuery({
+    queryKey: ['payment-grid', CURRENT_YEAR],
+    queryFn: () => cotisations.grid(CURRENT_YEAR),
+  })
+
+  const upToDateIds = new Set(
+    grid
+      ?.filter(row =>
+        row.months.some(m => m.month === CURRENT_MONTH && m.status === 'confirmed'),
+      )
+      .map(row => row.member_id) ?? [],
+  )
+
+  const filtered = (data?.items ?? []).filter(m => {
+    if (!search) return true
+    const q = search.toLowerCase()
+    return (
+      m.first_name.toLowerCase().includes(q) ||
+      m.last_name.toLowerCase().includes(q)
+    )
+  })
+
+  const total = data?.total ?? 0
+
+  return (
+    <div className="p-6 md:p-8 max-w-3xl space-y-6">
+
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Membres</h1>
+        <p className="text-sm text-[#6B6560] mt-1">
+          {isLoading ? '—' : `${total} membre${total > 1 ? 's' : ''} actifs`}
+        </p>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B928B]" />
+        <input
+          type="text"
+          placeholder="Rechercher un membre…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[rgba(0,0,0,0.10)] bg-white focus:outline-none focus:border-[#C8A96E] focus:ring-1 focus:ring-[#C8A96E]/30"
+        />
+      </div>
+
+      {/* List */}
+      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
+
+        {isLoading && (
+          <div className="px-5 py-12 text-center text-sm text-[#9B928B]">Chargement…</div>
+        )}
+
+        {!isLoading && filtered.length === 0 && (
+          <div className="px-5 py-12 text-center text-sm text-[#9B928B]">Aucun résultat</div>
+        )}
+
+        {!isLoading && filtered.length > 0 && (
+          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+            {filtered.map(m => {
+              const isUpToDate = upToDateIds.has(m.id)
+              const isSelf     = m.id === user?.id
+              const visibleRoles = m.roles.filter(r => r !== 'member')
+
+              return (
+                <li
+                  key={m.id}
+                  className={cn(
+                    'flex items-center gap-4 px-5 py-3.5',
+                    isSelf && 'bg-[#F7F9F5]',
+                  )}
+                >
+                  {/* Avatar */}
+                  <div className="w-9 h-9 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
+                    <span className="text-[11px] font-bold text-white">
+                      {m.first_name[0]}{m.last_name[0]}
+                    </span>
+                  </div>
+
+                  {/* Name + meta */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                      {m.first_name} {m.last_name}
+                      {isSelf && <span className="ml-1.5 text-[11px] text-[#C8A96E] font-normal">(vous)</span>}
+                    </p>
+                    <p className="text-xs text-[#B0A9A2] mt-0.5">Membre depuis {fmtDate(m.joined_at)}</p>
+                  </div>
+
+                  {/* Role chips */}
+                  <div className="hidden sm:flex gap-1.5 shrink-0">
+                    {visibleRoles.length > 0 ? visibleRoles.map(role => {
+                      const meta = ROLE_META[role]
+                      if (!meta) return null
+                      const Icon = meta.icon
+                      return (
+                        <span
+                          key={role}
+                          className={cn(
+                            'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border',
+                            meta.bg, meta.color, meta.border,
+                          )}
+                        >
+                          <Icon size={9} />
+                          {meta.label}
+                        </span>
+                      )
+                    }) : (
+                      <span className={cn(
+                        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border',
+                        ROLE_META.member.bg, ROLE_META.member.color, ROLE_META.member.border,
+                      )}>
+                        <User size={9} />
+                        Membre
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Cotisation status */}
+                  <div className="shrink-0" title={isUpToDate ? 'À jour' : 'Pas à jour'}>
+                    {isUpToDate
+                      ? <CheckCircle2 size={16} className="text-emerald-500" />
+                      : <XCircle size={16} className="text-red-300" />
+                    }
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </div>
+
+      <p className="text-xs text-[#B0A9A2] flex items-center gap-1.5">
+        <CheckCircle2 size={11} className="text-emerald-500" />
+        À jour · <XCircle size={11} className="text-red-300" /> Cotisation {new Date().toLocaleDateString('fr-FR', { month: 'long' })} non enregistrée
+      </p>
+    </div>
+  )
+}
