@@ -23,8 +23,11 @@ function LoginForm() {
     setError('')
     setLoading(true)
     try {
-      await login(email, password)
-      router.push('/dashboard')
+      const me = await login(email, password)
+      const isElevated = me.roles.some(r =>
+        ['super_admin', 'treasurer', 'secretary'].includes(r),
+      )
+      router.push(isElevated ? '/dashboard' : '/mon-espace')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Identifiants incorrects')
     } finally {
@@ -43,7 +46,7 @@ function LoginForm() {
               <span className="text-2xl font-bold text-[#C8A96E]">M</span>
             </div>
             <h1 className="text-2xl font-semibold text-[#1a1a1a] tracking-wide">Mboka</h1>
-            <p className="text-sm text-[#6B6560] mt-1">Espace administration</p>
+            <p className="text-sm text-[#6B6560] mt-1">Bienvenue dans votre espace</p>
           </div>
 
           {justRegistered && (

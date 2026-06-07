@@ -7,7 +7,7 @@ import type { Member } from '@/lib/types'
 interface AuthCtx {
   user: Member | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<Member>
   logout: () => void
 }
 
@@ -42,12 +42,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('auth:logout', handleLogout)
   }, [])
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string): Promise<Member> {
     const tokens = await auth.login(email, password)
     localStorage.setItem('access_token',  tokens.access_token)
     localStorage.setItem('refresh_token', tokens.refresh_token)
     const me = await auth.me()
     setUser(me)
+    return me
   }
 
   function logout() {

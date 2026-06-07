@@ -13,7 +13,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    if (!loading && !user) router.push('/login')
+    if (loading) return
+    if (!user) { router.push('/login'); return }
+    const isElevated = user.roles.some(r =>
+      ['super_admin', 'treasurer', 'secretary'].includes(r),
+    )
+    if (!isElevated) router.push('/mon-espace')
   }, [user, loading, router])
 
   if (loading) {
