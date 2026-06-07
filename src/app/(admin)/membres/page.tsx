@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { members, ApiError } from '@/lib/api'
+import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,8 @@ import {
 } from '@/components/ui/dialog'
 import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const ADMIN_ROLES = ['admin', 'treasurer', 'president', 'secretary', 'vice_president']
 
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
@@ -28,8 +31,24 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   honorary:  { label: 'Honoraire',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
+const ROLE_LABEL: Record<string, string> = {
+  admin:          'Administrateur',
+  treasurer:      'Trésorier(ère)',
+  president:      'Président(e)',
+  secretary:      'Secrétaire',
+  vice_president: 'Vice-président(e)',
+  board:          'Bureau',
+}
+
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function memberRole(roles: string[]): string {
+  for (const r of roles) {
+    if (ROLE_LABEL[r]) return ROLE_LABEL[r]
+  }
+  return '—'
 }
 
 const EMPTY_FORM = {
@@ -45,6 +64,9 @@ const EMPTY_FORM = {
 const FIELD_CLASS = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
 
 export default function MembresPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
+
   const [search, setSearch]               = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [status, setStatus]               = useState('')
@@ -116,6 +138,8 @@ export default function MembresPage() {
     setPage(1)
   }
 
+  const colCount = isAdmin ? 5 : 3
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-6">
 
@@ -124,97 +148,99 @@ export default function MembresPage() {
         <div>
           <h1 className="text-2xl font-semibold text-[#1a1a1a]">Membres</h1>
           <p className="text-sm text-[#6B6560] mt-0.5">
-            {data ? `${data.total} membre${data.total > 1 ? 's' : ''}` : '—'}
+            {data ? `${data.total} adhérent${data.total > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
 
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-          <Button
-            onClick={() => setOpen(true)}
-            className="bg-[#C8A96E] hover:bg-[#b8994e] text-white text-sm font-medium gap-1.5 shrink-0"
-          >
-            <Plus size={14} />
-            Nouveau membre
-          </Button>
+        {isAdmin && (
+          <Dialog open={open} onOpenChange={handleOpenChange}>
+            <Button
+              onClick={() => setOpen(true)}
+              className="bg-[#C8A96E] hover:bg-[#b8994e] text-white text-sm font-medium gap-1.5 shrink-0"
+            >
+              <Plus size={14} />
+              Nouveau membre
+            </Button>
 
-          <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-[#1a1a1a]">Nouveau membre</DialogTitle>
-            </DialogHeader>
+            <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-[#1a1a1a]">Nouveau membre</DialogTitle>
+              </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-4 mt-1">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Prénom *</label>
-                  <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
+              <form onSubmit={handleSubmit} className="space-y-4 mt-1">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-[#6B6560]">Prénom *</label>
+                    <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-[#6B6560]">Nom *</label>
+                    <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
+                  </div>
                 </div>
+
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Nom *</label>
-                  <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
+                  <label className="text-xs text-[#6B6560]">Email *</label>
+                  <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Email *</label>
-                <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#6B6560]">
+                    Mot de passe *{' '}
+                    <span className="text-[#B0A9A2]">8 car. min, 1 chiffre requis</span>
+                  </label>
+                  <Input
+                    type="password"
+                    value={form.password}
+                    onChange={field('password')}
+                    required
+                    minLength={8}
+                    className={FIELD_CLASS}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">
-                  Mot de passe *{' '}
-                  <span className="text-[#B0A9A2]">8 car. min, 1 chiffre requis</span>
-                </label>
-                <Input
-                  type="password"
-                  value={form.password}
-                  onChange={field('password')}
-                  required
-                  minLength={8}
-                  className={FIELD_CLASS}
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#6B6560]">Téléphone</label>
+                  <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Téléphone</label>
-                <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#6B6560]">Adresse</label>
+                  <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Adresse</label>
-                <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#6B6560]">Date de naissance</label>
+                  <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Date de naissance</label>
-                <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
-              </div>
+                {formError && (
+                  <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    {formError}
+                  </p>
+                )}
 
-              {formError && (
-                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  {formError}
-                </p>
-              )}
-
-              <DialogFooter className="gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeModal}
-                  className="border-[rgba(0,0,0,0.12)] text-[#6B6560] hover:text-[#1a1a1a] bg-transparent"
-                >
-                  Annuler
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
-                >
-                  {isPending ? 'Création…' : 'Créer le membre'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <DialogFooter className="gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeModal}
+                    className="border-[rgba(0,0,0,0.12)] text-[#6B6560] hover:text-[#1a1a1a] bg-transparent"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                  >
+                    {isPending ? 'Création…' : 'Créer le membre'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {/* Filtres */}
@@ -252,52 +278,82 @@ export default function MembresPage() {
           <thead>
             <tr className="border-b border-[rgba(0,0,0,0.06)]">
               <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Membre</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden md:table-cell">Email</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden lg:table-cell">Téléphone</th>
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Inscrit le</th>
+              {isAdmin ? (
+                <>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden md:table-cell">Email</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden lg:table-cell">Téléphone</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Inscrit le</th>
+                </>
+              ) : (
+                <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Fonction</th>
+              )}
               <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Statut</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[rgba(0,0,0,0.04)]">
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-[#9B928B]">Chargement…</td>
+                <td colSpan={colCount} className="px-5 py-12 text-center text-[#9B928B]">Chargement…</td>
               </tr>
             )}
             {!isLoading && data?.items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-[#9B928B]">Aucun membre trouvé</td>
+                <td colSpan={colCount} className="px-5 py-12 text-center text-[#9B928B]">Aucun membre trouvé</td>
               </tr>
             )}
             {data?.items.map(m => {
               const st = STATUS_LABEL[m.status]
+              const avatar = (
+                <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
+                  <span className="text-xs font-semibold text-white">
+                    {m.first_name[0]}{m.last_name[0]}
+                  </span>
+                </div>
+              )
               return (
                 <tr key={m.id} className="hover:bg-[rgba(0,0,0,0.02)] transition-colors group">
                   <td className="px-5 py-3.5">
-                    <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
-                        <span className="text-xs font-semibold text-white">
-                          {m.first_name[0]}{m.last_name[0]}
+                    {isAdmin ? (
+                      <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
+                        {avatar}
+                        <span className="font-medium text-[#1a1a1a] group-hover:text-[#C8A96E] transition-colors">
+                          {m.first_name} {m.last_name}
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        {avatar}
+                        <span className="font-medium text-[#1a1a1a]">
+                          {m.first_name} {m.last_name}
                         </span>
                       </div>
-                      <span className="font-medium text-[#1a1a1a] group-hover:text-[#C8A96E] transition-colors">
-                        {m.first_name} {m.last_name}
-                      </span>
-                    </Link>
+                    )}
                   </td>
-                  <td className="px-5 py-3.5 text-[#6B6560] hidden md:table-cell">
-                    <Link href={`/membres/${m.id}`} className="block">{m.email}</Link>
-                  </td>
-                  <td className="px-5 py-3.5 text-[#6B6560] hidden lg:table-cell">
-                    <Link href={`/membres/${m.id}`} className="block">{m.phone ?? '—'}</Link>
-                  </td>
-                  <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
-                    <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
-                  </td>
+                  {isAdmin ? (
+                    <>
+                      <td className="px-5 py-3.5 text-[#6B6560] hidden md:table-cell">
+                        <Link href={`/membres/${m.id}`} className="block">{m.email}</Link>
+                      </td>
+                      <td className="px-5 py-3.5 text-[#6B6560] hidden lg:table-cell">
+                        <Link href={`/membres/${m.id}`} className="block">{m.phone ?? '—'}</Link>
+                      </td>
+                      <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
+                        <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
+                      </td>
+                    </>
+                  ) : (
+                    <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
+                      {memberRole(m.roles)}
+                    </td>
+                  )}
                   <td className="px-5 py-3.5">
-                    <Link href={`/membres/${m.id}`} className="block">
+                    {isAdmin ? (
+                      <Link href={`/membres/${m.id}`} className="block">
+                        <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+                      </Link>
+                    ) : (
                       <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
-                    </Link>
+                    )}
                   </td>
                 </tr>
               )
