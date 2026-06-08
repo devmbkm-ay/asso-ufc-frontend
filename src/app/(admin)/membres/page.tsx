@@ -65,7 +65,8 @@ const FIELD_CLASS = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placehold
 
 export default function MembresPage() {
   const { user } = useAuth()
-  const isAdmin = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
+  const isAdmin      = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
+  const isSuperAdmin = user?.roles?.includes('super_admin') ?? false
 
   const [search, setSearch]               = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -102,7 +103,7 @@ export default function MembresPage() {
   const { data: pendingInvites } = useQuery({
     queryKey: ['invites'],
     queryFn:  invites.list,
-    enabled:  isAdmin,
+    enabled:  isSuperAdmin,
     select:   data => data.filter(i => i.is_valid),
   })
 
@@ -211,8 +212,8 @@ export default function MembresPage() {
 
         {isAdmin && (
           <div className="flex gap-2 shrink-0">
-            {/* Invite modal */}
-            <Dialog open={inviteOpen} onOpenChange={v => { if (!v) closeInviteModal(); else setInviteOpen(true) }}>
+            {/* Invite modal — super_admin only */}
+            {isSuperAdmin && <Dialog open={inviteOpen} onOpenChange={v => { if (!v) closeInviteModal(); else setInviteOpen(true) }}>
               <Button
                 onClick={() => setInviteOpen(true)}
                 variant="outline"
@@ -289,7 +290,7 @@ export default function MembresPage() {
                   </div>
                 )}
               </DialogContent>
-            </Dialog>
+            </Dialog>}
 
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <Button
@@ -383,7 +384,7 @@ export default function MembresPage() {
       </div>
 
       {/* Invitations en attente */}
-      {isAdmin && pendingInvites && pendingInvites.length > 0 && (
+      {isSuperAdmin && pendingInvites && pendingInvites.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
           <div className="flex items-center gap-2">
             <Clock size={14} className="text-amber-600" />
