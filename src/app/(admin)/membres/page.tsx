@@ -14,7 +14,7 @@ import {
 import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const ADMIN_ROLES = ['admin', 'treasurer', 'president', 'secretary', 'vice_president']
+const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
 
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
