@@ -32,12 +32,10 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 }
 
 const ROLE_LABEL: Record<string, string> = {
-  admin:          'Administrateur',
+  super_admin:    'Administrateur',
   treasurer:      'Trésorier(ère)',
-  president:      'Président(e)',
   secretary:      'Secrétaire',
-  vice_president: 'Vice-président(e)',
-  board:          'Bureau',
+  member:         'Adhérent(e)',
 }
 
 function fmtDate(iso: string) {
