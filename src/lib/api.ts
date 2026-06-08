@@ -274,6 +274,10 @@ export const cotisations = {
       method: 'PATCH',
       body: JSON.stringify({ status: 'confirmed' }),
     }),
+  memberConfirm: (id: string) =>
+    apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/confirm`, {
+      method: 'POST',
+    }),
   cancelPayment: (id: string) =>
     apiRequest<void>(`/api/v1/payments/${id}`, { method: 'DELETE' }),
 }
