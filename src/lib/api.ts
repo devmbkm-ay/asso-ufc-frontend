@@ -151,6 +151,11 @@ export const auth = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  register: (data: { token: string; first_name: string; last_name: string; phone?: string; password: string }) =>
+    apiRequest<import('./types').Member>('/api/v1/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 }
 
 // ── Members ─────────────────────────────────────────────────────────────────
@@ -335,6 +340,21 @@ export const events = {
     }),
   unregister: (eventId: string, registrationId: string) =>
     apiRequest<void>(`/api/v1/events/${eventId}/registrations/${registrationId}`, { method: 'DELETE' }),
+}
+
+// ── Invitations ───────────────────────────────────────────────────────────────
+
+export const invites = {
+  create: (email: string) =>
+    apiRequest<import('./types').MemberInvite>('/api/v1/invites', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  list: () => apiRequest<import('./types').MemberInvite[]>('/api/v1/invites'),
+  revoke: (token: string) =>
+    apiRequest<void>(`/api/v1/invites/${token}`, { method: 'DELETE' }),
+  check: (token: string) =>
+    apiRequest<{ email: string; valid: boolean }>(`/api/v1/invites/${token}`),
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────

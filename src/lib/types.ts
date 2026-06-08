@@ -155,3 +155,14 @@ export interface EventRegistration {
   amount_paid: number
   registered_at: string
 }
+
+export interface MemberInvite {
+  id: string
+  email: string
+  token: string
+  invited_by_name: string
+  expires_at: string
+  used_at?: string
+  created_at: string
+  is_valid: boolean
+}

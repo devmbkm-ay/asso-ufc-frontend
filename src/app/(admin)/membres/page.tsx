@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { members, ApiError } from '@/lib/api'
+import { members, invites, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ADMIN_ROLES = ['admin', 'treasurer', 'president', 'secretary', 'vice_president']
@@ -75,6 +75,13 @@ export default function MembresPage() {
   const [form, setForm]                   = useState(EMPTY_FORM)
   const [formError, setFormError]         = useState<string | null>(null)
 
+  // Invite modal state
+  const [inviteOpen, setInviteOpen]       = useState(false)
+  const [inviteEmail, setInviteEmail]     = useState('')
+  const [inviteError, setInviteError]     = useState<string | null>(null)
+  const [inviteLink, setInviteLink]       = useState<string | null>(null)
+  const [copied, setCopied]               = useState(false)
+
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -92,6 +99,13 @@ export default function MembresPage() {
     }),
   })
 
+  const { data: pendingInvites } = useQuery({
+    queryKey: ['invites'],
+    queryFn:  invites.list,
+    enabled:  isAdmin,
+    select:   data => data.filter(i => i.is_valid),
+  })
+
   const { mutate: createMember, isPending } = useMutation({
     mutationFn: members.create,
     onSuccess: () => {
@@ -103,10 +117,53 @@ export default function MembresPage() {
     },
   })
 
+  const { mutate: sendInvite, isPending: invitePending } = useMutation({
+    mutationFn: (email: string) => invites.create(email),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['invites'] })
+      const link = `${window.location.origin}/rejoindre/${data.token}`
+      setInviteLink(link)
+      setInviteError(null)
+    },
+    onError: (err: unknown) => {
+      setInviteError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  const { mutate: revokeInvite } = useMutation({
+    mutationFn: (token: string) => invites.revoke(token),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invites'] }),
+  })
+
   function closeModal() {
     setOpen(false)
     setForm(EMPTY_FORM)
     setFormError(null)
+  }
+
+  function closeInviteModal() {
+    setInviteOpen(false)
+    setInviteEmail('')
+    setInviteError(null)
+    setInviteLink(null)
+    setCopied(false)
+  }
+
+  function handleInviteSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setInviteError(null)
+    sendInvite(inviteEmail)
+  }
+
+  function copyLink() {
+    if (!inviteLink) return
+    navigator.clipboard.writeText(inviteLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  function fmtExpiry(iso: string) {
+    return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
   }
 
   function handleOpenChange(next: boolean) {
@@ -153,6 +210,87 @@ export default function MembresPage() {
         </div>
 
         {isAdmin && (
+          <div className="flex gap-2 shrink-0">
+            {/* Invite modal */}
+            <Dialog open={inviteOpen} onOpenChange={v => { if (!v) closeInviteModal(); else setInviteOpen(true) }}>
+              <Button
+                onClick={() => setInviteOpen(true)}
+                variant="outline"
+                className="border-[rgba(200,169,110,0.4)] text-[#8B6B30] hover:bg-[#FBF6EE] gap-1.5"
+              >
+                <Mail size={14} />
+                Inviter
+              </Button>
+
+              <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="text-[#1a1a1a]">
+                    {inviteLink ? 'Invitation envoyée' : 'Inviter un membre'}
+                  </DialogTitle>
+                </DialogHeader>
+
+                {!inviteLink ? (
+                  <form onSubmit={handleInviteSubmit} className="space-y-4 mt-1">
+                    <div className="space-y-1.5">
+                      <label className="text-xs text-[#6B6560]">Adresse email du futur membre *</label>
+                      <Input
+                        type="email"
+                        value={inviteEmail}
+                        onChange={e => setInviteEmail(e.target.value)}
+                        required
+                        placeholder="prenom.nom@example.com"
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <p className="text-xs text-[#9B928B]">
+                      Un email avec le lien d'inscription sera envoyé automatiquement. Le lien est valable 7 jours.
+                    </p>
+                    {inviteError && (
+                      <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                        {inviteError}
+                      </p>
+                    )}
+                    <DialogFooter className="gap-2">
+                      <Button type="button" variant="outline" onClick={closeInviteModal}
+                        className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">
+                        Annuler
+                      </Button>
+                      <Button type="submit" disabled={invitePending}
+                        className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+                        {invitePending ? 'Envoi…' : "Envoyer l'invitation"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                ) : (
+                  <div className="space-y-4 mt-1">
+                    <p className="text-sm text-[#1a1a1a]">
+                      Invitation envoyée à <strong>{inviteEmail}</strong>.
+                    </p>
+                    <div className="space-y-1.5">
+                      <p className="text-xs text-[#6B6560]">Lien de secours (partage manuel)</p>
+                      <div className="flex gap-2">
+                        <input
+                          readOnly
+                          value={inviteLink}
+                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-[rgba(0,0,0,0.12)] bg-[#F9F6F1] text-[#6B6560] truncate"
+                        />
+                        <Button size="sm" variant="outline" onClick={copyLink}
+                          className="border-[rgba(0,0,0,0.12)] text-[#6B6560] gap-1.5 shrink-0">
+                          {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                          {copied ? 'Copié !' : 'Copier'}
+                        </Button>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={closeInviteModal} className="bg-[#2D5016] hover:bg-[#3a6820] text-white">
+                        Fermer
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <Button
               onClick={() => setOpen(true)}
@@ -240,8 +378,42 @@ export default function MembresPage() {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         )}
       </div>
+
+      {/* Invitations en attente */}
+      {isAdmin && pendingInvites && pendingInvites.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Clock size={14} className="text-amber-600" />
+            <span className="text-sm font-semibold text-amber-800">
+              {pendingInvites.length} invitation{pendingInvites.length > 1 ? 's' : ''} en attente
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            {pendingInvites.map(inv => (
+              <div key={inv.id} className="flex items-center justify-between gap-3 bg-white border border-amber-100 rounded-lg px-3 py-2">
+                <div>
+                  <p className="text-sm font-medium text-[#1a1a1a]">{inv.email}</p>
+                  <p className="text-[10px] text-[#9B928B]">
+                    Invité par {inv.invited_by_name} · expire le {fmtExpiry(inv.expires_at)}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => revokeInvite(inv.token)}
+                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 gap-1 shrink-0"
+                >
+                  <Trash2 size={12} />
+                  Révoquer
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3">
