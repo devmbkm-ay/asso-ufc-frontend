@@ -53,7 +53,7 @@ export default function MaCotisationPage() {
 
   const { data: allData } = useQuery({
     queryKey: ['my-payments-all', user?.id],
-    queryFn:  () => cotisations.payments({ member_id: user?.id, size: 1000 }),
+    queryFn:  () => cotisations.payments({ member_id: user?.id, size: 500 }),
     enabled:  !!user,
   })
 

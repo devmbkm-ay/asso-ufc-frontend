@@ -2,13 +2,10 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { members as membersApi, cotisations } from '@/lib/api'
+import { members as membersApi } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
-import { Search, Crown, BookOpen, Wallet, User, CheckCircle2, XCircle } from 'lucide-react'
+import { Search, Crown, BookOpen, Wallet, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const CURRENT_YEAR  = new Date().getFullYear()
-const CURRENT_MONTH = new Date().getMonth() + 1
 
 const ROLE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
   super_admin: { label: 'Admin',      icon: Crown,    color: 'text-[#8B6B30]',   bg: 'bg-[#C8A96E]/15', border: 'border-[#C8A96E]/40' },
@@ -29,20 +26,6 @@ export default function MembresPage() {
     queryKey: ['members-list-public'],
     queryFn: () => membersApi.list({ size: 500, status: 'active' }),
   })
-
-  // Fetch the payment grid to derive "is up to date" per member
-  const { data: grid } = useQuery({
-    queryKey: ['payment-grid', CURRENT_YEAR],
-    queryFn: () => cotisations.grid(CURRENT_YEAR),
-  })
-
-  const upToDateIds = new Set(
-    grid
-      ?.filter(row =>
-        row.months.some(m => m.month === CURRENT_MONTH && m.status === 'confirmed'),
-      )
-      .map(row => row.member_id) ?? [],
-  )
 
   const filtered = (data?.items ?? []).filter(m => {
     if (!search) return true
@@ -92,8 +75,7 @@ export default function MembresPage() {
         {!isLoading && filtered.length > 0 && (
           <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
             {filtered.map(m => {
-              const isUpToDate = upToDateIds.has(m.id)
-              const isSelf     = m.id === user?.id
+              const isSelf = m.id === user?.id
               const visibleRoles = m.roles.filter(r => r !== 'member')
 
               return (
@@ -149,13 +131,6 @@ export default function MembresPage() {
                     )}
                   </div>
 
-                  {/* Cotisation status */}
-                  <div className="shrink-0" title={isUpToDate ? 'À jour' : 'Pas à jour'}>
-                    {isUpToDate
-                      ? <CheckCircle2 size={16} className="text-emerald-500" />
-                      : <XCircle size={16} className="text-red-300" />
-                    }
-                  </div>
                 </li>
               )
             })}
@@ -163,10 +138,6 @@ export default function MembresPage() {
         )}
       </div>
 
-      <p className="text-xs text-[#B0A9A2] flex items-center gap-1.5">
-        <CheckCircle2 size={11} className="text-emerald-500" />
-        À jour · <XCircle size={11} className="text-red-300" /> Cotisation {new Date().toLocaleDateString('fr-FR', { month: 'long' })} non enregistrée
-      </p>
     </div>
   )
 }
