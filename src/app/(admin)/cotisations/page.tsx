@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MONTHS      = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
@@ -121,6 +121,16 @@ export default function CotisationsPage() {
   const { mutate: deactivatePlan } = useMutation({
     mutationFn: (id: string) => cotisations.updatePlan(id, { is_active: false }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cotisations-plans'] }),
+  })
+
+  const [initingPlanId, setInitingPlanId] = useState<string | null>(null)
+  const { mutate: initPayments } = useMutation({
+    mutationFn: (id: string) => cotisations.initPlanPayments(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['cotisations-grid', year] })
+      setInitingPlanId(null)
+    },
+    onError: () => setInitingPlanId(null),
   })
 
   function handlePlanSubmit(e: React.FormEvent) {
@@ -281,13 +291,23 @@ export default function CotisationsPage() {
                   </p>
                 </div>
                 {canWrite && (
-                  <button
-                    onClick={() => deactivatePlan(p.id)}
-                    title="Désactiver ce plan"
-                    className="ml-1 text-[#B0A9A2] hover:text-red-400 transition-colors"
-                  >
-                    <ToggleLeft size={14} />
-                  </button>
+                  <div className="ml-1 flex items-center gap-1">
+                    <button
+                      onClick={() => { setInitingPlanId(p.id); initPayments(p.id) }}
+                      disabled={initingPlanId === p.id}
+                      title="Initialiser les cotisations en attente pour tous les membres"
+                      className="text-[#B0A9A2] hover:text-[#C8A96E] transition-colors disabled:opacity-50"
+                    >
+                      <Zap size={13} />
+                    </button>
+                    <button
+                      onClick={() => deactivatePlan(p.id)}
+                      title="Désactiver ce plan"
+                      className="text-[#B0A9A2] hover:text-red-400 transition-colors"
+                    >
+                      <ToggleLeft size={14} />
+                    </button>
+                  </div>
                 )}
               </div>
             ))}

@@ -249,6 +249,10 @@ export const cotisations = {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
+  initPlanPayments: (id: string) =>
+    apiRequest<{ detail: string }>(`/api/v1/cotisation-plans/${id}/init-payments`, {
+      method: 'POST',
+    }),
   exportCSV: (year: number) =>
     apiDownload(`/api/v1/payments/export?year=${year}`, `cotisations-${year}.csv`),
   record: (data: {
