@@ -278,6 +278,14 @@ export const cotisations = {
     apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/confirm`, {
       method: 'POST',
     }),
+  validatePayment: (id: string) =>
+    apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/validate`, {
+      method: 'POST',
+    }),
+  rejectPayment: (id: string) =>
+    apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/reject`, {
+      method: 'POST',
+    }),
   cancelPayment: (id: string) =>
     apiRequest<void>(`/api/v1/payments/${id}`, { method: 'DELETE' }),
 }

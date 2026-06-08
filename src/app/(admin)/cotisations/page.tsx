@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MONTHS      = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
@@ -25,6 +25,7 @@ const METHOD_LABELS: Record<string, string> = {
 
 const CELL_STYLE: Record<string, string> = {
   confirmed: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200',
+  declared:  'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
   pending:   'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
   cancelled: 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200',
   none:      'bg-[#F0EBE2] text-transparent border-[rgba(0,0,0,0.06)] hover:bg-[#E8DFD0] hover:border-[#C8A96E]',
@@ -32,6 +33,7 @@ const CELL_STYLE: Record<string, string> = {
 
 const CELL_SYMBOL: Record<string, string> = {
   confirmed: '✓',
+  declared:  '~',
   pending:   '·',
   cancelled: '✕',
   none:      '+',
@@ -92,8 +94,9 @@ export default function CotisationsPage() {
   const [planForm, setPlanForm] = useState(EMPTY_PLAN)
   const [planError, setPlanError] = useState<string | null>(null)
 
-  const canWrite = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
-  const canAdmin = user?.roles.includes('super_admin')
+  const canWrite    = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
+  const canValidate = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary'].includes(r))
+  const canAdmin    = user?.roles.includes('super_admin')
 
   const { data: grid, isLoading } = useQuery({
     queryKey: ['cotisations-grid', year],
@@ -171,6 +174,22 @@ export default function CotisationsPage() {
     },
   })
 
+  const { mutate: validatePayment, isPending: isValidating } = useMutation({
+    mutationFn: cotisations.validatePayment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cotisations-grid', year] })
+      close()
+    },
+  })
+
+  const { mutate: rejectPayment, isPending: isRejecting } = useMutation({
+    mutationFn: cotisations.rejectPayment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cotisations-grid', year] })
+      close()
+    },
+  })
+
   function close() {
     setSelected(null)
     setForm(EMPTY_FORM)
@@ -215,11 +234,13 @@ export default function CotisationsPage() {
     })
   }
 
-  const totalRevenue    = grid?.reduce((sum, row) =>
+  const totalRevenue   = grid?.reduce((sum, row) =>
     sum + row.months.reduce((s, m) => s + (m.status === 'confirmed' ? (m.amount ?? 0) : 0), 0), 0) ?? 0
-  const confirmedCount  = grid?.reduce((sum, row) =>
+  const confirmedCount = grid?.reduce((sum, row) =>
     sum + row.months.filter(m => m.status === 'confirmed').length, 0) ?? 0
-  const pendingCount    = grid?.reduce((sum, row) =>
+  const declaredCount  = grid?.reduce((sum, row) =>
+    sum + row.months.filter(m => m.status === 'declared').length, 0) ?? 0
+  const pendingCount   = grid?.reduce((sum, row) =>
     sum + row.months.filter(m => m.status === 'pending').length, 0) ?? 0
 
   const dialogTitle = selected
@@ -236,7 +257,7 @@ export default function CotisationsPage() {
           <p className="text-sm text-[#6B6560] mt-0.5">
             {isLoading
               ? '—'
-              : `${confirmedCount} confirmés · ${pendingCount} en attente · ${fmtEur(totalRevenue)} encaissés`}
+              : `${confirmedCount} confirmés · ${declaredCount > 0 ? `${declaredCount} à valider · ` : ''}${pendingCount} en attente · ${fmtEur(totalRevenue)} encaissés`}
           </p>
         </div>
         <div className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.10)] shadow-sm rounded-lg px-3 py-2">
@@ -389,10 +410,14 @@ export default function CotisationsPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-5 text-xs text-[#9B928B]">
+      <div className="flex flex-wrap items-center gap-5 text-xs text-[#9B928B]">
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-4 rounded border bg-emerald-100 border-emerald-300 flex items-center justify-center text-emerald-700 text-[10px]">✓</div>
           Confirmé
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-5 h-4 rounded border bg-blue-100 border-blue-300 flex items-center justify-center text-blue-700 text-[10px]">~</div>
+          À valider
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-4 rounded border bg-amber-100 border-amber-300 flex items-center justify-center text-amber-700 text-[10px]">·</div>
@@ -542,6 +567,42 @@ export default function CotisationsPage() {
                   {isConfirming ? 'Confirmation…' : 'Confirmer le paiement'}
                 </Button>
               </DialogFooter>
+            </div>
+          )}
+
+          {/* ── Validate or reject (declared) ── */}
+          {selected?.cell.status === 'declared' && (
+            <div className="space-y-4 mt-1">
+              <div className="flex items-center gap-3 px-3 py-3 bg-blue-50 rounded-lg border border-blue-200">
+                <UserCheck size={16} className="text-blue-600 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-blue-800">Déclaré par le membre</p>
+                  <p className="text-xs text-blue-600 mt-0.5">
+                    {selected.cell.amount != null ? fmtEur(selected.cell.amount) + ' · ' : ''}
+                    En attente de validation
+                  </p>
+                </div>
+              </div>
+              {canValidate && (
+                <DialogFooter className="gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => selected.cell.payment_id && rejectPayment(selected.cell.payment_id)}
+                    disabled={isRejecting || isValidating}
+                    className="border-amber-200 text-amber-700 bg-transparent hover:bg-amber-50"
+                  >
+                    {isRejecting ? 'Rejet…' : 'Rejeter'}
+                  </Button>
+                  <Button
+                    onClick={() => selected.cell.payment_id && validatePayment(selected.cell.payment_id)}
+                    disabled={isValidating || isRejecting}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+                  >
+                    <CheckCircle2 size={14} />
+                    {isValidating ? 'Validation…' : 'Valider'}
+                  </Button>
+                </DialogFooter>
+              )}
             </div>
           )}
 

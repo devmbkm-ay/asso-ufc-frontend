@@ -67,7 +67,7 @@ export interface PaginatedPayments {
 
 export interface MonthCell {
   month: number
-  status: 'confirmed' | 'pending' | 'cancelled' | 'none'
+  status: 'confirmed' | 'declared' | 'pending' | 'cancelled' | 'none'
   amount?: number
   payment_id?: string
 }

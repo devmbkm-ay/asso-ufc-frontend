@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cotisations } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight, CreditCard, CheckCircle2, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CreditCard, CheckCircle2, Clock, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const CURRENT_YEAR = new Date().getFullYear()
@@ -25,9 +25,10 @@ const METHOD_LABELS: Record<string, string> = {
 }
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  confirmed: { label: 'Confirmé',   color: 'text-emerald-700', bg: 'bg-emerald-50',  border: 'border-emerald-200' },
-  pending:   { label: 'En attente', color: 'text-amber-700',   bg: 'bg-amber-50',    border: 'border-amber-200'  },
-  cancelled: { label: 'Annulé',     color: 'text-red-600',     bg: 'bg-red-50',      border: 'border-red-200'    },
+  confirmed: { label: 'Validé',           color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  declared:  { label: 'En vérification',  color: 'text-blue-700',    bg: 'bg-blue-50',    border: 'border-blue-200'   },
+  pending:   { label: 'En attente',       color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200'  },
+  cancelled: { label: 'Annulé',           color: 'text-red-600',     bg: 'bg-red-50',     border: 'border-red-200'    },
 }
 
 function fmtDate(iso: string) {
@@ -76,9 +77,10 @@ export default function MaCotisationPage() {
   const yearPayments = yearData?.items ?? []
 
   const pendingYear    = yearPayments.filter(p => p.status === 'pending')
+  const declaredYear   = yearPayments.filter(p => p.status === 'declared')
   const confirmedYear  = yearPayments.filter(p => p.status === 'confirmed')
   const cancelledYear  = yearPayments.filter(p => p.status === 'cancelled')
-  const displayedYear  = [...confirmedYear, ...cancelledYear] // pending shown separately
+  const displayedYear  = [...confirmedYear, ...cancelledYear] // pending + declared shown separately
 
   // Monthly view: only payments with period_month set
   const monthlyConfirmed = confirmedYear.filter(p => p.period_month !== null)
@@ -153,6 +155,37 @@ export default function MaCotisationPage() {
         </div>
       )}
 
+      {/* Cotisations en cours de vérification */}
+      {declaredYear.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <UserCheck size={15} className="text-blue-600" />
+            <h2 className="text-sm font-semibold text-blue-800">
+              {declaredYear.length} cotisation{declaredYear.length > 1 ? 's' : ''} en cours de vérification
+            </h2>
+          </div>
+          <p className="text-xs text-blue-700">
+            Votre déclaration a été transmise. Le trésorier vérifiera et validera votre paiement prochainement.
+          </p>
+          <div className="space-y-2">
+            {declaredYear.map(p => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between gap-3 bg-white border border-blue-200 rounded-lg px-4 py-3"
+              >
+                <div>
+                  <p className="text-sm font-medium text-[#1a1a1a]">{p.plan_label}</p>
+                  <p className="text-xs text-[#9B928B]">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                </div>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
+                  En vérification
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Couverture mensuelle (seulement pour plans mensuels) */}
       {isMonthlyPlan && (
         <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
@@ -206,14 +239,14 @@ export default function MaCotisationPage() {
           <div className="px-5 py-10 text-center text-sm text-[#9B928B]">Chargement…</div>
         )}
 
-        {!isLoading && displayedYear.length === 0 && pendingYear.length === 0 && (
+        {!isLoading && displayedYear.length === 0 && pendingYear.length === 0 && declaredYear.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
             <CreditCard size={24} className="text-[#D8CFC8]" />
             <p className="text-sm text-[#9B928B]">Aucun paiement enregistré pour {year}</p>
           </div>
         )}
 
-        {!isLoading && displayedYear.length === 0 && pendingYear.length > 0 && (
+        {!isLoading && displayedYear.length === 0 && (pendingYear.length > 0 || declaredYear.length > 0) && (
           <div className="px-5 py-6 text-center text-sm text-[#9B928B]">
             Aucun paiement confirmé pour {year}
           </div>
