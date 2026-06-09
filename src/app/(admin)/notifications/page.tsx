@@ -11,7 +11,7 @@ import {
   CheckCircle2, XCircle, ChevronLeft, ChevronRight, Send,
 } from 'lucide-react'
 
-const CURRENT_YEAR  = new Date().getFullYear()
+const CURRENT_YEAR = new Date().getFullYear()
 const CURRENT_MONTH = new Date().getMonth() + 1
 
 const MONTHS_FULL = [
@@ -20,9 +20,9 @@ const MONTHS_FULL = [
 ]
 
 const TYPE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string }> = {
-  welcome:              { label: 'Bienvenue',           icon: UserPlus,   color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  cotisation_reminder:  { label: 'Rappel cotisation',   icon: CreditCard, color: 'text-[#C8A96E]',   bg: 'bg-[#C8A96E]/10' },
-  event_invitation:     { label: 'Invitation événement',icon: Calendar,   color: 'text-blue-500',    bg: 'bg-blue-50' },
+  welcome: { label: 'Bienvenue', icon: UserPlus, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  cotisation_reminder: { label: 'Rappel cotisation', icon: CreditCard, color: 'text-[#6366F1]', bg: 'bg-indigo-50' },
+  event_invitation: { label: 'Invitation événement', icon: Calendar, color: 'text-cyan-600', bg: 'bg-cyan-50' },
 }
 
 function fmtDate(iso: string) {
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
   const queryClient = useQueryClient()
 
   const [reminderMonth, setReminderMonth] = useState(CURRENT_MONTH)
-  const [reminderYear,  setReminderYear]  = useState(CURRENT_YEAR)
+  const [reminderYear, setReminderYear] = useState(CURRENT_YEAR)
   const [result, setResult] = useState<import('@/lib/types').ReminderResult | null>(null)
   const [resultError, setResultError] = useState<string | null>(null)
 
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],
-    queryFn:  () => notifications.list({ limit: 100 }),
+    queryFn: () => notifications.list({ limit: 100 }),
   })
 
   const { mutate: sendReminder, isPending } = useMutation({
@@ -58,7 +58,7 @@ export default function NotificationsPage() {
     },
   })
 
-  const sentCount   = data?.filter(n => n.sent).length ?? 0
+  const sentCount = data?.filter(n => n.sent).length ?? 0
   const failedCount = data?.filter(n => !n.sent).length ?? 0
 
   return (
@@ -66,60 +66,60 @@ export default function NotificationsPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Notifications</h1>
-        <p className="text-sm text-[#6B6560] mt-1">
+        <h1 className="text-2xl font-semibold text-card-foreground">Notifications</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${data?.length ?? 0} envois · ${sentCount} réussis · ${failedCount} échoués`}
         </p>
       </div>
 
       {/* Action — Rappels cotisation */}
       {canAction && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#C8A96E]/10 flex items-center justify-center shrink-0">
-              <Send size={15} className="text-[#C8A96E]" />
+            <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+              <Send size={15} className="text-[#6366F1]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1a1a1a]">Rappels de cotisation</p>
-              <p className="text-xs text-[#6B6560] mt-0.5">
+              <p className="text-sm font-semibold text-slate-800">Rappels de cotisation</p>
+              <p className="text-xs text-slate-400 mt-0.5">
                 Envoie un email à tous les membres actifs qui n'ont pas encore cotisé pour le mois sélectionné.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 pl-12">
-            <div className="flex items-center gap-1.5 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg px-2.5 py-1.5">
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderMonth(m => m === 1 ? 12 : m - 1)}
-                className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-[#1a1a1a] w-16 text-center select-none">
+              <span className="text-xs font-medium text-slate-700 w-16 text-center select-none">
                 {MONTHS_FULL[reminderMonth - 1]}
               </span>
               <button
                 onClick={() => setReminderMonth(m => m === 12 ? 1 : m + 1)}
-                className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg px-2.5 py-1.5">
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderYear(y => y - 1)}
-                className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-[#1a1a1a] w-10 text-center select-none">
+              <span className="text-xs font-medium text-slate-700 w-10 text-center select-none">
                 {reminderYear}
               </span>
               <button
                 onClick={() => setReminderYear(y => y + 1)}
                 disabled={reminderYear >= CURRENT_YEAR}
-                className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="text-slate-400 hover:text-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={14} />
               </button>
@@ -129,7 +129,7 @@ export default function NotificationsPage() {
               size="sm"
               onClick={() => { setResult(null); setResultError(null); sendReminder() }}
               disabled={isPending}
-              className="bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-1.5"
+              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
             >
               <Send size={13} />
               {isPending ? 'Envoi…' : 'Envoyer'}
@@ -158,45 +158,45 @@ export default function NotificationsPage() {
       )}
 
       {/* History */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
-          <h2 className="text-sm font-semibold text-[#1a1a1a]">Historique des envois</h2>
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100">
+          <h2 className="text-sm font-semibold text-slate-800">Historique des envois</h2>
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-[#9B928B]">Chargement…</div>
+          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
         )}
 
         {!isLoading && data?.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-12 text-center">
-            <div className="w-12 h-12 rounded-full bg-[#F0EBE2] flex items-center justify-center">
-              <BellRing size={20} className="text-[#B0A9A2]" />
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <BellRing size={20} className="text-slate-300" />
             </div>
-            <p className="text-sm text-[#9B928B]">Aucune notification envoyée pour le moment</p>
+            <p className="text-sm text-slate-400">Aucune notification envoyée pour le moment</p>
           </div>
         )}
 
         {data && data.length > 0 && (
-          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <ul className="divide-y divide-slate-100">
             {data.map(n => {
               const meta = TYPE_META[n.type] ?? TYPE_META.welcome
               const Icon = meta.icon
               return (
-                <li key={n.id} className="flex items-start gap-4 px-5 py-4 hover:bg-[rgba(0,0,0,0.015)]">
+                <li key={n.id} className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 transition-colors">
                   <div className={`w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                     <Icon size={14} className={meta.color} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-medium text-[#1a1a1a] truncate">{n.subject}</p>
+                      <p className="text-sm font-medium text-slate-800 truncate">{n.subject}</p>
                       <Badge className={`text-[10px] border shrink-0 ${n.sent
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : 'bg-red-50 text-red-600 border-red-200'
-                      }`}>
+                        }`}>
                         {n.sent ? 'Envoyé' : 'Échoué'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-[#B0A9A2] mt-0.5">{fmtDate(n.created_at)}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{fmtDate(n.created_at)}</p>
                   </div>
                   {n.sent
                     ? <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-1" />

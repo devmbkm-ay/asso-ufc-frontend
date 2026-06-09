@@ -12,17 +12,18 @@ interface KpiCardProps {
 export function KpiCard({ label, value, sub, accent, className }: KpiCardProps) {
   return (
     <Card className={cn(
-      'bg-white border-[rgba(200,169,110,0.18)] shadow-sm p-5 space-y-1',
+      'bg-white border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-1',
+      accent && 'border-t-2 border-t-[#6366F1]',
       className,
     )}>
-      <p className="text-xs text-[#9B928B] uppercase tracking-wide">{label}</p>
+      <p className="text-xs text-slate-400 uppercase tracking-wide">{label}</p>
       <p className={cn(
         'text-2xl font-bold',
-        accent ? 'text-[#C8A96E]' : 'text-[#1a1a1a]',
+        accent ? 'text-[#6366F1]' : 'text-slate-800',
       )}>
         {value}
       </p>
-      {sub && <p className="text-xs text-[#B0A9A2]">{sub}</p>}
+      {sub && <p className="text-xs text-slate-400">{sub}</p>}
     </Card>
   )
 }

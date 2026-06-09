@@ -23,8 +23,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EF]">
-        <div className="w-6 h-6 border-2 border-[#C8A96E] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF]">
+        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-[#2D5016] border-b border-[rgba(255,255,255,0.10)]">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-[#1F2139] border-b border-[rgba(255,255,255,0.10)]">
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="Ouvrir le menu"
@@ -48,8 +48,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[#C8A96E] flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-[#1a1a1a]">M</span>
+          <div className="w-7 h-7 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-sm">
+            <span className="text-xs font-bold text-white">M</span>
           </div>
           <span className="text-sm font-semibold text-white">Mboka</span>
         </div>
@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SheetContent>
       </Sheet>
 
-      <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0 bg-[#F8FAFF]">
         {children}
       </main>
     </div>

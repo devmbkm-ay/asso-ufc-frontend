@@ -9,10 +9,10 @@ import {
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/mon-espace',           label: 'Mon espace',    icon: LayoutDashboard, exact: true },
-  { href: '/mon-espace/membres',   label: 'Membres',       icon: Users },
-  { href: '/mon-espace/collectes', label: 'Collectes',     icon: Heart },
-  { href: '/mon-espace/evenements',label: 'Événements',    icon: Calendar },
+  { href: '/mon-espace', label: 'Mon espace', icon: LayoutDashboard, exact: true },
+  { href: '/mon-espace/membres', label: 'Membres', icon: Users },
+  { href: '/mon-espace/collectes', label: 'Collectes', icon: Heart },
+  { href: '/mon-espace/evenements', label: 'Événements', icon: Calendar },
   { href: '/mon-espace/ma-cotisation', label: 'Ma cotisation', icon: CreditCard },
 ]
 
@@ -25,11 +25,11 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
   )
 
   return (
-    <aside className="flex flex-col w-56 h-full bg-[#2D5016] border-r border-[rgba(255,255,255,0.10)] shrink-0">
+    <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
-        <div className="w-8 h-8 rounded-full bg-[#C8A96E] flex items-center justify-center shrink-0">
-          <span className="text-sm font-bold text-[#1a1a1a]">M</span>
+        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <span className="text-sm font-bold text-primary">M</span>
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white truncate">Mboka</p>
@@ -66,7 +66,7 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
           <Link
             href="/dashboard"
             onClick={onClose}
-            className="flex items-center gap-2.5 px-2 py-2 rounded-md text-xs text-[rgba(255,255,255,0.45)] hover:text-[#C8A96E] hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+            className="flex items-center gap-2.5 px-2 py-2 rounded-md text-xs text-muted-foreground hover:text-primary hover:bg-sidebar-accent transition-colors"
           >
             <Settings2 size={13} />
             Espace administration

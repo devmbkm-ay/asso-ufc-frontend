@@ -28,7 +28,7 @@ const CELL_STYLE: Record<string, string> = {
   declared:  'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
   pending:   'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
   cancelled: 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200',
-  none:      'bg-[#F0EBE2] text-transparent border-[rgba(0,0,0,0.06)] hover:bg-[#E8DFD0] hover:border-[#C8A96E]',
+  none:      'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-[#6366F1]',
 }
 
 const CELL_SYMBOL: Record<string, string> = {
@@ -59,7 +59,7 @@ const EMPTY_FORM = {
   reference:    '',
 }
 
-const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 const FREQ_LABELS: Record<string, string> = {
   monthly:  'Mensuelle',
@@ -253,25 +253,25 @@ export default function CotisationsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Cotisations</h1>
-          <p className="text-sm text-[#6B6560] mt-0.5">
+          <h1 className="text-2xl font-semibold text-slate-800">Cotisations</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             {isLoading
               ? '—'
               : `${confirmedCount} confirmés · ${declaredCount > 0 ? `${declaredCount} à valider · ` : ''}${pendingCount} en attente · ${fmtEur(totalRevenue)} encaissés`}
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.10)] shadow-sm rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-lg px-3 py-2">
           <button
             onClick={() => setYear(y => y - 1)}
-            className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors"
+            className="text-slate-400 hover:text-slate-800 transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="text-sm font-semibold text-[#1a1a1a] w-10 text-center select-none">{year}</span>
+          <span className="text-sm font-semibold text-slate-800 w-10 text-center select-none">{year}</span>
           <button
             onClick={() => setYear(y => y + 1)}
             disabled={year >= currentYear}
-            className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-slate-400 hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronRight size={16} />
           </button>
@@ -280,12 +280,12 @@ export default function CotisationsPage() {
 
       {/* Plans de cotisation */}
       {canWrite && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
           <div className="flex items-center justify-between gap-4 mb-3">
-            <h2 className="text-xs font-semibold tracking-wider text-[#9B928B] uppercase">Plans de cotisation</h2>
+            <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Plans de cotisation</h2>
             <button
               onClick={() => { setPlanOpen(true); setPlanError(null); setPlanForm(EMPTY_PLAN) }}
-              className="flex items-center gap-1 text-xs text-[#C8A96E] hover:text-[#b8994e] transition-colors font-medium"
+              className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5] transition-colors font-medium"
             >
               <Plus size={13} />
               Nouveau plan
@@ -293,7 +293,7 @@ export default function CotisationsPage() {
           </div>
 
           {!plans?.length && (
-            <p className="text-xs text-[#9B928B] italic">
+            <p className="text-xs text-slate-400 italic">
               Aucun plan actif — créez un plan pour pouvoir enregistrer des paiements.
             </p>
           )}
@@ -302,11 +302,11 @@ export default function CotisationsPage() {
             {plans?.map(p => (
               <div
                 key={p.id}
-                className="flex items-center gap-2 bg-[#F0EBE2] border border-[rgba(200,169,110,0.25)] rounded-lg px-3 py-2"
+                className="flex items-center gap-2 bg-indigo-50 border border-[rgba(99,102,241,0.20)] rounded-lg px-3 py-2"
               >
                 <div>
-                  <p className="text-xs font-semibold text-[#1a1a1a]">{p.label}</p>
-                  <p className="text-[11px] text-[#6B6560]">
+                  <p className="text-xs font-semibold text-slate-800">{p.label}</p>
+                  <p className="text-[11px] text-slate-500">
                     {fmtEur(Number(p.amount))} · {FREQ_LABELS[p.frequency] ?? p.frequency}
                     {p.valid_until && ` · jusqu'au ${fmtDate(p.valid_until)}`}
                   </p>
@@ -317,14 +317,14 @@ export default function CotisationsPage() {
                       onClick={() => { setInitingPlanId(p.id); initPayments(p.id) }}
                       disabled={initingPlanId === p.id}
                       title="Initialiser les cotisations en attente pour tous les membres"
-                      className="text-[#B0A9A2] hover:text-[#C8A96E] transition-colors disabled:opacity-50"
+                      className="text-slate-400 hover:text-[#6366F1] transition-colors disabled:opacity-50"
                     >
                       <Zap size={13} />
                     </button>
                     <button
                       onClick={() => deactivatePlan(p.id)}
                       title="Désactiver ce plan"
-                      className="text-[#B0A9A2] hover:text-red-400 transition-colors"
+                      className="text-slate-400 hover:text-red-400 transition-colors"
                     >
                       <ToggleLeft size={14} />
                     </button>
@@ -337,40 +337,40 @@ export default function CotisationsPage() {
       )}
 
       {/* Grid */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-x-auto">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-[rgba(0,0,0,0.06)]">
-              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase sticky left-0 bg-white min-w-[180px] z-10">
+            <tr className="border-b border-slate-100">
+              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase sticky left-0 bg-white min-w-[180px] z-10">
                 Membre
               </th>
               {MONTHS.map(m => (
-                <th key={m} className="px-1.5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase text-center min-w-[48px]">
+                <th key={m} className="px-1.5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase text-center min-w-[48px]">
                   {m}
                 </th>
               ))}
-              <th className="px-4 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase text-right whitespace-nowrap">
+              <th className="px-4 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase text-right whitespace-nowrap">
                 Total
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={14} className="px-4 py-12 text-center text-[#9B928B]">Chargement…</td>
+                <td colSpan={14} className="px-4 py-12 text-center text-slate-400">Chargement…</td>
               </tr>
             )}
             {!isLoading && grid?.length === 0 && (
               <tr>
-                <td colSpan={14} className="px-4 py-12 text-center text-[#9B928B]">Aucune donnée pour {year}</td>
+                <td colSpan={14} className="px-4 py-12 text-center text-slate-400">Aucune donnée pour {year}</td>
               </tr>
             )}
             {grid?.map(row => {
               const rowTotal = row.months.reduce(
                 (s, m) => s + (m.status === 'confirmed' ? (m.amount ?? 0) : 0), 0)
               return (
-                <tr key={row.member_id} className="hover:bg-[rgba(0,0,0,0.015)]">
-                  <td className="px-4 py-2.5 sticky left-0 bg-white font-medium text-[#1a1a1a] whitespace-nowrap z-10">
+                <tr key={row.member_id} className="hover:bg-slate-50">
+                  <td className="px-4 py-2.5 sticky left-0 bg-white font-medium text-slate-800 whitespace-nowrap z-10">
                     {row.member_name}
                   </td>
                   {row.months.map(cell => (
@@ -392,13 +392,13 @@ export default function CotisationsPage() {
                       >
                         {/* show '+' only for none+canWrite, otherwise symbol */}
                         {cell.status === 'none'
-                          ? (canWrite ? <span className="text-[#C8A96E] opacity-0 group-hover:opacity-100">+</span> : '')
+                          ? (canWrite ? <span className="text-[#6366F1] opacity-0 group-hover:opacity-100">+</span> : '')
                           : CELL_SYMBOL[cell.status]}
                       </button>
                     </td>
                   ))}
                   <td className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">
-                    <span className={rowTotal > 0 ? 'text-[#C8A96E]' : 'text-[#B0A9A2]'}>
+                    <span className={rowTotal > 0 ? 'text-[#6366F1]' : 'text-slate-400'}>
                       {rowTotal > 0 ? fmtEur(rowTotal) : '—'}
                     </span>
                   </td>
@@ -410,7 +410,7 @@ export default function CotisationsPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-5 text-xs text-[#9B928B]">
+      <div className="flex flex-wrap items-center gap-5 text-xs text-slate-400">
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-4 rounded border bg-emerald-100 border-emerald-300 flex items-center justify-center text-emerald-700 text-[10px]">✓</div>
           Confirmé
@@ -428,28 +428,28 @@ export default function CotisationsPage() {
           Annulé
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-5 h-4 rounded border bg-[#F0EBE2] border-[rgba(0,0,0,0.06)]" />
+          <div className="w-5 h-4 rounded border bg-slate-100 border-slate-200" />
           Non payé
         </div>
       </div>
 
       {/* Cell dialog */}
       <Dialog open={!!selected} onOpenChange={open => { if (!open) close() }}>
-        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-[#1a1a1a] text-base">{dialogTitle}</DialogTitle>
+            <DialogTitle className="text-slate-800 text-base">{dialogTitle}</DialogTitle>
           </DialogHeader>
 
           {/* ── Record (none) ── */}
           {selected?.cell.status === 'none' && (
             <form onSubmit={handleRecord} className="space-y-3 mt-1">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Plan de cotisation</label>
+                <label className="text-xs text-slate-500">Plan de cotisation</label>
                 <select
                   value={form.plan_id}
                   onChange={e => handlePlanChange(e.target.value)}
                   required
-                  className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
                 >
                   <option value="">Sélectionner un plan</option>
                   {plans?.map(p => (
@@ -462,7 +462,7 @@ export default function CotisationsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Montant (€)</label>
+                  <label className="text-xs text-slate-500">Montant (€)</label>
                   <Input
                     type="number"
                     min={1}
@@ -474,7 +474,7 @@ export default function CotisationsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Date</label>
+                  <label className="text-xs text-slate-500">Date</label>
                   <Input
                     type="date"
                     value={form.payment_date}
@@ -486,11 +486,11 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Méthode</label>
+                <label className="text-xs text-slate-500">Méthode</label>
                 <select
                   value={form.method}
                   onChange={e => setForm(f => ({ ...f, method: e.target.value }))}
-                  className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
                 >
                   {Object.entries(METHOD_LABELS).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
@@ -499,8 +499,8 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">
-                  Référence <span className="text-[#B0A9A2]">(optionnel)</span>
+                <label className="text-xs text-slate-500">
+                  Référence <span className="text-slate-400">(optionnel)</span>
                 </label>
                 <Input
                   value={form.reference}
@@ -521,14 +521,14 @@ export default function CotisationsPage() {
                   type="button"
                   variant="outline"
                   onClick={close}
-                  className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent"
+                  className="border-slate-200 text-slate-500 bg-transparent"
                 >
                   Annuler
                 </Button>
                 <Button
                   type="submit"
                   disabled={isRecording || !form.plan_id}
-                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                 >
                   {isRecording ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -651,14 +651,14 @@ export default function CotisationsPage() {
 
       {/* Plan creation dialog */}
       <Dialog open={planOpen} onOpenChange={open => { if (!open) { setPlanOpen(false); setPlanError(null) } }}>
-        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-[#1a1a1a] text-base">Nouveau plan de cotisation</DialogTitle>
+            <DialogTitle className="text-slate-800 text-base">Nouveau plan de cotisation</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handlePlanSubmit} className="space-y-3 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Libellé</label>
+              <label className="text-xs text-slate-500">Libellé</label>
               <Input
                 value={planForm.label}
                 onChange={e => setPlanForm(f => ({ ...f, label: e.target.value }))}
@@ -670,7 +670,7 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Montant (€)</label>
+                <label className="text-xs text-slate-500">Montant (€)</label>
                 <Input
                   type="number"
                   min={1}
@@ -682,11 +682,11 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Fréquence</label>
+                <label className="text-xs text-slate-500">Fréquence</label>
                 <select
                   value={planForm.frequency}
                   onChange={e => setPlanForm(f => ({ ...f, frequency: e.target.value as typeof f.frequency }))}
-                  className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
                 >
                   <option value="annual">Annuelle</option>
                   <option value="monthly">Mensuelle</option>
@@ -697,7 +697,7 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Valide à partir du</label>
+                <label className="text-xs text-slate-500">Valide à partir du</label>
                 <Input
                   type="date"
                   value={planForm.valid_from}
@@ -707,7 +707,7 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Expire le <span className="text-[#B0A9A2]">(optionnel)</span></label>
+                <label className="text-xs text-slate-500">Expire le <span className="text-slate-400">(optionnel)</span></label>
                 <Input
                   type="date"
                   value={planForm.valid_until}
@@ -728,14 +728,14 @@ export default function CotisationsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => { setPlanOpen(false); setPlanError(null) }}
-                className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent"
+                className="border-slate-200 text-slate-500 bg-transparent"
               >
                 Annuler
               </Button>
               <Button
                 type="submit"
                 disabled={isCreatingPlan}
-                className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
               >
                 {isCreatingPlan ? 'Création…' : 'Créer le plan'}
               </Button>

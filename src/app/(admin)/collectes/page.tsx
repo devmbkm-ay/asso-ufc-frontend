@@ -27,19 +27,19 @@ function daysLeft(endDate: string) {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'À venir',  className: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200' },
-  active:   { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
-  expired:  { label: 'Expirée',  className: 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200' },
-  closed:   { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
+  upcoming: { label: 'À venir', className: 'text-[10px] border bg-indigo-50 text-indigo-600 border-indigo-200' },
+  active: { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
+  expired: { label: 'Expirée', className: 'text-[10px] border bg-slate-100 text-slate-500 border-slate-200' },
+  closed: { label: 'Clôturée', className: 'text-[10px] border bg-cyan-50 text-cyan-700 border-cyan-200' },
 }
 
 const CATEGORIES = [
-  { value: '',          label: 'Non précisé' },
-  { value: 'deces',     label: 'Décès' },
-  { value: 'mariage',   label: 'Mariage' },
+  { value: '', label: 'Non précisé' },
+  { value: 'deces', label: 'Décès' },
+  { value: 'mariage', label: 'Mariage' },
   { value: 'naissance', label: 'Naissance' },
-  { value: 'maladie',   label: 'Maladie' },
-  { value: 'autre',     label: 'Autre' },
+  { value: 'maladie', label: 'Maladie' },
+  { value: 'autre', label: 'Autre' },
 ]
 
 const EMPTY_FORM = {
@@ -51,7 +51,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const FIELD = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
 export default function CollectesPage() {
   const { user } = useAuth()
@@ -128,18 +128,18 @@ export default function CollectesPage() {
     }
 
     create({
-      title:            form.title,
+      title: form.title,
       beneficiary_name: form.beneficiary_name,
       photo_url,
-      description:      form.description || undefined,
-      min_amount:       Number(form.min_amount) || 20,
-      start_date:       form.start_date,
-      category:         form.category || undefined,
+      description: form.description || undefined,
+      min_amount: Number(form.min_amount) || 20,
+      start_date: form.start_date,
+      category: form.category || undefined,
     })
   }
 
   const active = data?.filter(c => c.status === 'active' || c.status === 'upcoming') ?? []
-  const past   = data?.filter(c => c.status === 'expired' || c.status === 'closed') ?? []
+  const past = data?.filter(c => c.status === 'expired' || c.status === 'closed') ?? []
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
@@ -147,8 +147,8 @@ export default function CollectesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Collectes de solidarité</h1>
-          <p className="text-sm text-[#6B6560] mt-0.5">
+          <h1 className="text-2xl font-semibold text-card-foreground">Collectes de solidarité</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
             {data ? `${data.length} collecte${data.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -157,20 +157,20 @@ export default function CollectesPage() {
           <Dialog open={open} onOpenChange={next => { if (!next) closeModal(); else setOpen(true) }}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-1.5 shrink-0"
+              className="bg-primary hover:bg-violet-600 text-primary-foreground gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouvelle collecte
             </Button>
 
-            <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+            <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-[#1a1a1a]">Nouvelle collecte</DialogTitle>
+                <DialogTitle className="text-card-foreground">Nouvelle collecte</DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Titre de la collecte *</label>
+                  <label className="text-xs text-muted-foreground">Titre de la collecte *</label>
                   <Input
                     value={form.title}
                     onChange={field('title')}
@@ -181,7 +181,7 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Nom du défunt *</label>
+                  <label className="text-xs text-muted-foreground">Nom du défunt *</label>
                   <Input
                     value={form.beneficiary_name}
                     onChange={field('beneficiary_name')}
@@ -193,8 +193,8 @@ export default function CollectesPage() {
 
                 {/* Photo upload */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">
-                    Photo <span className="text-[#B0A9A2]">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
+                  <label className="text-xs text-slate-500">
+                    Photo <span className="text-slate-400">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
                   </label>
                   <input
                     ref={fileRef}
@@ -204,7 +204,7 @@ export default function CollectesPage() {
                     onChange={handleFileChange}
                   />
                   {photoPreview ? (
-                    <div className="relative w-20 h-20 rounded-full overflow-hidden bg-[#F0EBE2] group">
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden bg-slate-100 group">
                       <img src={photoPreview} alt="Aperçu" className="w-full h-full object-cover" />
                       <button
                         type="button"
@@ -218,7 +218,7 @@ export default function CollectesPage() {
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-[rgba(0,0,0,0.15)] text-xs text-[#9B928B] hover:border-[#C8A96E] hover:text-[#C8A96E] transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                     >
                       <ImagePlus size={14} />
                       Choisir une photo
@@ -227,11 +227,11 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Catégorie</label>
+                  <label className="text-xs text-slate-500">Catégorie</label>
                   <select
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground focus:outline-none focus:border-primary"
                   >
                     {CATEGORIES.map(c => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -240,21 +240,21 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">
-                    Message <span className="text-[#B0A9A2]">(optionnel)</span>
+                  <label className="text-xs text-slate-500">
+                    Message <span className="text-slate-400">(optionnel)</span>
                   </label>
                   <textarea
                     value={form.description}
                     onChange={field('description')}
                     rows={3}
                     placeholder="Un mot d'accompagnement pour la famille…"
-                    className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#6B6560]">Montant minimum (€)</label>
+                    <label className="text-xs text-slate-500">Montant minimum (€)</label>
                     <Input
                       type="number"
                       min={1}
@@ -264,7 +264,7 @@ export default function CollectesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#6B6560]">Date de début</label>
+                    <label className="text-xs text-slate-500">Date de début</label>
                     <Input
                       type="date"
                       value={form.start_date}
@@ -275,7 +275,7 @@ export default function CollectesPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-[#9B928B]">La collecte durera 14 jours à partir de la date de début.</p>
+                <p className="text-xs text-slate-400">La collecte durera 14 jours à partir de la date de début.</p>
 
                 {formError && (
                   <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -295,7 +295,7 @@ export default function CollectesPage() {
                   <Button
                     type="submit"
                     disabled={isPending || uploading}
-                    className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                    className="bg-primary hover:bg-violet-600 text-primary-foreground"
                   >
                     {uploading ? 'Upload…' : isPending ? 'Création…' : 'Lancer la collecte'}
                   </Button>
@@ -307,13 +307,13 @@ export default function CollectesPage() {
       </div>
 
       {isLoading && (
-        <div className="py-16 text-center text-[#9B928B] text-sm">Chargement…</div>
+        <div className="py-16 text-center text-slate-400 text-sm">Chargement…</div>
       )}
 
       {/* Collectes actives */}
       {active.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">En cours</h2>
+          <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">En cours</h2>
           <div className="space-y-3">
             {active.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
@@ -323,7 +323,7 @@ export default function CollectesPage() {
       {/* Collectes passées */}
       {past.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">Terminées</h2>
+          <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Terminées</h2>
           <div className="space-y-3">
             {past.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
@@ -332,8 +332,8 @@ export default function CollectesPage() {
 
       {!isLoading && data?.length === 0 && (
         <div className="py-16 text-center space-y-2">
-          <Heart size={32} className="mx-auto text-[#D8C9A8]" />
-          <p className="text-sm text-[#9B928B]">Aucune collecte pour le moment</p>
+          <Heart size={32} className="mx-auto text-indigo-200" />
+          <p className="text-sm text-slate-400">Aucune collecte pour le moment</p>
         </div>
       )}
     </div>
@@ -346,21 +346,21 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
   return (
     <Link
       href={`/collectes/${c.id}`}
-      className="block bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 hover:border-[rgba(200,169,110,0.4)] transition-colors"
+      className="block bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 hover:border-[rgba(99,102,241,0.35)] hover:shadow-[0_0_0_1px_rgba(99,102,241,0.15)] transition-all"
     >
       <div className="flex gap-4">
-        <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
           {c.photo_url
             ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
-            : <Heart size={22} className="text-[#C8A96E]" />
+            : <Heart size={22} className="text-primary" />
           }
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
-              <h3 className="text-sm font-semibold text-[#1a1a1a]">{c.title}</h3>
-              <p className="text-xs text-[#9B928B] mt-0.5">En mémoire de {c.beneficiary_name}</p>
+              <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
+              <p className="text-xs text-slate-400 mt-0.5">En mémoire de {c.beneficiary_name}</p>
             </div>
             <Badge className={STATUS_BADGE[c.status]?.className ?? STATUS_BADGE.expired.className}>
               {STATUS_BADGE[c.status]?.label ?? 'Expirée'}
@@ -369,15 +369,15 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
 
           <div className="flex flex-wrap gap-5 mt-3 text-sm">
             <div>
-              <p className="text-lg font-bold text-[#C8A96E] leading-none">{fmtEur(c.total_collected)}</p>
-              <p className="text-[10px] text-[#9B928B] mt-0.5">collectés</p>
+              <p className="text-lg font-bold text-primary leading-none">{fmtEur(c.total_collected)}</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">collectés</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-[#9B928B]">
-              <Users size={12} className="text-[#C8A96E]" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Users size={12} className="text-[#6366F1]" />
               {c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-[#9B928B]">
-              <Calendar size={12} className="text-[#C8A96E]" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Calendar size={12} className="text-[#6366F1]" />
               {c.is_active
                 ? `${remaining} jour${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`
                 : `Terminée le ${fmtDate(c.end_date)}`

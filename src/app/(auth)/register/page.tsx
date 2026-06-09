@@ -16,7 +16,7 @@ export default function RegisterPage() {
     password: '',
     confirm: '',
   })
-  const [error,   setError]   = useState('')
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   function set(field: keyof typeof form) {
@@ -35,9 +35,9 @@ export default function RegisterPage() {
     try {
       await auth.setup({
         first_name: form.first_name,
-        last_name:  form.last_name,
-        email:      form.email,
-        password:   form.password,
+        last_name: form.last_name,
+        email: form.email,
+        password: form.password,
       })
       router.push('/login?registered=1')
     } catch (err: unknown) {
@@ -51,48 +51,48 @@ export default function RegisterPage() {
     }
   }
 
-  const inputCls = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+  const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
   return (
     <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-white rounded-2xl shadow-md border border-[rgba(200,169,110,0.18)] p-8 space-y-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#2D5016] mb-4">
-              <span className="text-2xl font-bold text-[#C8A96E]">M</span>
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
+              <span className="text-2xl font-bold text-primary">M</span>
             </div>
-            <h1 className="text-xl font-semibold text-[#1a1a1a] tracking-wide">Premier compte</h1>
-            <p className="text-sm text-[#6B6560] mt-1">Création du super-administrateur</p>
+            <h1 className="text-xl font-semibold text-card-foreground tracking-wide">Premier compte</h1>
+            <p className="text-sm text-muted-foreground mt-1">Création du super-administrateur</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-sm text-[#4a4540]" htmlFor="first_name">Prénom</label>
+                <label className="text-sm text-muted-foreground" htmlFor="first_name">Prénom</label>
                 <Input id="first_name" value={form.first_name} onChange={set('first_name')}
                   placeholder="Marie" required className={inputCls} />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#4a4540]" htmlFor="last_name">Nom</label>
+                <label className="text-sm text-muted-foreground" htmlFor="last_name">Nom</label>
                 <Input id="last_name" value={form.last_name} onChange={set('last_name')}
                   placeholder="Dupont" required className={inputCls} />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-[#4a4540]" htmlFor="email">Adresse email</label>
+              <label className="text-sm text-muted-foreground" htmlFor="email">Adresse email</label>
               <Input id="email" type="email" value={form.email} onChange={set('email')}
                 placeholder="vous@example.com" required className={inputCls} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-[#4a4540]" htmlFor="password">Mot de passe</label>
+              <label className="text-sm text-muted-foreground" htmlFor="password">Mot de passe</label>
               <Input id="password" type="password" value={form.password} onChange={set('password')}
                 placeholder="8 caractères minimum" minLength={8} required className={inputCls} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-[#4a4540]" htmlFor="confirm">Confirmer</label>
+              <label className="text-sm text-muted-foreground" htmlFor="confirm">Confirmer</label>
               <Input id="confirm" type="password" value={form.confirm} onChange={set('confirm')}
                 placeholder="••••••••" required className={inputCls} />
             </div>
@@ -106,15 +106,15 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2D5016] hover:bg-[#3a6820] text-white font-semibold h-11"
+              className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
             >
               {loading ? 'Création…' : 'Créer le compte administrateur'}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-[#9B928B]">
+          <p className="text-center text-sm text-muted-foreground">
             Déjà un compte ?{' '}
-            <Link href="/login" className="text-[#C8A96E] hover:underline font-medium">
+            <Link href="/login" className="text-primary hover:underline font-medium">
               Se connecter
             </Link>
           </p>

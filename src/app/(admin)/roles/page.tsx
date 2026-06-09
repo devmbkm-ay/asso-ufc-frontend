@@ -7,7 +7,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Shield, Crown, BookOpen, Wallet, User, X, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, avatarColor } from '@/lib/utils'
 
 const ROLE_META: Record<string, {
   label: string
@@ -16,7 +16,7 @@ const ROLE_META: Record<string, {
   bg: string
   border: string
 }> = {
-  super_admin: { label: 'Super admin', icon: Crown,    color: 'text-[#8B6B30]',  bg: 'bg-[#C8A96E]/15', border: 'border-[#C8A96E]/40' },
+  super_admin: { label: 'Super admin', icon: Crown,    color: 'text-[#6366F1]',  bg: 'bg-indigo-50',    border: 'border-indigo-200' },
   treasurer:   { label: 'Trésorier',   icon: Wallet,   color: 'text-purple-700', bg: 'bg-purple-50',    border: 'border-purple-200' },
   secretary:   { label: 'Secrétaire',  icon: BookOpen, color: 'text-emerald-700',bg: 'bg-emerald-50',   border: 'border-emerald-200' },
   member:      { label: 'Membre',      icon: User,     color: 'text-gray-500',   bg: 'bg-gray-100',     border: 'border-gray-200' },
@@ -66,8 +66,8 @@ export default function RolesPage() {
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Rôles & accès</h1>
-        <p className="text-sm text-[#6B6560] mt-1">
+        <h1 className="text-2xl font-semibold text-slate-800">Rôles & accès</h1>
+        <p className="text-sm text-slate-400 mt-1">
           Attribuez et révoquez les rôles des membres de l'association.
         </p>
       </div>
@@ -78,44 +78,44 @@ export default function RolesPage() {
           const m = ROLE_META[role]
           const Icon = m.icon
           return (
-            <div key={role} className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-3 flex items-center gap-2.5">
+            <div key={role} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-3 flex items-center gap-2.5">
               <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0', m.bg)}>
                 <Icon size={13} className={m.color} />
               </div>
-              <span className="text-xs font-medium text-[#1a1a1a]">{m.label}</span>
+              <span className="text-xs font-medium text-slate-800">{m.label}</span>
             </div>
           )
         })}
       </div>
 
       {/* Members list */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
-          <h2 className="text-sm font-semibold text-[#1a1a1a]">Membres & rôles</h2>
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100">
+          <h2 className="text-sm font-semibold text-slate-800">Membres & rôles</h2>
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-[#9B928B]">Chargement…</div>
+          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
         )}
 
         {!isLoading && (
-          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <ul className="divide-y divide-slate-100">
             {[...membersWithRoles, ...membersOnly].map(m => {
               const isAdding = addingFor === m.id
               const availableRoles = ALL_ROLES.filter(r => !m.roles.includes(r))
 
               return (
-                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-[rgba(0,0,0,0.015)]">
+                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-slate-50">
                   {/* Avatar */}
-                  <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
-                    <span className="text-[11px] font-bold text-white">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
+                    <span className="text-[11px] font-bold">
                       {m.first_name[0]}{m.last_name[0]}
                     </span>
                   </div>
 
                   {/* Name */}
                   <div className="w-40 shrink-0">
-                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                    <p className="text-sm font-medium text-slate-800 truncate">
                       {m.first_name} {m.last_name}
                     </p>
                   </div>
@@ -160,7 +160,7 @@ export default function RolesPage() {
                           <select
                             value={selectedRole}
                             onChange={e => { setSelectedRole(e.target.value); setError(null) }}
-                            className="text-xs rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-2 py-1 focus:outline-none focus:border-[#C8A96E]"
+                            className="text-xs rounded-md border border-slate-200 bg-white text-slate-800 px-2 py-1 focus:outline-none focus:border-[#6366F1]"
                           >
                             <option value="">Choisir…</option>
                             {availableRoles.map(r => (
@@ -171,13 +171,13 @@ export default function RolesPage() {
                             size="sm"
                             disabled={!selectedRole || isAssigning}
                             onClick={() => assign({ id: m.id, role: selectedRole })}
-                            className="h-6 px-2 text-[11px] bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                            className="h-6 px-2 text-[11px] bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                           >
                             OK
                           </Button>
                           <button
                             onClick={() => { setAddingFor(null); setSelectedRole(''); setError(null) }}
-                            className="text-[#9B928B] hover:text-[#1a1a1a]"
+                            className="text-slate-400 hover:text-slate-800"
                           >
                             <X size={13} />
                           </button>
@@ -185,7 +185,7 @@ export default function RolesPage() {
                       ) : (
                         <button
                           onClick={() => { setAddingFor(m.id); setSelectedRole('') }}
-                          className="flex items-center gap-1 text-[11px] text-[#9B928B] hover:text-[#C8A96E] transition-colors"
+                          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-[#6366F1] transition-colors"
                           title="Attribuer un rôle"
                         >
                           <Plus size={12} />
@@ -209,7 +209,7 @@ export default function RolesPage() {
       )}
 
       {/* Bottom note */}
-      <p className="flex items-center gap-2 text-xs text-[#B0A9A2] border-t border-[rgba(0,0,0,0.06)] pt-4">
+      <p className="flex items-center gap-2 text-xs text-slate-400 border-t border-slate-100 pt-4">
         <Shield size={12} />
         Un membre doit toujours conserver au moins un rôle. Le rôle super_admin ne peut pas être révoqué par lui-même.
       </p>

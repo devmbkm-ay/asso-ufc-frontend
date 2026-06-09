@@ -12,7 +12,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, avatarColor } from '@/lib/utils'
 
 const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
 
@@ -26,9 +26,9 @@ const STATUS_TABS = [
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive:  { label: 'Inactif',    className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  inactive:  { label: 'Inactif',    className: 'bg-slate-100 text-slate-500 border-slate-200' },
   suspended: { label: 'Suspendu',   className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
+  honorary:  { label: 'Honoraire',  className: 'bg-violet-50 text-violet-600 border-violet-200' },
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -59,7 +59,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 export default function MembresPage() {
   const { user } = useAuth()
@@ -202,8 +202,8 @@ export default function MembresPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Membres</h1>
-          <p className="text-sm text-[#6B6560] mt-0.5">
+          <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             {data ? `${data.total} adhérent${data.total > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -215,15 +215,15 @@ export default function MembresPage() {
               <Button
                 onClick={() => setInviteOpen(true)}
                 variant="outline"
-                className="border-[rgba(200,169,110,0.4)] text-[#8B6B30] hover:bg-[#FBF6EE] gap-1.5"
+                className="border-[rgba(99,102,241,0.4)] text-[#6366F1] hover:bg-indigo-50 gap-1.5"
               >
                 <Mail size={14} />
                 Inviter
               </Button>
 
-              <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+              <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle className="text-[#1a1a1a]">
+                  <DialogTitle className="text-slate-800">
                     {inviteLink ? 'Invitation envoyée' : 'Inviter un membre'}
                   </DialogTitle>
                 </DialogHeader>
@@ -231,7 +231,7 @@ export default function MembresPage() {
                 {!inviteLink ? (
                   <form onSubmit={handleInviteSubmit} className="space-y-4 mt-1">
                     <div className="space-y-1.5">
-                      <label className="text-xs text-[#6B6560]">Adresse email du futur membre *</label>
+                      <label className="text-xs text-slate-500">Adresse email du futur membre *</label>
                       <Input
                         type="email"
                         value={inviteEmail}
@@ -241,7 +241,7 @@ export default function MembresPage() {
                         className={FIELD_CLASS}
                       />
                     </div>
-                    <p className="text-xs text-[#9B928B]">
+                    <p className="text-xs text-slate-400">
                       Un email avec le lien d'inscription sera envoyé automatiquement. Le lien est valable 7 jours.
                     </p>
                     {inviteError && (
@@ -251,37 +251,37 @@ export default function MembresPage() {
                     )}
                     <DialogFooter className="gap-2">
                       <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">
+                        className="border-slate-200 text-slate-500 bg-transparent">
                         Annuler
                       </Button>
                       <Button type="submit" disabled={invitePending}
-                        className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
                         {invitePending ? 'Envoi…' : "Envoyer l'invitation"}
                       </Button>
                     </DialogFooter>
                   </form>
                 ) : (
                   <div className="space-y-4 mt-1">
-                    <p className="text-sm text-[#1a1a1a]">
+                    <p className="text-sm text-slate-800">
                       Invitation envoyée à <strong>{inviteEmail}</strong>.
                     </p>
                     <div className="space-y-1.5">
-                      <p className="text-xs text-[#6B6560]">Lien de secours (partage manuel)</p>
+                      <p className="text-xs text-slate-500">Lien de secours (partage manuel)</p>
                       <div className="flex gap-2">
                         <input
                           readOnly
                           value={inviteLink}
-                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-[rgba(0,0,0,0.12)] bg-[#F9F6F1] text-[#6B6560] truncate"
+                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-500 truncate"
                         />
                         <Button size="sm" variant="outline" onClick={copyLink}
-                          className="border-[rgba(0,0,0,0.12)] text-[#6B6560] gap-1.5 shrink-0">
+                          className="border-slate-200 text-slate-500 gap-1.5 shrink-0">
                           {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                           {copied ? 'Copié !' : 'Copier'}
                         </Button>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-[#2D5016] hover:bg-[#3a6820] text-white">
+                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -293,38 +293,38 @@ export default function MembresPage() {
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-[#C8A96E] hover:bg-[#b8994e] text-white text-sm font-medium gap-1.5 shrink-0"
+              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-medium gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouveau membre
             </Button>
 
-            <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+            <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-[#1a1a1a]">Nouveau membre</DialogTitle>
+                <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#6B6560]">Prénom *</label>
+                    <label className="text-xs text-slate-500">Prénom *</label>
                     <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#6B6560]">Nom *</label>
+                    <label className="text-xs text-slate-500">Nom *</label>
                     <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Email *</label>
+                  <label className="text-xs text-slate-500">Email *</label>
                   <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">
+                  <label className="text-xs text-slate-500">
                     Mot de passe *{' '}
-                    <span className="text-[#B0A9A2]">8 car. min, 1 chiffre requis</span>
+                    <span className="text-slate-400">8 car. min, 1 chiffre requis</span>
                   </label>
                   <Input
                     type="password"
@@ -337,17 +337,17 @@ export default function MembresPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Téléphone</label>
+                  <label className="text-xs text-slate-500">Téléphone</label>
                   <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Adresse</label>
+                  <label className="text-xs text-slate-500">Adresse</label>
                   <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#6B6560]">Date de naissance</label>
+                  <label className="text-xs text-slate-500">Date de naissance</label>
                   <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
                 </div>
 
@@ -362,14 +362,14 @@ export default function MembresPage() {
                     type="button"
                     variant="outline"
                     onClick={closeModal}
-                    className="border-[rgba(0,0,0,0.12)] text-[#6B6560] hover:text-[#1a1a1a] bg-transparent"
+                    className="border-slate-200 text-slate-500 hover:text-slate-800 bg-transparent"
                   >
                     Annuler
                   </Button>
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                   >
                     {isPending ? 'Création…' : 'Créer le membre'}
                   </Button>
@@ -394,8 +394,8 @@ export default function MembresPage() {
             {pendingInvites.map(inv => (
               <div key={inv.id} className="flex items-center justify-between gap-3 bg-white border border-amber-100 rounded-lg px-3 py-2">
                 <div>
-                  <p className="text-sm font-medium text-[#1a1a1a]">{inv.email}</p>
-                  <p className="text-[10px] text-[#9B928B]">
+                  <p className="text-sm font-medium text-slate-800">{inv.email}</p>
+                  <p className="text-[10px] text-slate-400">
                     Invité par {inv.invited_by_name} · expire le {fmtExpiry(inv.expires_at)}
                   </p>
                 </div>
@@ -417,15 +417,15 @@ export default function MembresPage() {
       {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B928B]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Rechercher un membre…"
-            className="pl-9 bg-white border-[rgba(0,0,0,0.10)] text-[#1a1a1a] placeholder:text-[#B0A9A2]"
+            className="pl-9 bg-white border-slate-200 text-slate-800 placeholder:text-slate-400"
           />
         </div>
-        <div className="flex gap-1 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg p-1">
+        <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1">
           {STATUS_TABS.map(t => (
             <button
               key={t.value}
@@ -433,8 +433,8 @@ export default function MembresPage() {
               className={cn(
                 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 status === t.value
-                  ? 'bg-[#C8A96E]/20 text-[#8B6B30]'
-                  : 'text-[#7A726B] hover:text-[#1a1a1a]',
+                  ? 'bg-indigo-100 text-[#6366F1]'
+                  : 'text-slate-500 hover:text-slate-800',
               )}
             >
               {t.label}
@@ -444,57 +444,57 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[rgba(0,0,0,0.06)]">
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Membre</th>
+            <tr className="border-b border-slate-100">
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Membre</th>
               {isAdmin ? (
                 <>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden md:table-cell">Email</th>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden lg:table-cell">Téléphone</th>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Inscrit le</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden md:table-cell">Email</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden lg:table-cell">Téléphone</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden sm:table-cell">Inscrit le</th>
                 </>
               ) : (
-                <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase hidden sm:table-cell">Fonction</th>
+                <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden sm:table-cell">Fonction</th>
               )}
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-[#9B928B] uppercase">Statut</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={colCount} className="px-5 py-12 text-center text-[#9B928B]">Chargement…</td>
+                <td colSpan={colCount} className="px-5 py-12 text-center text-slate-400">Chargement…</td>
               </tr>
             )}
             {!isLoading && data?.items.length === 0 && (
               <tr>
-                <td colSpan={colCount} className="px-5 py-12 text-center text-[#9B928B]">Aucun membre trouvé</td>
+                <td colSpan={colCount} className="px-5 py-12 text-center text-slate-400">Aucun membre trouvé</td>
               </tr>
             )}
             {data?.items.map(m => {
               const st = STATUS_LABEL[m.status]
               const avatar = (
-                <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
-                  <span className="text-xs font-semibold text-white">
+                <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', avatarColor(m.first_name + m.last_name))}>
+                  <span className="text-xs font-semibold">
                     {m.first_name[0]}{m.last_name[0]}
                   </span>
                 </div>
               )
               return (
-                <tr key={m.id} className="hover:bg-[rgba(0,0,0,0.02)] transition-colors group">
+                <tr key={m.id} className="hover:bg-slate-50 transition-colors group">
                   <td className="px-5 py-3.5">
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-[#1a1a1a] group-hover:text-[#C8A96E] transition-colors">
+                        <span className="font-medium text-slate-800 group-hover:text-[#6366F1] transition-colors">
                           {m.first_name} {m.last_name}
                         </span>
                       </Link>
                     ) : (
                       <div className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-[#1a1a1a]">
+                        <span className="font-medium text-slate-800">
                           {m.first_name} {m.last_name}
                         </span>
                       </div>
@@ -502,18 +502,18 @@ export default function MembresPage() {
                   </td>
                   {isAdmin ? (
                     <>
-                      <td className="px-5 py-3.5 text-[#6B6560] hidden md:table-cell">
+                      <td className="px-5 py-3.5 text-slate-500 hidden md:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{m.email}</Link>
                       </td>
-                      <td className="px-5 py-3.5 text-[#6B6560] hidden lg:table-cell">
+                      <td className="px-5 py-3.5 text-slate-500 hidden lg:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{m.phone ?? '—'}</Link>
                       </td>
-                      <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
+                      <td className="px-5 py-3.5 text-slate-500 hidden sm:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
                       </td>
                     </>
                   ) : (
-                    <td className="px-5 py-3.5 text-[#6B6560] hidden sm:table-cell">
+                    <td className="px-5 py-3.5 text-slate-500 hidden sm:table-cell">
                       {memberRole(m.roles)}
                     </td>
                   )}
@@ -536,7 +536,7 @@ export default function MembresPage() {
       {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <p className="text-[#9B928B]">
+          <p className="text-slate-400">
             Page {data.page} sur {data.pages}
           </p>
           <div className="flex gap-2">
@@ -545,7 +545,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
-              className="bg-white border-[rgba(0,0,0,0.10)] text-[#6B6560] hover:text-[#1a1a1a] hover:bg-[#F0EBE2]"
+              className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             >
               <ChevronLeft size={14} />
             </Button>
@@ -554,7 +554,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === data.pages}
               onClick={() => setPage(p => p + 1)}
-              className="bg-white border-[rgba(0,0,0,0.10)] text-[#6B6560] hover:text-[#1a1a1a] hover:bg-[#F0EBE2]"
+              className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             >
               <ChevronRight size={14} />
             </Button>

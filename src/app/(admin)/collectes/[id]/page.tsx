@@ -15,11 +15,11 @@ import {
 import { ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle } from 'lucide-react'
 
 const CATEGORY_LABEL: Record<string, string> = {
-  deces:     'Décès',
-  mariage:   'Mariage',
+  deces: 'Décès',
+  mariage: 'Mariage',
   naissance: 'Naissance',
-  maladie:   'Maladie',
-  autre:     'Autre',
+  maladie: 'Maladie',
+  autre: 'Autre',
 }
 
 function fmtEur(n: number) {
@@ -43,13 +43,13 @@ function daysLeft(endDate: string) {
 }
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'À venir',  className: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200' },
-  active:   { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
-  expired:  { label: 'Expirée',  className: 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200' },
-  closed:   { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
+  upcoming: { label: 'À venir', className: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200' },
+  active: { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
+  expired: { label: 'Expirée', className: 'text-[10px] border bg-gray-100 text-gray-500 border-gray-200' },
+  closed: { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
 }
 
-const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#6366F1]'
 
 export default function CollecteDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -57,7 +57,7 @@ export default function CollecteDetailPage() {
   const queryClient = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const canEdit  = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
   const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
 
   // ── Contribution state ────────────────────────────────────────────────────
@@ -66,7 +66,7 @@ export default function CollecteDetailPage() {
   const [contribError, setContribError] = useState<string | null>(null)
 
   // ── Admin actions state ───────────────────────────────────────────────────
-  const [closeOpen, setCloseOpen]     = useState(false)
+  const [closeOpen, setCloseOpen] = useState(false)
   const [archiveOpen, setArchiveOpen] = useState(false)
 
   // ── Edit state ────────────────────────────────────────────────────────────
@@ -205,11 +205,11 @@ export default function CollecteDetailPage() {
     }
 
     updateCollecte({
-      title:            editForm.title || undefined,
+      title: editForm.title || undefined,
       beneficiary_name: editForm.beneficiary_name || undefined,
-      photo_url:        photo_url,
-      description:      editForm.description || undefined,
-      min_amount:       Number(editForm.min_amount) || undefined,
+      photo_url: photo_url,
+      description: editForm.description || undefined,
+      min_amount: Number(editForm.min_amount) || undefined,
     })
   }
 
@@ -234,7 +234,7 @@ export default function CollecteDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[#C8A96E] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -260,7 +260,7 @@ export default function CollecteDetailPage() {
           <div className="w-20 h-20 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
             {collecte.photo_url
               ? <img src={collecte.photo_url} alt={collecte.beneficiary_name} className="w-full h-full object-cover" />
-              : <Heart size={30} className="text-[#C8A96E]" />
+              : <Heart size={30} className="text-[#06B6D4]" />
             }
           </div>
 
@@ -282,7 +282,7 @@ export default function CollecteDetailPage() {
                 {canEdit && !collecte.is_archived && (
                   <button
                     onClick={openEditModal}
-                    className="p-1.5 rounded-md text-[#9B928B] hover:text-[#C8A96E] hover:bg-[#F0EBE2] transition-colors"
+                    className="p-1.5 rounded-md text-[#9B928B] hover:text-[#06B6D4] hover:bg-[#F0EBE2] transition-colors"
                     title="Modifier"
                   >
                     <Pencil size={14} />
@@ -327,19 +327,19 @@ export default function CollecteDetailPage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 text-center">
-          <p className="text-2xl font-bold text-[#C8A96E]">{fmtEur(collecte.total_collected)}</p>
+          <p className="text-2xl font-bold text-[#06B6D4]">{fmtEur(collecte.total_collected)}</p>
           <p className="text-xs text-[#9B928B] mt-1">Total collecté</p>
         </div>
         <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
-            <Users size={14} className="text-[#C8A96E]" />
+            <Users size={14} className="text-[#06B6D4]" />
             <p className="text-2xl font-bold text-[#1a1a1a]">{collecte.contributors_count}</p>
           </div>
           <p className="text-xs text-[#9B928B] mt-1">Contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
         </div>
         <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
-            <Clock size={14} className="text-[#C8A96E]" />
+            <Clock size={14} className="text-[#06B6D4]" />
             <p className="text-2xl font-bold text-[#1a1a1a]">
               {collecte.is_active ? remaining : '—'}
             </p>
@@ -358,7 +358,7 @@ export default function CollecteDetailPage() {
         <Dialog open={openContrib} onOpenChange={next => { if (!next) closeContribModal(); else setOpenContrib(true) }}>
           <Button
             onClick={() => setOpenContrib(true)}
-            className="w-full bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-2 py-5 text-base"
+            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-2 py-5 text-base"
           >
             <HandCoins size={18} />
             Contribuer — minimum {fmtEur(collecte.min_amount)}
@@ -407,7 +407,7 @@ export default function CollecteDetailPage() {
                 <Button
                   type="submit"
                   disabled={contribPending}
-                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                 >
                   {contribPending ? 'Envoi…' : 'Confirmer'}
                 </Button>
@@ -462,7 +462,7 @@ export default function CollecteDetailPage() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-[rgba(0,0,0,0.15)] text-xs text-[#9B928B] hover:border-[#C8A96E] hover:text-[#C8A96E] transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-[rgba(0,0,0,0.15)] text-xs text-[#9B928B] hover:border-[#6366F1] hover:text-[#6366F1] transition-colors"
                 >
                   <ImagePlus size={14} />
                   Choisir une photo
@@ -476,7 +476,7 @@ export default function CollecteDetailPage() {
                 value={editForm.description}
                 onChange={editField('description')}
                 rows={3}
-                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#6366F1] resize-none"
               />
             </div>
 
@@ -587,7 +587,7 @@ export default function CollecteDetailPage() {
                   <p className="text-sm font-medium text-[#1a1a1a]">{c.member_name}</p>
                   <p className="text-xs text-[#9B928B]">{fmtDateTime(c.contributed_at)}</p>
                 </div>
-                <p className="text-sm font-semibold text-[#C8A96E]">{fmtEur(c.amount)}</p>
+                <p className="text-sm font-semibold text-[#06B6D4]">{fmtEur(c.amount)}</p>
               </li>
             ))}
           </ul>

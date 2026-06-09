@@ -8,21 +8,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
 
-const inputCls = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
 type TokenState = 'loading' | 'valid' | 'invalid'
 
 export default function RejoindreTokenPage() {
-  const params    = useParams<{ token: string }>()
-  const router    = useRouter()
-  const token     = params.token
+  const params = useParams<{ token: string }>()
+  const router = useRouter()
+  const token = params.token
 
   const [tokenState, setTokenState] = useState<TokenState>('loading')
-  const [email, setEmail]           = useState('')
-  const [form, setForm]             = useState({ first_name: '', last_name: '', phone: '', password: '', confirm: '' })
-  const [error, setError]           = useState('')
-  const [loading, setLoading]       = useState(false)
-  const [done, setDone]             = useState(false)
+  const [email, setEmail] = useState('')
+  const [form, setForm] = useState({ first_name: '', last_name: '', phone: '', password: '', confirm: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
     invites.check(token)
@@ -47,9 +47,9 @@ export default function RejoindreTokenPage() {
       await auth.register({
         token,
         first_name: form.first_name,
-        last_name:  form.last_name,
-        phone:      form.phone || undefined,
-        password:   form.password,
+        last_name: form.last_name,
+        phone: form.phone || undefined,
+        password: form.password,
       })
       setDone(true)
       setTimeout(() => router.push('/login'), 2500)
@@ -70,15 +70,15 @@ export default function RejoindreTokenPage() {
         <div className="bg-white rounded-2xl shadow-md border border-[rgba(200,169,110,0.18)] p-8 space-y-6">
 
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#2D5016] mb-4">
-              <span className="text-2xl font-bold text-[#C8A96E]">M</span>
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
+              <span className="text-2xl font-bold text-primary">M</span>
             </div>
             <h1 className="text-xl font-semibold text-[#1a1a1a] tracking-wide">Rejoindre l'association</h1>
           </div>
 
           {tokenState === 'loading' && (
             <div className="flex justify-center py-6">
-              <Loader2 size={24} className="animate-spin text-[#C8A96E]" />
+              <Loader2 size={24} className="animate-spin text-primary" />
             </div>
           )}
 

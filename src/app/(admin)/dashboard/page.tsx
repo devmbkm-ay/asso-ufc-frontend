@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CalendarDays, Users } from 'lucide-react'
+import { avatarColor } from '@/lib/utils'
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -44,10 +45,10 @@ export default function DashboardPage() {
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">
+        <h1 className="text-2xl font-semibold text-slate-800">
           {greeting}, {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-[#6B6560] mt-0.5">
+        <p className="text-sm text-slate-400 mt-0.5">
           {today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
@@ -79,36 +80,36 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Derniers membres */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Users size={15} className="text-[#C8A96E]" />
-              <h2 className="text-sm font-semibold text-[#1a1a1a]">Derniers membres</h2>
+              <Users size={15} className="text-[#6366F1]" />
+              <h2 className="text-sm font-semibold text-slate-800">Derniers membres</h2>
             </div>
-            <a href="/membres" className="text-xs text-[#C8A96E] hover:underline">Voir tous</a>
+            <a href="/membres" className="text-xs text-[#6366F1] hover:underline">Voir tous</a>
           </div>
           <ul className="space-y-3">
             {membersData?.items.map(m => {
               const st = STATUS_LABEL[m.status]
               return (
                 <li key={m.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
-                    <span className="text-xs font-semibold text-white">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
+                    <span className="text-xs font-semibold">
                       {m.first_name[0]}{m.last_name[0]}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                    <p className="text-sm font-medium text-slate-800 truncate">
                       {m.first_name} {m.last_name}
                     </p>
-                    <p className="text-xs text-[#9B928B]">Inscrit le {fmtDate(m.joined_at)}</p>
+                    <p className="text-xs text-slate-400">Inscrit le {fmtDate(m.joined_at)}</p>
                   </div>
                   <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
                 </li>
               )
             })}
             {!membersData && (
-              <li className="text-sm text-[#9B928B] text-center py-4">Chargement…</li>
+              <li className="text-sm text-slate-400 text-center py-4">Chargement…</li>
             )}
           </ul>
         </div>
@@ -127,10 +128,10 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
+          <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
             <div className="flex items-center gap-2 mb-4">
-              <CalendarDays size={15} className="text-[#C8A96E]" />
-              <h2 className="text-sm font-semibold text-[#1a1a1a]">Événements à venir</h2>
+              <CalendarDays size={15} className="text-[#6366F1]" />
+              <h2 className="text-sm font-semibold text-slate-800">Événements à venir</h2>
             </div>
             <ul className="space-y-3">
               {upcomingEvents?.slice(0, 3).map(ev => {
@@ -138,21 +139,21 @@ export default function DashboardPage() {
                 return (
                   <li key={ev.id} className="flex gap-3">
                     <div className="text-center w-10 shrink-0">
-                      <p className="text-lg font-bold text-[#C8A96E] leading-none">{d.getDate()}</p>
-                      <p className="text-[10px] text-[#9B928B] uppercase">{MONTH_FR[d.getMonth()]}</p>
+                      <p className="text-lg font-bold text-[#6366F1] leading-none">{d.getDate()}</p>
+                      <p className="text-[10px] text-slate-400 uppercase">{MONTH_FR[d.getMonth()]}</p>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm text-[#1a1a1a] truncate">{ev.title}</p>
-                      <p className="text-xs text-[#9B928B]">{ev.registrations_count} inscrits</p>
+                      <p className="text-sm text-slate-800 truncate">{ev.title}</p>
+                      <p className="text-xs text-slate-400">{ev.registrations_count} inscrits</p>
                     </div>
                   </li>
                 )
               })}
               {upcomingEvents?.length === 0 && (
-                <li className="text-xs text-[#9B928B]">Aucun événement à venir</li>
+                <li className="text-xs text-slate-400">Aucun événement à venir</li>
               )}
               {!upcomingEvents && (
-                <li className="text-xs text-[#9B928B]">Chargement…</li>
+                <li className="text-xs text-slate-400">Chargement…</li>
               )}
             </ul>
           </div>

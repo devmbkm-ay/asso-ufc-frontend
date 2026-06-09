@@ -37,7 +37,7 @@ const COLLECTE_STATUS_BADGE: Record<string, string> = {
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const FIELD = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -183,15 +183,15 @@ export default function EvenementsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Événements</h1>
-          <p className="text-sm text-[#6B6560] mt-0.5">
+          <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             {data ? `${data.length} événement${data.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
         {canWrite && (
           <Button
             onClick={() => { setCreateOpen(true); setCreateError(null) }}
-            className="bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-1.5 shrink-0"
+            className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
           >
             <Plus size={14} />
             Nouvel événement
@@ -203,8 +203,8 @@ export default function EvenementsPage() {
       {activeCollectes && activeCollectes.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <Heart size={13} className="text-[#C8A96E]" />
-            <h2 className="text-xs font-semibold tracking-widest text-[#6B6560] uppercase">
+            <Heart size={13} className="text-[#6366F1]" />
+            <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">
               Annonces en cours
             </h2>
           </div>
@@ -215,27 +215,27 @@ export default function EvenementsPage() {
                 <Link
                   key={c.id}
                   href={`/collectes/${c.id}`}
-                  className="shrink-0 w-56 bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 hover:border-[rgba(200,169,110,0.4)] transition-colors"
+                  className="shrink-0 w-56 bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 hover:border-[rgba(99,102,241,0.35)] transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden bg-[#F0EBE2] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
                       {c.photo_url
                         ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
-                        : <Heart size={16} className="text-[#C8A96E]" />
+                        : <Heart size={16} className="text-[#6366F1]" />
                       }
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-[#1a1a1a] truncate">{c.title}</p>
-                      <p className="text-[10px] text-[#9B928B] truncate">{c.beneficiary_name}</p>
+                      <p className="text-xs font-semibold text-slate-800 truncate">{c.title}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{c.beneficiary_name}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-xs text-[#C8A96E] font-semibold">
+                    <div className="flex items-center gap-1 text-xs text-[#6366F1] font-semibold">
                       <HandCoins size={11} />
                       {fmtEur(c.total_collected)}
                     </div>
                     {c.status === 'active' ? (
-                      <span className="text-[10px] text-[#9B928B]">
+                      <span className="text-[10px] text-slate-400">
                         {remaining}j restant{remaining > 1 ? 's' : ''}
                       </span>
                     ) : (
@@ -252,7 +252,7 @@ export default function EvenementsPage() {
       )}
 
       {/* Filtres */}
-      <div className="flex gap-1 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 w-fit">
         {STATUS_TABS.map(t => (
           <button
             key={t.value}
@@ -260,8 +260,8 @@ export default function EvenementsPage() {
             className={cn(
               'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
               statusFilter === t.value
-                ? 'bg-[#C8A96E]/20 text-[#8B6B30]'
-                : 'text-[#7A726B] hover:text-[#1a1a1a]',
+                ? 'bg-indigo-100 text-[#6366F1]'
+                : 'text-slate-500 hover:text-slate-800',
             )}
           >
             {t.label}
@@ -272,10 +272,10 @@ export default function EvenementsPage() {
       {/* Liste événements */}
       <div className="space-y-3">
         {isLoading && (
-          <div className="py-12 text-center text-[#9B928B] text-sm">Chargement…</div>
+          <div className="py-12 text-center text-slate-400 text-sm">Chargement…</div>
         )}
         {!isLoading && data?.length === 0 && (
-          <div className="py-12 text-center text-[#9B928B] text-sm">Aucun événement</div>
+          <div className="py-12 text-center text-slate-400 text-sm">Aucun événement</div>
         )}
         {data?.map(ev => {
           const d = new Date(ev.event_date)
@@ -284,23 +284,23 @@ export default function EvenementsPage() {
           return (
             <div
               key={ev.id}
-              className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 flex gap-5 hover:border-[rgba(200,169,110,0.35)] transition-colors"
+              className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex gap-5 hover:border-[rgba(99,102,241,0.30)] transition-colors"
             >
               <div className="text-center w-12 shrink-0 pt-0.5">
-                <p className="text-2xl font-bold text-[#C8A96E] leading-none">{d.getDate()}</p>
-                <p className="text-[10px] text-[#9B928B] uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
-                <p className="text-[10px] text-[#B0A9A2] mt-0.5">{d.getFullYear()}</p>
+                <p className="text-2xl font-bold text-[#6366F1] leading-none">{d.getDate()}</p>
+                <p className="text-[10px] text-slate-400 uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">{d.getFullYear()}</p>
               </div>
 
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <h3 className="text-sm font-semibold text-[#1a1a1a]">{ev.title}</h3>
+                  <h3 className="text-sm font-semibold text-slate-800">{ev.title}</h3>
                   <div className="flex items-center gap-1.5 shrink-0">
                     <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
                     {canWrite && ev.status !== 'cancelled' && (
                       <button
                         onClick={() => openEdit(ev)}
-                        className="p-1.5 rounded-md text-[#B0A9A2] hover:text-[#C8A96E] hover:bg-[#F0EBE2] transition-colors"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
                         title="Modifier"
                       >
                         <Pencil size={12} />
@@ -309,7 +309,7 @@ export default function EvenementsPage() {
                     {canAdmin && ev.status !== 'cancelled' && (
                       <button
                         onClick={() => setCancelTarget(ev)}
-                        className="p-1.5 rounded-md text-[#B0A9A2] hover:text-red-500 hover:bg-red-50 transition-colors"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                         title="Annuler l'événement"
                       >
                         <X size={12} />
@@ -318,24 +318,24 @@ export default function EvenementsPage() {
                   </div>
                 </div>
                 {ev.description && (
-                  <p className="text-xs text-[#7A726B] line-clamp-2">{ev.description}</p>
+                  <p className="text-xs text-slate-500 line-clamp-2">{ev.description}</p>
                 )}
-                <div className="flex flex-wrap gap-4 text-xs text-[#9B928B]">
+                <div className="flex flex-wrap gap-4 text-xs text-slate-400">
                   {ev.location && (
                     <div className="flex items-center gap-1.5">
-                      <MapPin size={11} className="text-[#C8A96E]" />
+                      <MapPin size={11} className="text-[#6366F1]" />
                       {ev.location}
                     </div>
                   )}
                   <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-600')}>
-                    <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-[#C8A96E]'} />
+                    <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-[#6366F1]'} />
                     {ev.registrations_count} inscrit{ev.registrations_count > 1 ? 's' : ''}
                     {ev.capacity && ` / ${ev.capacity}`}
                     {capacityFull && ' · Complet'}
                   </div>
                   {ev.ticket_price > 0 && (
                     <div className="flex items-center gap-1.5">
-                      <Ticket size={11} className="text-[#C8A96E]" />
+                      <Ticket size={11} className="text-[#6366F1]" />
                       {fmtEur(ev.ticket_price)}
                     </div>
                   )}
@@ -348,50 +348,50 @@ export default function EvenementsPage() {
 
       {/* ── Modale création ─────────────────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={open => { if (!open) { setCreateOpen(false); setCreateForm(EMPTY_CREATE); setCreateError(null) } }}>
-        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#1a1a1a]">Nouvel événement</DialogTitle>
+            <DialogTitle className="text-slate-800">Nouvel événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Titre *</label>
+              <label className="text-xs text-slate-500">Titre *</label>
               <Input value={createForm.title} onChange={cf('title')} required placeholder="Tournoi de judo — juin 2026" className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Date *</label>
+              <label className="text-xs text-slate-500">Date *</label>
               <Input type="date" value={createForm.event_date} onChange={cf('event_date')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Lieu <span className="text-[#B0A9A2]">(optionnel)</span></label>
+              <label className="text-xs text-slate-500">Lieu <span className="text-slate-400">(optionnel)</span></label>
               <Input value={createForm.location} onChange={cf('location')} placeholder="Salle Mboka, Bordeaux" className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Description <span className="text-[#B0A9A2]">(optionnel)</span></label>
+              <label className="text-xs text-slate-500">Description <span className="text-slate-400">(optionnel)</span></label>
               <textarea
                 value={createForm.description}
                 onChange={cf('description')}
                 rows={3}
                 placeholder="Décrivez l'événement…"
-                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Capacité max</label>
+                <label className="text-xs text-slate-500">Capacité max</label>
                 <Input type="number" min={1} value={createForm.capacity} onChange={cf('capacity')} placeholder="—" className={FIELD} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Prix billet (€)</label>
+                <label className="text-xs text-slate-500">Prix billet (€)</label>
                 <Input type="number" min={0} step="0.01" value={createForm.ticket_price} onChange={cf('ticket_price')} className={FIELD} />
               </div>
             </div>
-            <p className="text-xs text-[#9B928B]">L'événement sera créé en brouillon. Publiez-le depuis la liste pour ouvrir les inscriptions.</p>
+            <p className="text-xs text-slate-400">L'événement sera créé en brouillon. Publiez-le depuis la liste pour ouvrir les inscriptions.</p>
             {createError && (
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{createError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={creating} className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={creating} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
                 {creating ? 'Création…' : 'Créer'}
               </Button>
             </DialogFooter>
@@ -401,48 +401,48 @@ export default function EvenementsPage() {
 
       {/* ── Modale édition ──────────────────────────────────────────────────── */}
       <Dialog open={!!editTarget} onOpenChange={open => { if (!open) setEditTarget(null) }}>
-        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-md">
+        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#1a1a1a]">Modifier l'événement</DialogTitle>
+            <DialogTitle className="text-slate-800">Modifier l'événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Titre *</label>
+              <label className="text-xs text-slate-500">Titre *</label>
               <Input value={editForm.title} onChange={ef('title')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Date *</label>
+              <label className="text-xs text-slate-500">Date *</label>
               <Input type="date" value={editForm.event_date} onChange={ef('event_date')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Lieu</label>
+              <label className="text-xs text-slate-500">Lieu</label>
               <Input value={editForm.location} onChange={ef('location')} className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Description</label>
+              <label className="text-xs text-slate-500">Description</label>
               <textarea
                 value={editForm.description}
                 onChange={ef('description')}
                 rows={3}
-                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:outline-none focus:border-[#C8A96E] resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Capacité max</label>
+                <label className="text-xs text-slate-500">Capacité max</label>
                 <Input type="number" min={1} value={editForm.capacity} onChange={ef('capacity')} placeholder="—" className={FIELD} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-[#6B6560]">Prix billet (€)</label>
+                <label className="text-xs text-slate-500">Prix billet (€)</label>
                 <Input type="number" min={0} step="0.01" value={editForm.ticket_price} onChange={ef('ticket_price')} className={FIELD} />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-[#6B6560]">Statut</label>
+              <label className="text-xs text-slate-500">Statut</label>
               <select
                 value={editForm.status}
                 onChange={ef('status')}
-                className="w-full rounded-md border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#C8A96E]"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
               >
                 <option value="draft">Brouillon</option>
                 <option value="published">Publié</option>
@@ -453,8 +453,8 @@ export default function EvenementsPage() {
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{editError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={updating} className="bg-[#C8A96E] hover:bg-[#b8994e] text-white">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={updating} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
                 {updating ? 'Sauvegarde…' : 'Enregistrer'}
               </Button>
             </DialogFooter>
@@ -464,18 +464,18 @@ export default function EvenementsPage() {
 
       {/* ── Confirmation annulation ─────────────────────────────────────────── */}
       <Dialog open={!!cancelTarget} onOpenChange={open => { if (!open) setCancelTarget(null) }}>
-        <DialogContent className="bg-white border-[rgba(0,0,0,0.08)] sm:max-w-sm">
+        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-[#1a1a1a] flex items-center gap-2">
+            <DialogTitle className="text-slate-800 flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
               Annuler l'événement
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-[#6B6560] mt-1">
-            L'événement <span className="font-semibold text-[#1a1a1a]">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
+          <p className="text-sm text-slate-500 mt-1">
+            L'événement <span className="font-semibold text-slate-800">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
           </p>
           <DialogFooter className="gap-2 mt-4">
-            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent">Retour</Button>
+            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-slate-200 text-slate-500 bg-transparent">Retour</Button>
             <Button
               disabled={cancelling}
               onClick={() => cancelTarget && cancelEvent(cancelTarget.id)}

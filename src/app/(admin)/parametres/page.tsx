@@ -9,16 +9,16 @@ import { CheckCircle2, AlertCircle, User, Phone, MapPin } from 'lucide-react'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-const inputCls = 'bg-white border-[rgba(0,0,0,0.12)] text-[#1a1a1a] placeholder:text-[#B0A9A2] focus:border-[#C8A96E] h-9 text-sm'
+const inputCls = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1] h-9 text-sm'
 
 export default function ParametresPage() {
   const { user } = useAuth()
 
   const [form, setForm] = useState({
     first_name: user?.first_name ?? '',
-    last_name:  user?.last_name  ?? '',
-    phone:      user?.phone   ?? '',
-    address:    user?.address ?? '',
+    last_name: user?.last_name ?? '',
+    phone: user?.phone ?? '',
+    address: user?.address ?? '',
   })
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -36,9 +36,9 @@ export default function ParametresPage() {
     try {
       await members.update(user.id, {
         first_name: form.first_name,
-        last_name:  form.last_name,
-        phone:      form.phone || undefined,
-        address:    form.address || undefined,
+        last_name: form.last_name,
+        phone: form.phone || undefined,
+        address: form.address || undefined,
       })
       setStatus('success')
       setTimeout(() => setStatus('idle'), 3000)
@@ -51,35 +51,35 @@ export default function ParametresPage() {
   return (
     <div className="p-8 max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Paramètres</h1>
-        <p className="text-sm text-[#6B6560] mt-1">Gérez votre profil et vos informations de contact.</p>
+        <h1 className="text-2xl font-semibold text-slate-800">Paramètres</h1>
+        <p className="text-sm text-slate-400 mt-1">Gérez votre profil et vos informations de contact.</p>
       </div>
 
-      <div className="bg-white mboka-card border rounded-xl p-5 flex items-center gap-4 shadow-sm">
-        <div className="w-14 h-14 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
+      <div className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-5 flex items-center gap-4 shadow-sm">
+        <div className="w-14 h-14 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0">
           <span className="text-xl font-bold text-white">
             {user?.first_name?.[0]}{user?.last_name?.[0]}
           </span>
         </div>
         <div>
-          <p className="text-sm font-semibold text-[#1a1a1a]">{user?.first_name} {user?.last_name}</p>
-          <p className="text-xs text-[#6B6560]">{user?.email}</p>
-          <p className="text-xs text-[#C8A96E] mt-0.5">{((user?.roles ?? []) as string[])[0] ?? 'Membre'}</p>
+          <p className="text-sm font-semibold text-slate-800">{user?.first_name} {user?.last_name}</p>
+          <p className="text-xs text-slate-400">{user?.email}</p>
+          <p className="text-xs text-[#6366F1] mt-0.5">{((user?.roles ?? []) as string[])[0] ?? 'Membre'}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white mboka-card border rounded-xl p-6 space-y-5 shadow-sm">
-        <p className="text-xs font-semibold tracking-widest text-[#9B928B] uppercase">Informations personnelles</p>
+      <form onSubmit={handleSubmit} className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-6 space-y-5 shadow-sm">
+        <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Informations personnelles</p>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-[#6B6560] flex items-center gap-1.5">
+            <label className="text-xs text-slate-500 flex items-center gap-1.5">
               <User size={11} />Prénom
             </label>
             <Input value={form.first_name} onChange={set('first_name')} required className={inputCls} />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-[#6B6560] flex items-center gap-1.5">
+            <label className="text-xs text-slate-500 flex items-center gap-1.5">
               <User size={11} />Nom
             </label>
             <Input value={form.last_name} onChange={set('last_name')} required className={inputCls} />
@@ -87,23 +87,23 @@ export default function ParametresPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs text-[#6B6560] flex items-center gap-1.5">
+          <label className="text-xs text-slate-500 flex items-center gap-1.5">
             <Phone size={11} />Téléphone
           </label>
           <Input value={form.phone} onChange={set('phone')} placeholder="+33 6 00 00 00 00" type="tel" className={inputCls} />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs text-[#6B6560] flex items-center gap-1.5">
+          <label className="text-xs text-slate-500 flex items-center gap-1.5">
             <MapPin size={11} />Adresse
           </label>
           <Input value={form.address} onChange={set('address')} placeholder="12 rue des Lilas, 75010 Paris" className={inputCls} />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs text-[#6B6560]">Email</label>
+          <label className="text-xs text-slate-500">Email</label>
           <Input value={user?.email ?? ''} disabled className={`${inputCls} opacity-50 cursor-not-allowed`} />
-          <p className="text-[11px] text-[#B0A9A2]">L'email ne peut pas être modifié pour l'instant.</p>
+          <p className="text-[11px] text-slate-400">L'email ne peut pas être modifié pour l'instant.</p>
         </div>
 
         {status === 'success' && (
@@ -123,15 +123,15 @@ export default function ParametresPage() {
           type="submit"
           disabled={status === 'loading'}
           size="sm"
-          className="bg-[#C8A96E] hover:bg-[#b8955a] text-white font-semibold"
+          className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-semibold"
         >
           {status === 'loading' ? 'Sauvegarde…' : 'Enregistrer les modifications'}
         </Button>
       </form>
 
-      <div className="bg-white mboka-card border border-red-200 rounded-xl p-5 space-y-3 shadow-sm">
-        <p className="text-xs font-semibold tracking-widest text-[#9B928B] uppercase">Zone sensible</p>
-        <p className="text-xs text-[#7A726B]">La suppression de compte et la réinitialisation du mot de passe seront disponibles dans une prochaine version.</p>
+      <div className="bg-white border border-red-200 rounded-xl p-5 space-y-3 shadow-sm">
+        <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Zone sensible</p>
+        <p className="text-xs text-slate-500">La suppression de compte et la réinitialisation du mot de passe seront disponibles dans une prochaine version.</p>
       </div>
     </div>
   )

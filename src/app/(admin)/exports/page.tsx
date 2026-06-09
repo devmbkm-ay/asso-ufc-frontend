@@ -28,14 +28,14 @@ function ExportCard({
   children?: React.ReactNode
 }) {
   return (
-    <div className="bg-white mboka-card border rounded-xl p-6 space-y-4 shadow-sm">
+    <div className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-6 space-y-4 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-lg bg-[#C8A96E]/10 flex items-center justify-center shrink-0">
-          <Icon size={18} className="text-[#C8A96E]" />
+        <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+          <Icon size={18} className="text-[#6366F1]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[#1a1a1a]">{title}</p>
-          <p className="text-xs text-[#6B6560] mt-0.5">{description}</p>
+          <p className="text-sm font-semibold text-slate-800">{title}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ function ExportCard({
         onClick={onExport}
         disabled={status === 'loading'}
         size="sm"
-        className="bg-[#C8A96E] hover:bg-[#b8955a] text-white font-semibold gap-2"
+        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-semibold gap-2"
       >
         <Download size={14} />
         {status === 'loading' ? 'Export en cours…' : 'Télécharger CSV'}
@@ -183,8 +183,8 @@ export default function ExportsPage() {
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Exports</h1>
-        <p className="text-sm text-[#6B6560] mt-1">Téléchargez vos données en format CSV, prêtes pour Excel ou Google Sheets.</p>
+        <h1 className="text-2xl font-semibold text-slate-800">Exports</h1>
+        <p className="text-sm text-slate-400 mt-1">Téléchargez vos données en format CSV, prêtes pour Excel ou Google Sheets.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -197,11 +197,11 @@ export default function ExportsPage() {
           errorMsg={cotisError}
         >
           <div className="flex items-center gap-2">
-            <label className="text-xs text-[#6B6560] shrink-0">Année</label>
+            <label className="text-xs text-slate-500 shrink-0">Année</label>
             <select
               value={cotisYear}
               onChange={e => setCotisYear(Number(e.target.value))}
-              className="text-xs bg-[#F0EBE2] border border-[rgba(0,0,0,0.10)] text-[#1a1a1a] rounded-md px-2 py-1 focus:outline-none focus:border-[#C8A96E]"
+              className="text-xs bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-2 py-1 focus:outline-none focus:border-[#6366F1]"
             >
               {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
@@ -236,7 +236,7 @@ export default function ExportsPage() {
         />
       </div>
 
-      <p className="text-xs text-[#B0A9A2] border-t border-[rgba(0,0,0,0.06)] pt-4">
+      <p className="text-xs text-slate-400 border-t border-slate-100 pt-4">
         Les fichiers sont encodés en UTF-8 avec BOM pour une compatibilité optimale avec Excel.
       </p>
     </div>
