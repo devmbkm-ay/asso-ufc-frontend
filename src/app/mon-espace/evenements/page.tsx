@@ -86,8 +86,8 @@ export default function EvenementsPage() {
         className={cn(
           'bg-white rounded-xl border shadow-sm p-5 space-y-4',
           isPast
-            ? 'border-[rgba(0,0,0,0.08)] opacity-75'
-            : 'border-[rgba(200,169,110,0.18)]',
+            ? 'border-slate-200 opacity-75'
+            : 'border-[rgba(99,102,241,0.15)]',
         )}
       >
         {/* Header */}
@@ -97,8 +97,8 @@ export default function EvenementsPage() {
               <Calendar size={16} className="text-blue-500" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1a1a1a]">{e.title}</p>
-              <p className="text-xs text-[#9B928B] mt-0.5 capitalize">{fmtDate(e.event_date)}</p>
+              <p className="text-sm font-semibold text-slate-800">{e.title}</p>
+              <p className="text-xs text-slate-400 mt-0.5 capitalize">{fmtDate(e.event_date)}</p>
             </div>
           </div>
 
@@ -110,7 +110,7 @@ export default function EvenementsPage() {
         </div>
 
         {/* Meta */}
-        <div className="flex flex-wrap gap-4 text-xs text-[#6B6560]">
+        <div className="flex flex-wrap gap-4 text-xs text-slate-500">
           {e.location && (
             <span className="flex items-center gap-1.5">
               <MapPin size={12} /> {e.location}
@@ -127,7 +127,7 @@ export default function EvenementsPage() {
         </div>
 
         {e.description && (
-          <p className="text-sm text-[#6B6560] leading-relaxed line-clamp-2">{e.description}</p>
+          <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{e.description}</p>
         )}
 
         {/* Error */}
@@ -144,12 +144,12 @@ export default function EvenementsPage() {
             {reg ? (
               <button
                 onClick={() => unregister({ eventId: e.id, regId: reg.id })}
-                className="text-xs text-[#9B928B] hover:text-red-500 transition-colors underline underline-offset-2"
+                className="text-xs text-slate-400 hover:text-red-500 transition-colors underline underline-offset-2"
               >
                 Se désinscrire
               </button>
             ) : isFull ? (
-              <span className="text-xs text-[#B0A9A2]">Complet</span>
+              <span className="text-xs text-slate-400">Complet</span>
             ) : (
               <Button
                 size="sm"
@@ -158,7 +158,7 @@ export default function EvenementsPage() {
                   register({ eventId: e.id })
                 }}
                 disabled={registeringId === e.id || loadingRegs}
-                className="bg-[#2D5016] hover:bg-[#3a6b1e] text-white gap-1.5"
+                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
               >
                 <CheckCircle2 size={13} />
                 {registeringId === e.id ? 'Inscription…' : "S'inscrire"}
@@ -175,22 +175,22 @@ export default function EvenementsPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Événements</h1>
-        <p className="text-sm text-[#6B6560] mt-1">
+        <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
+        <p className="text-sm text-slate-400 mt-1">
           {isLoading ? '—' : `${eventsList?.length ?? 0} événement${(eventsList?.length ?? 0) > 1 ? 's' : ''}`}
         </p>
       </div>
 
       {isLoading && (
-        <div className="py-12 text-center text-sm text-[#9B928B]">Chargement…</div>
+        <div className="py-12 text-center text-sm text-slate-400">Chargement…</div>
       )}
 
       {!isLoading && eventsList?.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <div className="w-12 h-12 rounded-full bg-[#F0EBE2] flex items-center justify-center">
-            <Calendar size={20} className="text-[#B0A9A2]" />
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+            <Calendar size={20} className="text-slate-400" />
           </div>
-          <p className="text-sm text-[#9B928B]">Aucun événement à venir pour le moment</p>
+          <p className="text-sm text-slate-400">Aucun événement à venir pour le moment</p>
         </div>
       )}
 
@@ -202,7 +202,7 @@ export default function EvenementsPage() {
 
       {past.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-[#B0A9A2] tracking-wider uppercase">Passés</p>
+          <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">Passés</p>
           {past.map(renderEvent)}
         </div>
       )}

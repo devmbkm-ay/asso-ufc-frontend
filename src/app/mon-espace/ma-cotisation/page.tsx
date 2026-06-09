@@ -95,8 +95,8 @@ export default function MaCotisationPage() {
     <div className="p-6 md:p-8 max-w-2xl space-y-6">
 
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Ma cotisation</h1>
-        <p className="text-sm text-[#6B6560] mt-1">Historique de vos paiements</p>
+        <h1 className="text-2xl font-semibold text-slate-800">Ma cotisation</h1>
+        <p className="text-sm text-slate-400 mt-1">Historique de vos paiements</p>
       </div>
 
       {/* Stats */}
@@ -111,9 +111,9 @@ export default function MaCotisationPage() {
           { label: `Total ${year}`,  value: fmtAmount(totalPaidThisYear) },
           { label: 'Total cumulé',   value: fmtAmount(totalAllTime) },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4 text-center">
-            <p className="text-lg font-bold text-[#1a1a1a]">{value}</p>
-            <p className="text-[10px] text-[#9B928B] mt-0.5">{label}</p>
+          <div key={label} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+            <p className="text-lg font-bold text-slate-800">{value}</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -137,14 +137,14 @@ export default function MaCotisationPage() {
                 className="flex items-center justify-between gap-3 bg-white border border-amber-200 rounded-lg px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-[#1a1a1a]">{p.plan_label}</p>
-                  <p className="text-xs text-[#9B928B]">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
+                  <p className="text-xs text-slate-400">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <Button
                   size="sm"
                   onClick={() => { setConfirmingId(p.id); confirmPayment(p.id) }}
                   disabled={confirmingId === p.id}
-                  className="bg-[#2D5016] hover:bg-[#3a6820] text-white gap-1.5 shrink-0"
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
                 >
                   <CheckCircle2 size={13} />
                   {confirmingId === p.id ? 'En cours…' : "J'ai réglé"}
@@ -174,8 +174,8 @@ export default function MaCotisationPage() {
                 className="flex items-center justify-between gap-3 bg-white border border-blue-200 rounded-lg px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-[#1a1a1a]">{p.plan_label}</p>
-                  <p className="text-xs text-[#9B928B]">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
+                  <p className="text-xs text-slate-400">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
                   En vérification
@@ -188,18 +188,18 @@ export default function MaCotisationPage() {
 
       {/* Couverture mensuelle (seulement pour plans mensuels) */}
       {isMonthlyPlan && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-[#1a1a1a]">Couverture {year}</h2>
-            <div className="flex items-center gap-1.5 bg-[#F0EBE2] border border-[rgba(0,0,0,0.08)] rounded-lg px-2 py-1">
-              <button onClick={() => setYear(y => y - 1)} className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors">
+            <h2 className="text-sm font-semibold text-slate-800">Couverture {year}</h2>
+            <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2 py-1">
+              <button onClick={() => setYear(y => y - 1)} className="text-slate-400 hover:text-slate-800 transition-colors">
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-[#1a1a1a] w-10 text-center select-none">{year}</span>
+              <span className="text-xs font-medium text-slate-800 w-10 text-center select-none">{year}</span>
               <button
                 onClick={() => setYear(y => y + 1)}
                 disabled={year >= CURRENT_YEAR}
-                className="text-[#9B928B] hover:text-[#1a1a1a] transition-colors disabled:opacity-30"
+                className="text-slate-400 hover:text-slate-800 transition-colors disabled:opacity-30"
               >
                 <ChevronRight size={14} />
               </button>
@@ -216,12 +216,12 @@ export default function MaCotisationPage() {
                   <div className={cn(
                     'w-full aspect-square rounded flex items-center justify-center text-[9px] font-semibold transition-colors',
                     paid    ? 'bg-emerald-500 text-white'
-                    : future ? 'bg-[#F0EBE2] text-[#D0C9C2]'
+                    : future ? 'bg-slate-100 text-slate-300'
                     :          'bg-red-100 text-red-300',
                   )}>
                     {paid ? '✓' : future ? '' : '✗'}
                   </div>
-                  <span className="text-[8px] text-[#B0A9A2] hidden sm:block">{m}</span>
+                  <span className="text-[8px] text-slate-400 hidden sm:block">{m}</span>
                 </div>
               )
             })}
@@ -230,24 +230,24 @@ export default function MaCotisationPage() {
       )}
 
       {/* Historique (confirmés + annulés) */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
-          <h2 className="text-sm font-semibold text-[#1a1a1a]">Paiements {year}</h2>
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100">
+          <h2 className="text-sm font-semibold text-slate-800">Paiements {year}</h2>
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-[#9B928B]">Chargement…</div>
+          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
         )}
 
         {!isLoading && displayedYear.length === 0 && pendingYear.length === 0 && declaredYear.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <CreditCard size={24} className="text-[#D8CFC8]" />
-            <p className="text-sm text-[#9B928B]">Aucun paiement enregistré pour {year}</p>
+            <CreditCard size={24} className="text-slate-300" />
+            <p className="text-sm text-slate-400">Aucun paiement enregistré pour {year}</p>
           </div>
         )}
 
         {!isLoading && displayedYear.length === 0 && (pendingYear.length > 0 || declaredYear.length > 0) && (
-          <div className="px-5 py-6 text-center text-sm text-[#9B928B]">
+          <div className="px-5 py-6 text-center text-sm text-slate-400">
             Aucun paiement confirmé pour {year}
           </div>
         )}
@@ -256,28 +256,28 @@ export default function MaCotisationPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[rgba(0,0,0,0.06)]">
+                <tr className="border-b border-slate-100">
                   {['Période', 'Plan', 'Méthode', 'Date', 'Montant', 'Statut'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-[#9B928B] uppercase tracking-wider">
+                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(0,0,0,0.04)]">
+              <tbody className="divide-y divide-slate-100">
                 {displayedYear.map(p => {
                   const meta = STATUS_META[p.status] ?? STATUS_META.pending
                   return (
-                    <tr key={p.id} className="hover:bg-[rgba(0,0,0,0.015)]">
-                      <td className="px-4 py-3 text-[#1a1a1a] font-medium whitespace-nowrap">
+                    <tr key={p.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 text-slate-800 font-medium whitespace-nowrap">
                         {periodLabel(p)}
                       </td>
-                      <td className="px-4 py-3 text-[#6B6560] whitespace-nowrap">{p.plan_label}</td>
-                      <td className="px-4 py-3 text-[#6B6560] whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{p.plan_label}</td>
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                         {METHOD_LABELS[p.method] ?? p.method}
                       </td>
-                      <td className="px-4 py-3 text-[#9B928B] whitespace-nowrap">{fmtDate(p.payment_date)}</td>
-                      <td className="px-4 py-3 font-semibold text-[#1a1a1a] whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
+                      <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{fmtDate(p.payment_date)}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
                       <td className="px-4 py-3">
                         <span className={cn(
                           'text-[10px] font-medium px-2 py-0.5 rounded-full border',

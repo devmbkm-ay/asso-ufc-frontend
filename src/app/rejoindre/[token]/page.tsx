@@ -67,13 +67,13 @@ export default function RejoindreTokenPage() {
   return (
     <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl shadow-md border border-[rgba(200,169,110,0.18)] p-8 space-y-6">
+        <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
               <span className="text-2xl font-bold text-primary">M</span>
             </div>
-            <h1 className="text-xl font-semibold text-[#1a1a1a] tracking-wide">Rejoindre l'association</h1>
+            <h1 className="text-xl font-semibold text-card-foreground tracking-wide">Rejoindre l'association</h1>
           </div>
 
           {tokenState === 'loading' && (
@@ -85,11 +85,11 @@ export default function RejoindreTokenPage() {
           {tokenState === 'invalid' && (
             <div className="text-center space-y-3 py-2">
               <XCircle size={40} className="mx-auto text-red-400" />
-              <p className="text-sm font-medium text-[#1a1a1a]">Lien invalide ou expiré</p>
-              <p className="text-xs text-[#9B928B]">
+              <p className="text-sm font-medium text-card-foreground">Lien invalide ou expiré</p>
+              <p className="text-xs text-muted-foreground">
                 Ce lien d'invitation n'est plus valide. Contactez l'administrateur pour en obtenir un nouveau.
               </p>
-              <Link href="/login" className="block text-sm text-[#C8A96E] hover:underline mt-2">
+              <Link href="/login" className="block text-sm text-primary hover:underline mt-2">
                 Retour à la connexion
               </Link>
             </div>
@@ -98,45 +98,45 @@ export default function RejoindreTokenPage() {
           {tokenState === 'valid' && done && (
             <div className="text-center space-y-3 py-2">
               <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
-              <p className="text-sm font-medium text-[#1a1a1a]">Compte créé avec succès !</p>
-              <p className="text-xs text-[#9B928B]">Redirection vers la page de connexion…</p>
+              <p className="text-sm font-medium text-card-foreground">Compte créé avec succès !</p>
+              <p className="text-xs text-muted-foreground">Redirection vers la page de connexion…</p>
             </div>
           )}
 
           {tokenState === 'valid' && !done && (
             <>
-              <p className="text-sm text-center text-[#6B6560]">
-                Invitation pour <strong className="text-[#1a1a1a]">{email}</strong>
+              <p className="text-sm text-center text-muted-foreground">
+                Invitation pour <strong className="text-card-foreground">{email}</strong>
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#4a4540]">Prénom *</label>
+                    <label className="text-xs text-muted-foreground">Prénom *</label>
                     <Input value={form.first_name} onChange={set('first_name')}
                       placeholder="Marie" required className={inputCls} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#4a4540]">Nom *</label>
+                    <label className="text-xs text-muted-foreground">Nom *</label>
                     <Input value={form.last_name} onChange={set('last_name')}
                       placeholder="Dupont" required className={inputCls} />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#4a4540]">Téléphone</label>
+                  <label className="text-xs text-muted-foreground">Téléphone</label>
                   <Input value={form.phone} onChange={set('phone')}
                     placeholder="06 00 00 00 00" className={inputCls} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#4a4540]">Mot de passe *</label>
+                  <label className="text-xs text-muted-foreground">Mot de passe *</label>
                   <Input type="password" value={form.password} onChange={set('password')}
                     placeholder="8 caractères min, 1 chiffre" minLength={8} required className={inputCls} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#4a4540]">Confirmer *</label>
+                  <label className="text-xs text-muted-foreground">Confirmer *</label>
                   <Input type="password" value={form.confirm} onChange={set('confirm')}
                     placeholder="••••••••" required className={inputCls} />
                 </div>
@@ -150,15 +150,15 @@ export default function RejoindreTokenPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#2D5016] hover:bg-[#3a6820] text-white font-semibold h-11"
+                  className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
                 >
                   {loading ? 'Création…' : 'Créer mon compte'}
                 </Button>
               </form>
 
-              <p className="text-center text-sm text-[#9B928B]">
+              <p className="text-center text-sm text-muted-foreground">
                 Déjà un compte ?{' '}
-                <Link href="/login" className="text-[#C8A96E] hover:underline font-medium">
+                <Link href="/login" className="text-primary hover:underline font-medium">
                   Se connecter
                 </Link>
               </p>

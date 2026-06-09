@@ -288,7 +288,7 @@ export default function CollectesPage() {
                     type="button"
                     variant="outline"
                     onClick={closeModal}
-                    className="border-[rgba(0,0,0,0.12)] text-[#6B6560] bg-transparent"
+                    className="border-slate-200 text-slate-500 bg-transparent"
                   >
                     Annuler
                   </Button>

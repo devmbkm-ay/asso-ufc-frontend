@@ -10,7 +10,7 @@ import {
   ArrowLeft, Heart, Users, EyeOff, Eye, AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { cn, avatarColor } from '@/lib/utils'
 
 const CATEGORY_LABELS: Record<string, string> = {
   deces:     'Décès',
@@ -76,7 +76,7 @@ export default function CollecteDetailPage() {
   if (loadingCollecte) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#C8A96E] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -95,13 +95,13 @@ export default function CollecteDetailPage() {
       {/* Back */}
       <Link
         href="/mon-espace/collectes"
-        className="inline-flex items-center gap-1.5 text-xs text-[#9B928B] hover:text-[#1a1a1a] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-800 transition-colors"
       >
         <ArrowLeft size={13} /> Collectes
       </Link>
 
       {/* Header card */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
         {collecte.photo_url && (
           <img
             src={collecte.photo_url}
@@ -112,11 +112,11 @@ export default function CollecteDetailPage() {
         <div className="p-5 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h1 className="text-xl font-semibold text-[#1a1a1a]">{collecte.title}</h1>
-              <p className="text-sm text-[#6B6560] mt-0.5">
+              <h1 className="text-xl font-semibold text-slate-800">{collecte.title}</h1>
+              <p className="text-sm text-slate-400 mt-0.5">
                 {collecte.beneficiary_name}
                 {collecte.category && (
-                  <span className="ml-2 text-xs bg-[#F0EBE2] text-[#8B6B30] px-2 py-0.5 rounded-full">
+                  <span className="ml-2 text-xs bg-indigo-50 text-[#6366F1] px-2 py-0.5 rounded-full">
                     {CATEGORY_LABELS[collecte.category] ?? collecte.category}
                   </span>
                 )}
@@ -137,33 +137,33 @@ export default function CollecteDetailPage() {
           </div>
 
           {collecte.description && (
-            <p className="text-sm text-[#6B6560] leading-relaxed">{collecte.description}</p>
+            <p className="text-sm text-slate-500 leading-relaxed">{collecte.description}</p>
           )}
 
           {/* Stats */}
           <div className="flex items-center gap-6 pt-1">
             <div>
-              <p className="text-xl font-bold text-[#1a1a1a]">{fmtAmount(collecte.total_collected)}</p>
-              <p className="text-xs text-[#9B928B]">collectés</p>
+              <p className="text-xl font-bold text-slate-800">{fmtAmount(collecte.total_collected)}</p>
+              <p className="text-xs text-slate-400">collectés</p>
             </div>
-            <div className="w-px h-8 bg-[rgba(0,0,0,0.08)]" />
+            <div className="w-px h-8 bg-slate-200" />
             <div>
-              <p className="text-xl font-bold text-[#1a1a1a]">{collecte.contributors_count}</p>
-              <p className="text-xs text-[#9B928B]">contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
+              <p className="text-xl font-bold text-slate-800">{collecte.contributors_count}</p>
+              <p className="text-xs text-slate-400">contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
             </div>
             {myTotal > 0 && (
               <>
-                <div className="w-px h-8 bg-[rgba(0,0,0,0.08)]" />
+                <div className="w-px h-8 bg-slate-200" />
                 <div>
                   <p className="text-xl font-bold text-emerald-600">{fmtAmount(myTotal)}</p>
-                  <p className="text-xs text-[#9B928B]">ma contribution</p>
+                  <p className="text-xs text-slate-400">ma contribution</p>
                 </div>
               </>
             )}
           </div>
 
           {/* Dates */}
-          <p className="text-xs text-[#B0A9A2]">
+          <p className="text-xs text-slate-400">
             {fmtDate(collecte.start_date)} → {fmtDate(collecte.end_date)}
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function CollecteDetailPage() {
 
       {/* Contribute section */}
       {canContribute && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
           {success && (
             <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
               <Heart size={14} className="fill-emerald-500 text-emerald-500" />
@@ -182,12 +182,12 @@ export default function CollecteDetailPage() {
           {!showForm ? (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-[#1a1a1a]">Contribuer à cette collecte</p>
-                <p className="text-xs text-[#9B928B] mt-0.5">Minimum {fmtAmount(minAmount)}</p>
+                <p className="text-sm font-semibold text-slate-800">Contribuer à cette collecte</p>
+                <p className="text-xs text-slate-400 mt-0.5">Minimum {fmtAmount(minAmount)}</p>
               </div>
               <Button
                 onClick={() => setShowForm(true)}
-                className="bg-[#C8A96E] hover:bg-[#b8994e] text-white gap-2"
+                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-2"
               >
                 <Heart size={14} />
                 Je contribue
@@ -195,11 +195,11 @@ export default function CollecteDetailPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm font-semibold text-[#1a1a1a]">Votre contribution</p>
+              <p className="text-sm font-semibold text-slate-800">Votre contribution</p>
 
               {/* Amount input */}
               <div>
-                <label className="text-xs text-[#6B6560] mb-1.5 block">
+                <label className="text-xs text-slate-500 mb-1.5 block">
                   Montant (min. {fmtAmount(minAmount)})
                 </label>
                 <div className="relative">
@@ -210,9 +210,9 @@ export default function CollecteDetailPage() {
                     placeholder={String(minAmount)}
                     value={amount}
                     onChange={e => { setAmount(e.target.value); setFormError(null) }}
-                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-[rgba(0,0,0,0.10)] focus:outline-none focus:border-[#C8A96E] focus:ring-1 focus:ring-[#C8A96E]/30"
+                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]/20"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#9B928B]">€</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">€</span>
                 </div>
               </div>
 
@@ -220,24 +220,24 @@ export default function CollecteDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsAnonymous(a => !a)}
-                className="flex items-center gap-2 text-sm text-[#6B6560] hover:text-[#1a1a1a] transition-colors"
+                className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
               >
                 <div className={cn(
                   'w-4 h-4 rounded border flex items-center justify-center transition-colors',
                   isAnonymous
-                    ? 'bg-[#C8A96E] border-[#C8A96E] text-white'
-                    : 'border-[rgba(0,0,0,0.20)] bg-white',
+                    ? 'bg-[#6366F1] border-[#6366F1] text-white'
+                    : 'border-slate-300 bg-white',
                 )}>
                   {isAnonymous && <span className="text-[8px] font-bold">✓</span>}
                 </div>
                 {isAnonymous
-                  ? <><EyeOff size={13} className="text-[#9B928B]" /> Contribution anonyme</>
-                  : <><Eye size={13} className="text-[#9B928B]" /> Afficher mon nom</>
+                  ? <><EyeOff size={13} className="text-slate-400" /> Contribution anonyme</>
+                  : <><Eye size={13} className="text-slate-400" /> Afficher mon nom</>
                 }
               </button>
 
               {isAnonymous && (
-                <p className="text-[11px] text-[#9B928B] bg-[#F7F4EF] rounded-lg px-3 py-2">
+                <p className="text-[11px] text-slate-400 bg-slate-50 rounded-lg px-3 py-2">
                   Votre nom n'apparaîtra pas dans la liste des contributions.
                 </p>
               )}
@@ -253,7 +253,7 @@ export default function CollecteDetailPage() {
                 <Button
                   onClick={() => contribute()}
                   disabled={!amount || parseFloat(amount) < minAmount || isPending}
-                  className="bg-[#C8A96E] hover:bg-[#b8994e] text-white"
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                 >
                   {isPending ? 'Envoi…' : `Contribuer ${amount ? fmtAmount(parseFloat(amount)) : ''}`}
                 </Button>
@@ -270,59 +270,59 @@ export default function CollecteDetailPage() {
       )}
 
       {/* Contributions wall */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
-          <Users size={14} className="text-[#9B928B]" />
-          <h2 className="text-sm font-semibold text-[#1a1a1a]">Contributeurs</h2>
-          <span className="ml-auto text-xs text-[#B0A9A2]">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+          <Users size={14} className="text-slate-400" />
+          <h2 className="text-sm font-semibold text-slate-800">Contributeurs</h2>
+          <span className="ml-auto text-xs text-slate-400">
             {loadingContribs ? '—' : `${contributions?.length ?? 0}`}
           </span>
         </div>
 
         {loadingContribs && (
-          <div className="px-5 py-8 text-center text-sm text-[#9B928B]">Chargement…</div>
+          <div className="px-5 py-8 text-center text-sm text-slate-400">Chargement…</div>
         )}
 
         {!loadingContribs && contributions?.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <Heart size={24} className="text-[#D8CFC8]" />
-            <p className="text-sm text-[#9B928B]">Soyez le premier à contribuer</p>
+            <Heart size={24} className="text-slate-300" />
+            <p className="text-sm text-slate-400">Soyez le premier à contribuer</p>
           </div>
         )}
 
         {contributions && contributions.length > 0 && (
-          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <ul className="divide-y divide-slate-100">
             {contributions.map((c, i) => {
               const isMe = c.member_id === user?.id && !c.is_anonymous
               return (
                 <li key={c.id} className={cn(
                   'flex items-center gap-4 px-5 py-3.5',
-                  isMe && 'bg-[#F7F9F5]',
+                  isMe && 'bg-indigo-50/50',
                 )}>
                   {/* Position */}
-                  <span className="text-[11px] text-[#B0A9A2] w-5 text-right shrink-0">{i + 1}</span>
+                  <span className="text-[11px] text-slate-400 w-5 text-right shrink-0">{i + 1}</span>
 
                   {/* Avatar */}
                   <div className={cn(
                     'w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold',
                     c.is_anonymous
-                      ? 'bg-[#F0EBE2] text-[#B0A9A2]'
-                      : 'bg-[#2D5016] text-white',
+                      ? 'bg-slate-100 text-slate-400'
+                      : avatarColor(c.member_name),
                   )}>
                     {c.is_anonymous ? '?' : c.member_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                    <p className="text-sm font-medium text-slate-800 truncate">
                       {c.member_name}
-                      {isMe && <span className="ml-1.5 text-[11px] text-[#C8A96E] font-normal">(vous)</span>}
+                      {isMe && <span className="ml-1.5 text-[11px] text-[#6366F1] font-normal">(vous)</span>}
                     </p>
-                    <p className="text-[10px] text-[#B0A9A2]">{fmtTime(c.contributed_at)}</p>
+                    <p className="text-[10px] text-slate-400">{fmtTime(c.contributed_at)}</p>
                   </div>
 
                   {/* Amount */}
-                  <span className="text-sm font-semibold text-[#1a1a1a] shrink-0">
+                  <span className="text-sm font-semibold text-slate-800 shrink-0">
                     {fmtAmount(c.amount)}
                   </span>
                 </li>

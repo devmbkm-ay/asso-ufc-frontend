@@ -73,10 +73,10 @@ export default function MonEspacePage() {
 
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">
+        <h1 className="text-2xl font-semibold text-slate-800">
           Bonjour, {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-[#6B6560] mt-0.5">Voici un résumé de votre activité dans l'association.</p>
+        <p className="text-sm text-slate-400 mt-0.5">Voici un résumé de votre activité dans l'association.</p>
       </div>
 
       {/* Quick stats */}
@@ -93,8 +93,8 @@ export default function MonEspacePage() {
             label: 'Collectes actives',
             value: String(activeCollectes.length),
             icon: Heart,
-            color: 'text-[#C8A96E]',
-            bg: 'bg-[#C8A96E]/10',
+            color: 'text-[#6366F1]',
+            bg: 'bg-indigo-50',
           },
           {
             label: 'Événements à venir',
@@ -107,25 +107,25 @@ export default function MonEspacePage() {
             label: 'Membres',
             value: String(membersData?.total ?? '—'),
             icon: Users,
-            color: 'text-[#2D5016]',
-            bg: 'bg-[#2D5016]/10',
+            color: 'text-cyan-600',
+            bg: 'bg-cyan-50',
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-4">
+          <div key={label} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
             <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', bg)}>
               <Icon size={15} className={color} />
             </div>
-            <p className="text-xl font-bold text-[#1a1a1a]">{value}</p>
-            <p className="text-xs text-[#9B928B] mt-0.5">{label}</p>
+            <p className="text-xl font-bold text-slate-800">{value}</p>
+            <p className="text-xs text-slate-400 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Cotisation status */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-[#1a1a1a]">Cotisation {CURRENT_YEAR}</h2>
-          <Link href="/mon-espace/ma-cotisation" className="flex items-center gap-1 text-xs text-[#C8A96E] hover:text-[#b8994e]">
+          <h2 className="text-sm font-semibold text-slate-800">Cotisation {CURRENT_YEAR}</h2>
+          <Link href="/mon-espace/ma-cotisation" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
             Détail <ChevronRight size={13} />
           </Link>
         </div>
@@ -148,11 +148,11 @@ export default function MonEspacePage() {
                     ? 'bg-emerald-500 text-white'
                     : past
                       ? 'bg-red-100 text-red-400'
-                      : 'bg-[#F0EBE2] text-[#B0A9A2]',
+                      : 'bg-slate-100 text-slate-400',
                 )}>
                   {paid ? '✓' : past ? '✗' : '·'}
                 </div>
-                <span className="text-[9px] text-[#B0A9A2] text-center leading-none hidden sm:block">{m}</span>
+                <span className="text-[9px] text-slate-400 text-center leading-none hidden sm:block">{m}</span>
               </div>
             )
           })}
@@ -170,31 +170,31 @@ export default function MonEspacePage() {
 
       {/* Active collectes */}
       {activeCollectes.length > 0 && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,0,0.06)]">
-            <h2 className="text-sm font-semibold text-[#1a1a1a]">Collectes en cours</h2>
-            <Link href="/mon-espace/collectes" className="flex items-center gap-1 text-xs text-[#C8A96E] hover:text-[#b8994e]">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-800">Collectes en cours</h2>
+            <Link href="/mon-espace/collectes" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
               Voir tout <ChevronRight size={13} />
             </Link>
           </div>
-          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <ul className="divide-y divide-slate-100">
             {activeCollectes.slice(0, 3).map(c => (
               <li key={c.id}>
                 <Link
                   href={`/mon-espace/collectes/${c.id}`}
-                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-[rgba(0,0,0,0.015)] transition-colors"
+                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#C8A96E]/10 flex items-center justify-center shrink-0">
-                    <Heart size={14} className="text-[#C8A96E]" />
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+                    <Heart size={14} className="text-[#6366F1]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1a1a1a] truncate">{c.title}</p>
-                    <p className="text-xs text-[#9B928B] mt-0.5">
+                    <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {fmtAmount(c.total_collected)} collectés · {c.contributors_count} contributeurs
                       {c.category && ` · ${CATEGORY_LABELS[c.category] ?? c.category}`}
                     </p>
                   </div>
-                  <ChevronRight size={14} className="text-[#B0A9A2] shrink-0" />
+                  <ChevronRight size={14} className="text-slate-400 shrink-0" />
                 </Link>
               </li>
             ))}
@@ -204,10 +204,10 @@ export default function MonEspacePage() {
 
       {/* Next event */}
       {nextEvent && (
-        <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-[#1a1a1a]">Prochain événement</h2>
-            <Link href="/mon-espace/evenements" className="flex items-center gap-1 text-xs text-[#C8A96E] hover:text-[#b8994e]">
+            <h2 className="text-sm font-semibold text-slate-800">Prochain événement</h2>
+            <Link href="/mon-espace/evenements" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
               Voir tout <ChevronRight size={13} />
             </Link>
           </div>
@@ -216,12 +216,12 @@ export default function MonEspacePage() {
               <Calendar size={16} className="text-blue-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-[#1a1a1a] group-hover:text-[#C8A96E] transition-colors">
+              <p className="text-sm font-semibold text-slate-800 group-hover:text-[#6366F1] transition-colors">
                 {nextEvent.title}
               </p>
-              <p className="text-xs text-[#9B928B] mt-0.5">{fmtDate(nextEvent.event_date)}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{fmtDate(nextEvent.event_date)}</p>
               {nextEvent.location && (
-                <p className="text-xs text-[#B0A9A2] mt-0.5">{nextEvent.location}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{nextEvent.location}</p>
               )}
             </div>
             <div className="shrink-0">
@@ -230,7 +230,7 @@ export default function MonEspacePage() {
                   <CheckCircle2 size={10} /> Inscrit
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-[#9B928B] bg-[#F0EBE2] rounded-full px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400 bg-slate-100 rounded-full px-2 py-0.5">
                   <Circle size={10} /> Non inscrit
                 </span>
               )}

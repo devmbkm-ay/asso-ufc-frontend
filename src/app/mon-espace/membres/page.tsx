@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query'
 import { members as membersApi } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Search, Crown, BookOpen, Wallet, User } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, avatarColor } from '@/lib/utils'
 
 const ROLE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
-  super_admin: { label: 'Admin',      icon: Crown,    color: 'text-[#8B6B30]',   bg: 'bg-[#C8A96E]/15', border: 'border-[#C8A96E]/40' },
+  super_admin: { label: 'Admin',      icon: Crown,    color: 'text-[#6366F1]',   bg: 'bg-indigo-50',    border: 'border-indigo-200' },
   treasurer:   { label: 'Trésorier', icon: Wallet,   color: 'text-purple-700',  bg: 'bg-purple-50',     border: 'border-purple-200' },
   secretary:   { label: 'Secrétaire',icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50',    border: 'border-emerald-200' },
   member:      { label: 'Membre',     icon: User,     color: 'text-gray-500',    bg: 'bg-gray-100',      border: 'border-gray-200' },
@@ -43,37 +43,37 @@ export default function MembresPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-[#1a1a1a]">Membres</h1>
-        <p className="text-sm text-[#6B6560] mt-1">
+        <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
+        <p className="text-sm text-slate-400 mt-1">
           {isLoading ? '—' : `${total} membre${total > 1 ? 's' : ''} actifs`}
         </p>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B928B]" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <input
           type="text"
           placeholder="Rechercher un membre…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[rgba(0,0,0,0.10)] bg-white focus:outline-none focus:border-[#C8A96E] focus:ring-1 focus:ring-[#C8A96E]/30"
+          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]/20"
         />
       </div>
 
       {/* List */}
-      <div className="bg-white rounded-xl border border-[rgba(200,169,110,0.18)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
 
         {isLoading && (
-          <div className="px-5 py-12 text-center text-sm text-[#9B928B]">Chargement…</div>
+          <div className="px-5 py-12 text-center text-sm text-slate-400">Chargement…</div>
         )}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="px-5 py-12 text-center text-sm text-[#9B928B]">Aucun résultat</div>
+          <div className="px-5 py-12 text-center text-sm text-slate-400">Aucun résultat</div>
         )}
 
         {!isLoading && filtered.length > 0 && (
-          <ul className="divide-y divide-[rgba(0,0,0,0.04)]">
+          <ul className="divide-y divide-slate-100">
             {filtered.map(m => {
               const isSelf = m.id === user?.id
               const visibleRoles = m.roles.filter(r => r !== 'member')
@@ -83,23 +83,23 @@ export default function MembresPage() {
                   key={m.id}
                   className={cn(
                     'flex items-center gap-4 px-5 py-3.5',
-                    isSelf && 'bg-[#F7F9F5]',
+                    isSelf && 'bg-indigo-50/50',
                   )}
                 >
                   {/* Avatar */}
-                  <div className="w-9 h-9 rounded-full bg-[#2D5016] flex items-center justify-center shrink-0">
-                    <span className="text-[11px] font-bold text-white">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
+                    <span className="text-[11px] font-bold">
                       {m.first_name[0]}{m.last_name[0]}
                     </span>
                   </div>
 
                   {/* Name + meta */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                    <p className="text-sm font-medium text-slate-800 truncate">
                       {m.first_name} {m.last_name}
-                      {isSelf && <span className="ml-1.5 text-[11px] text-[#C8A96E] font-normal">(vous)</span>}
+                      {isSelf && <span className="ml-1.5 text-[11px] text-[#6366F1] font-normal">(vous)</span>}
                     </p>
-                    <p className="text-xs text-[#B0A9A2] mt-0.5">Membre depuis {fmtDate(m.joined_at)}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Membre depuis {fmtDate(m.joined_at)}</p>
                   </div>
 
                   {/* Role chips */}

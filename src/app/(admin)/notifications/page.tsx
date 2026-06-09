@@ -145,7 +145,7 @@ export default function NotificationsPage() {
                 {result.failed_count > 0 && (
                   <span className="text-red-600"><strong>{result.failed_count}</strong> échoués</span>
                 )}
-                <span className="text-[#9B928B]"><strong>{result.skipped_count}</strong> déjà cotisés</span>
+                <span className="text-emerald-600"><strong>{result.skipped_count}</strong> déjà cotisés</span>
               </div>
             </div>
           )}

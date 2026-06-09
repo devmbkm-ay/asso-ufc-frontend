@@ -28,8 +28,8 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
     <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-          <span className="text-sm font-bold text-primary">M</span>
+        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-lg">
+          <span className="text-sm font-bold text-white">M</span>
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white truncate">Mboka</p>

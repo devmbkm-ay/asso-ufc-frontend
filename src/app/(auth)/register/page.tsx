@@ -56,7 +56,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl shadow-md border border-[rgba(200,169,110,0.18)] p-8 space-y-6">
+        <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
               <span className="text-2xl font-bold text-primary">M</span>
