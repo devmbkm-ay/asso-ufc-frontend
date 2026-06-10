@@ -51,7 +51,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-const FIELD = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 export default function CollectesPage() {
   const { user } = useAuth()
@@ -147,8 +147,8 @@ export default function CollectesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-card-foreground">Collectes de solidarité</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl font-semibold text-slate-800">Collectes de solidarité</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
             {data ? `${data.length} collecte${data.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function CollectesPage() {
           <Dialog open={open} onOpenChange={next => { if (!next) closeModal(); else setOpen(true) }}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-primary hover:bg-violet-600 text-primary-foreground gap-1.5 shrink-0"
+              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouvelle collecte
@@ -165,12 +165,12 @@ export default function CollectesPage() {
 
             <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-card-foreground">Nouvelle collecte</DialogTitle>
+                <DialogTitle className="text-slate-800">Nouvelle collecte</DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Titre de la collecte *</label>
+                  <label className="text-xs text-slate-500">Titre de la collecte *</label>
                   <Input
                     value={form.title}
                     onChange={field('title')}
@@ -181,7 +181,7 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Nom du défunt *</label>
+                  <label className="text-xs text-slate-500">Nom du défunt *</label>
                   <Input
                     value={form.beneficiary_name}
                     onChange={field('beneficiary_name')}
@@ -218,7 +218,7 @@ export default function CollectesPage() {
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-200 text-xs text-slate-500 hover:border-[#6366F1] hover:text-[#6366F1] transition-colors"
                     >
                       <ImagePlus size={14} />
                       Choisir une photo
@@ -231,7 +231,7 @@ export default function CollectesPage() {
                   <select
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground focus:outline-none focus:border-primary"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
                   >
                     {CATEGORIES.map(c => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -248,7 +248,7 @@ export default function CollectesPage() {
                     onChange={field('description')}
                     rows={3}
                     placeholder="Un mot d'accompagnement pour la famille…"
-                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
                   />
                 </div>
 
@@ -295,7 +295,7 @@ export default function CollectesPage() {
                   <Button
                     type="submit"
                     disabled={isPending || uploading}
-                    className="bg-primary hover:bg-violet-600 text-primary-foreground"
+                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                   >
                     {uploading ? 'Upload…' : isPending ? 'Création…' : 'Lancer la collecte'}
                   </Button>
