@@ -5,8 +5,8 @@ import { dashboard, members, events } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Badge } from '@/components/ui/badge'
-import { AlertTriangle, CalendarDays, Users } from 'lucide-react'
-import { avatarColor } from '@/lib/utils'
+import { AlertTriangle, CalendarDays, Users, MapPin, ChevronRight } from 'lucide-react'
+import { avatarColor, cn } from '@/lib/utils'
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -25,6 +25,16 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
+function startOfToday() {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
 export default function DashboardPage() {
   const { user } = useAuth()
   const today = new Date()
@@ -34,10 +44,18 @@ export default function DashboardPage() {
     queryKey: ['members', 'recent'],
     queryFn: () => members.list({ page: 1, size: 5 }),
   })
-  const { data: upcomingEvents } = useQuery({
-    queryKey: ['events', 'upcoming'],
-    queryFn: () => events.list({ upcoming_only: true, status: 'published' }),
+  const { data: publishedEvents } = useQuery({
+    queryKey: ['events', 'published'],
+    queryFn: () => events.list({ status: 'published' }),
   })
+
+  const upcoming = [...(publishedEvents ?? [])]
+    .filter(ev => new Date(ev.event_date) >= startOfToday())
+    .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())
+
+  const featuredEvent = upcoming[0]
+  const otherUpcoming = upcoming.slice(1, 4)
+  const isToday = featuredEvent && isSameDay(new Date(featuredEvent.event_date), new Date())
 
   const greeting = today.getHours() < 12 ? 'Bonjour' : today.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'
 
@@ -52,6 +70,62 @@ export default function DashboardPage() {
           {today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
+
+      {/* Événement en avant */}
+      {!publishedEvents ? (
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+          <p className="text-sm text-slate-400">Chargement…</p>
+        </div>
+      ) : featuredEvent ? (
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="w-14 h-14 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shrink-0">
+              <span className="text-xl font-bold text-[#6366F1] leading-none">{new Date(featuredEvent.event_date).getDate()}</span>
+              <span className="text-[10px] font-medium text-[#6366F1] uppercase mt-0.5">{MONTH_FR[new Date(featuredEvent.event_date).getMonth()]}</span>
+            </div>
+            <div className="min-w-0">
+              <Badge className={cn(
+                'text-[10px] border mb-1.5',
+                isToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-[#6366F1] border-indigo-200',
+              )}>
+                {isToday ? "Aujourd'hui" : 'Prochain événement'}
+              </Badge>
+              <h2 className="text-sm font-semibold text-slate-800 truncate">{featuredEvent.title}</h2>
+              <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-1">
+                {featuredEvent.location && (
+                  <span className="flex items-center gap-1">
+                    <MapPin size={11} className="text-[#6366F1]" />
+                    {featuredEvent.location}
+                  </span>
+                )}
+                <span className="flex items-center gap-1">
+                  <Users size={11} className="text-[#6366F1]" />
+                  {featuredEvent.registrations_count} inscrit{featuredEvent.registrations_count > 1 ? 's' : ''}
+                  {featuredEvent.capacity && ` / ${featuredEvent.capacity}`}
+                </span>
+              </div>
+            </div>
+          </div>
+          <a
+            href="/evenements"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0 self-start sm:self-center"
+          >
+            Gérer <ChevronRight size={13} />
+          </a>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+              <CalendarDays size={16} className="text-[#6366F1]" />
+            </div>
+            <p className="text-sm text-slate-400">Aucun événement publié pour le moment</p>
+          </div>
+          <a href="/evenements" className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0">
+            Voir les événements <ChevronRight size={13} />
+          </a>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -134,7 +208,7 @@ export default function DashboardPage() {
               <h2 className="text-sm font-semibold text-slate-800">Événements à venir</h2>
             </div>
             <ul className="space-y-3">
-              {upcomingEvents?.slice(0, 3).map(ev => {
+              {otherUpcoming.map(ev => {
                 const d = new Date(ev.event_date)
                 return (
                   <li key={ev.id} className="flex gap-3">
@@ -149,10 +223,12 @@ export default function DashboardPage() {
                   </li>
                 )
               })}
-              {upcomingEvents?.length === 0 && (
-                <li className="text-xs text-slate-400">Aucun événement à venir</li>
+              {publishedEvents && otherUpcoming.length === 0 && (
+                <li className="text-xs text-slate-400">
+                  {featuredEvent ? 'Aucun autre événement à venir' : 'Aucun événement à venir'}
+                </li>
               )}
-              {!upcomingEvents && (
+              {!publishedEvents && (
                 <li className="text-xs text-slate-400">Chargement…</li>
               )}
             </ul>
