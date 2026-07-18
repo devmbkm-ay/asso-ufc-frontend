@@ -123,6 +123,7 @@ export interface CollecteRead {
   photo_url?: string
   description?: string
   min_amount: number
+  goal_amount?: number
   start_date: string
   end_date: string
   is_closed: boolean
@@ -139,7 +140,9 @@ export interface CollecteRead {
 export interface ContributionRead {
   id: string
   collecte_id: string
-  member_id: string
+  // null quand la contribution est anonyme et que le lecteur n'est ni
+  // l'auteur ni un admin
+  member_id: string | null
   member_name: string
   amount: number
   is_anonymous: boolean

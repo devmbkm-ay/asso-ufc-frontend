@@ -73,7 +73,7 @@ export default function CollecteDetailPage() {
   // ── Edit state ────────────────────────────────────────────────────────────
   const [openEdit, setOpenEdit] = useState(false)
   const [editForm, setEditForm] = useState({
-    title: '', beneficiary_name: '', description: '', min_amount: '',
+    title: '', beneficiary_name: '', description: '', min_amount: '', goal_amount: '',
   })
   const [editPhotoFile, setEditPhotoFile] = useState<File | null>(null)
   const [editPhotoPreview, setEditPhotoPreview] = useState<string | null>(null)
@@ -150,6 +150,7 @@ export default function CollecteDetailPage() {
       beneficiary_name: collecte.beneficiary_name,
       description: collecte.description ?? '',
       min_amount: String(collecte.min_amount),
+      goal_amount: collecte.goal_amount ? String(collecte.goal_amount) : '',
     })
     setEditPhotoFile(null)
     setEditPhotoPreview(collecte.photo_url ?? null)
@@ -211,6 +212,7 @@ export default function CollecteDetailPage() {
       photo_url: photo_url,
       description: editForm.description || undefined,
       min_amount: Number(editForm.min_amount) || undefined,
+      goal_amount: editForm.goal_amount ? Number(editForm.goal_amount) : undefined,
     })
   }
 
@@ -322,6 +324,22 @@ export default function CollecteDetailPage() {
               Archiver
             </Button>
           )}
+        </div>
+      )}
+
+      {/* Progression vers l'objectif */}
+      {!!collecte.goal_amount && (
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
+          <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
+            <span>{fmtEur(collecte.total_collected)} collectés</span>
+            <span>Objectif {fmtEur(collecte.goal_amount)}</span>
+          </div>
+          <div className="h-2 rounded-full bg-indigo-50 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[#6366F1]"
+              style={{ width: `${Math.min((collecte.total_collected / collecte.goal_amount) * 100, 100)}%` }}
+            />
+          </div>
         </div>
       )}
 
@@ -481,15 +499,30 @@ export default function CollecteDetailPage() {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Montant minimum (€)</label>
-              <Input
-                type="number"
-                min={1}
-                value={editForm.min_amount}
-                onChange={editField('min_amount')}
-                className={FIELD}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-slate-500">Montant minimum (€)</label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={editForm.min_amount}
+                  onChange={editField('min_amount')}
+                  className={FIELD}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-slate-500">
+                  Objectif (€) <span className="text-slate-400">(optionnel)</span>
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={editForm.goal_amount}
+                  onChange={editField('goal_amount')}
+                  placeholder="Ex. 500"
+                  className={FIELD}
+                />
+              </div>
             </div>
 
             {editError && (

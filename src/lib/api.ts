@@ -380,6 +380,7 @@ export const collectes = {
     photo_url?: string
     description?: string
     min_amount?: number
+    goal_amount?: number
     start_date: string
     category?: string
   }) => apiRequest<import('./types').CollecteRead>('/api/v1/collectes', {
@@ -399,6 +400,7 @@ export const collectes = {
     photo_url?: string
     description?: string
     min_amount?: number
+    goal_amount?: number
   }) => apiRequest<import('./types').CollecteRead>(`/api/v1/collectes/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),

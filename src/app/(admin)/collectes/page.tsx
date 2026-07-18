@@ -47,6 +47,7 @@ const EMPTY_FORM = {
   beneficiary_name: '',
   description: '',
   min_amount: '20',
+  goal_amount: '',
   start_date: new Date().toISOString().split('T')[0],
   category: '',
 }
@@ -133,6 +134,7 @@ export default function CollectesPage() {
       photo_url,
       description: form.description || undefined,
       min_amount: Number(form.min_amount) || 20,
+      goal_amount: form.goal_amount ? Number(form.goal_amount) : undefined,
       start_date: form.start_date,
       category: form.category || undefined,
     })
@@ -264,15 +266,29 @@ export default function CollectesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Date de début</label>
+                    <label className="text-xs text-slate-500">
+                      Objectif (€) <span className="text-slate-400">(optionnel)</span>
+                    </label>
                     <Input
-                      type="date"
-                      value={form.start_date}
-                      onChange={field('start_date')}
-                      required
+                      type="number"
+                      min={1}
+                      value={form.goal_amount}
+                      onChange={field('goal_amount')}
+                      placeholder="Ex. 500"
                       className={FIELD}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500">Date de début</label>
+                  <Input
+                    type="date"
+                    value={form.start_date}
+                    onChange={field('start_date')}
+                    required
+                    className={FIELD}
+                  />
                 </div>
 
                 <p className="text-xs text-slate-400">La collecte durera 14 jours à partir de la date de début.</p>

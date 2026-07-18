@@ -162,6 +162,19 @@ export default function CollecteDetailPage() {
             )}
           </div>
 
+          {/* Progress bar */}
+          {!!collecte.goal_amount && (
+            <div className="space-y-1.5">
+              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#6366F1] transition-all"
+                  style={{ width: `${Math.min((collecte.total_collected / collecte.goal_amount) * 100, 100)}%` }}
+                />
+              </div>
+              <p className="text-xs text-slate-400">Objectif {fmtAmount(collecte.goal_amount)}</p>
+            </div>
+          )}
+
           {/* Dates */}
           <p className="text-xs text-slate-400">
             {fmtDate(collecte.start_date)} → {fmtDate(collecte.end_date)}

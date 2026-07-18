@@ -69,8 +69,9 @@ export default function CollectesPage() {
           {sorted.map(c => {
             const meta    = STATUS_META[c.status] ?? STATUS_META.expired
             const Icon    = meta.icon
-            const pct     = c.min_amount > 0
-              ? Math.min((c.total_collected / (c.min_amount * 5)) * 100, 100)
+            const goal    = c.goal_amount ?? (c.min_amount > 0 ? c.min_amount * 5 : 0)
+            const pct     = goal > 0
+              ? Math.min((c.total_collected / goal) * 100, 100)
               : 0
 
             return (
