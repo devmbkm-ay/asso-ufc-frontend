@@ -2,12 +2,20 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { members, cotisations } from '@/lib/api'
+import { members, cotisations, ApiError } from '@/lib/api'
+import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
+
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -44,12 +52,61 @@ function fmtEur(n: number) {
 
 export default function MembrePage() {
   const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
   const [tableYear, setTableYear] = useState(CURRENT_YEAR)
+
+  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+
+  const [openEdit, setOpenEdit] = useState(false)
+  const [editForm, setEditForm] = useState({ first_name: '', last_name: '', phone: '', address: '', birth_date: '' })
+  const [editError, setEditError] = useState<string | null>(null)
 
   const { data: member, isLoading } = useQuery({
     queryKey: ['member', id],
     queryFn: () => members.get(id),
   })
+
+  const { mutate: updateMember, isPending: editPending } = useMutation({
+    mutationFn: (data: Parameters<typeof members.update>[1]) => members.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['member', id] })
+      setOpenEdit(false)
+    },
+    onError: (err: unknown) => {
+      setEditError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  function openEditModal() {
+    if (!member) return
+    setEditForm({
+      first_name: member.first_name,
+      last_name: member.last_name,
+      phone: member.phone ?? '',
+      address: member.address ?? '',
+      birth_date: member.birth_date ?? '',
+    })
+    setEditError(null)
+    setOpenEdit(true)
+  }
+
+  function editField(key: keyof typeof editForm) {
+    return (e: React.ChangeEvent<HTMLInputElement>) =>
+      setEditForm(f => ({ ...f, [key]: e.target.value }))
+  }
+
+  function handleEditSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setEditError(null)
+    updateMember({
+      first_name: editForm.first_name,
+      last_name: editForm.last_name,
+      phone: editForm.phone || undefined,
+      address: editForm.address || undefined,
+      birth_date: editForm.birth_date || undefined,
+    })
+  }
 
   // All payments — for summary stats
   const { data: allPayments } = useQuery({
@@ -112,6 +169,15 @@ export default function MembrePage() {
               {member.first_name} {member.last_name}
             </h1>
             <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+            {canEdit && (
+              <button
+                onClick={openEditModal}
+                className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
+                title="Modifier le profil"
+              >
+                <Pencil size={13} />
+              </button>
+            )}
           </div>
           {member.roles.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
@@ -124,6 +190,72 @@ export default function MembrePage() {
           )}
         </div>
       </div>
+
+      {canEdit && (
+        <Dialog open={openEdit} onOpenChange={setOpenEdit}>
+          <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-slate-800">Modifier le profil</DialogTitle>
+            </DialogHeader>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4 mt-1">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500">Prénom</label>
+                  <Input value={editForm.first_name} onChange={editField('first_name')} required className={FIELD} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500">Nom</label>
+                  <Input value={editForm.last_name} onChange={editField('last_name')} required className={FIELD} />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-slate-500">Téléphone</label>
+                <Input value={editForm.phone} onChange={editField('phone')} placeholder="06 00 00 00 00" className={FIELD} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-slate-500">Adresse</label>
+                <Input value={editForm.address} onChange={editField('address')} className={FIELD} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-slate-500">Date de naissance</label>
+                <Input type="date" value={editForm.birth_date} onChange={editField('birth_date')} className={FIELD} />
+              </div>
+
+              <p className="text-xs text-slate-400">
+                L&apos;email ({member.email}) ne peut pas être modifié pour l&apos;instant.
+              </p>
+
+              {editError && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  {editError}
+                </p>
+              )}
+
+              <DialogFooter className="gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpenEdit(false)}
+                  className="border-slate-200 text-slate-500 bg-transparent"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={editPending}
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                >
+                  {editPending ? 'Enregistrement…' : 'Enregistrer'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Info + Cotisations cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

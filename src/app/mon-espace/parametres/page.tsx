@@ -1,18 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useAuth } from '@/providers/AuthProvider'
 import { members, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Link from 'next/link'
 import { CheckCircle2, AlertCircle, User, Phone, MapPin, KeyRound } from 'lucide-react'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 const inputCls = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1] h-9 text-sm'
 
-export default function ParametresPage() {
+export default function MemberParametresPage() {
   const { user } = useAuth()
 
   const [form, setForm] = useState({
@@ -50,7 +50,7 @@ export default function ParametresPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Paramètres</h1>
         <p className="text-sm text-slate-400 mt-1">Gérez votre profil et vos informations de contact.</p>
@@ -65,7 +65,6 @@ export default function ParametresPage() {
         <div>
           <p className="text-sm font-semibold text-slate-800">{user?.first_name} {user?.last_name}</p>
           <p className="text-xs text-slate-400">{user?.email}</p>
-          <p className="text-xs text-[#6366F1] mt-0.5">{((user?.roles ?? []) as string[])[0] ?? 'Membre'}</p>
         </div>
       </div>
 

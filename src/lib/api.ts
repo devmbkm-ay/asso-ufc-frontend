@@ -192,7 +192,9 @@ export const members = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  update: (id: string, data: Partial<{ first_name: string; last_name: string; phone: string; address: string }>) =>
+  update: (id: string, data: Partial<{
+    first_name: string; last_name: string; phone: string; address: string; birth_date: string
+  }>) =>
     apiRequest<import('./types').Member>(`/api/v1/members/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
