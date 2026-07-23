@@ -239,12 +239,13 @@ export const cotisations = {
   plans: () => apiRequest<import('./types').CotisationPlan[]>('/api/v1/cotisation-plans'),
   grid: (year: number) =>
     apiRequest<import('./types').PaymentGridRow[]>(`/api/v1/payments/grid?year=${year}`),
-  payments: (params?: { page?: number; size?: number; member_id?: string; year?: number }) => {
+  payments: (params?: { page?: number; size?: number; member_id?: string; year?: number; status?: string }) => {
     const q = new URLSearchParams()
     if (params?.page)      q.set('page', String(params.page))
     if (params?.size)      q.set('size', String(params.size))
     if (params?.member_id) q.set('member_id', params.member_id)
     if (params?.year)      q.set('year', String(params.year))
+    if (params?.status)    q.set('status', params.status)
     return apiRequest<import('./types').PaginatedPayments>(`/api/v1/payments?${q}`)
   },
   createPlan: (data: {

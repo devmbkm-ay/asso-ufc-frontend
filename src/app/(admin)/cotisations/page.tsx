@@ -79,6 +79,12 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function periodLabel(p: { period_month?: number | null; period_year: number }) {
+  return p.period_month
+    ? `${MONTHS_FULL[p.period_month - 1]} ${p.period_year}`
+    : String(p.period_year)
+}
+
 export default function CotisationsPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -101,6 +107,14 @@ export default function CotisationsPage() {
   const { data: grid, isLoading } = useQuery({
     queryKey: ['cotisations-grid', year],
     queryFn:  () => cotisations.grid(year),
+  })
+
+  // Tous les paiements déclarés, y compris les plans annuels/ponctuels
+  // (period_month = null) — invisibles dans la grille mensuelle ci-dessous.
+  const { data: declaredPayments } = useQuery({
+    queryKey: ['cotisations-declared'],
+    queryFn:  () => cotisations.payments({ status: 'declared', size: 200 }),
+    enabled:  !!canValidate,
   })
 
   const { data: plans } = useQuery({
@@ -178,6 +192,7 @@ export default function CotisationsPage() {
     mutationFn: cotisations.validatePayment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cotisations-grid', year] })
+      queryClient.invalidateQueries({ queryKey: ['cotisations-declared'] })
       close()
     },
   })
@@ -186,9 +201,18 @@ export default function CotisationsPage() {
     mutationFn: cotisations.rejectPayment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cotisations-grid', year] })
+      queryClient.invalidateQueries({ queryKey: ['cotisations-declared'] })
       close()
     },
   })
+
+  const [decidingId, setDecidingId] = useState<string | null>(null)
+
+  function decideDeclared(id: string, action: 'validate' | 'reject') {
+    setDecidingId(id)
+    const mutate = action === 'validate' ? validatePayment : rejectPayment
+    mutate(id, { onSettled: () => setDecidingId(null) })
+  }
 
   function close() {
     setSelected(null)
@@ -330,6 +354,50 @@ export default function CotisationsPage() {
                     </button>
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Cotisations à valider — inclut les plans annuels/ponctuels, absents de la grille */}
+      {canValidate && !!declaredPayments?.items.length && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+          <h2 className="text-xs font-semibold tracking-wider text-blue-700 uppercase flex items-center gap-1.5">
+            <UserCheck size={13} />
+            {declaredPayments.items.length} cotisation{declaredPayments.items.length > 1 ? 's' : ''} à valider
+          </h2>
+          <div className="space-y-2">
+            {declaredPayments.items.map(p => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between gap-3 bg-white border border-blue-100 rounded-lg px-4 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-800 truncate">{p.member_name}</p>
+                  <p className="text-xs text-slate-400">
+                    {p.plan_label} · {periodLabel(p)} · {fmtEur(p.amount)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => decideDeclared(p.id, 'reject')}
+                    disabled={decidingId === p.id}
+                    className="border-red-200 text-red-600 bg-transparent hover:bg-red-50 h-8 px-2.5"
+                  >
+                    <XCircle size={13} />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => decideDeclared(p.id, 'validate')}
+                    disabled={decidingId === p.id}
+                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white h-8 px-2.5"
+                  >
+                    <CheckCircle2 size={13} />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
