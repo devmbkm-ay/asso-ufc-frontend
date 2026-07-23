@@ -5,10 +5,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { events, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
-  Calendar, MapPin, Users, Ticket, CheckCircle2, AlertCircle,
+  Calendar, MapPin, Users, Ticket, CheckCircle2, AlertCircle, ChevronDown, ChevronUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { EventRead } from '@/lib/types'
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', {
@@ -21,10 +23,39 @@ function fmtAmount(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 }
 
+function RegistrantsList({ eventId }: { eventId: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['event-registrations', eventId],
+    queryFn: () => events.registrations(eventId),
+  })
+
+  if (isLoading) {
+    return <p className="text-xs text-slate-400 py-2">Chargement des inscrits…</p>
+  }
+  if (!data || data.length === 0) {
+    return <p className="text-xs text-slate-400 py-2">Aucun inscrit pour le moment.</p>
+  }
+
+  return (
+    <ul className="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">
+      {data.map(r => (
+        <li key={r.id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+          <span className="text-slate-700 truncate">{r.member_name}</span>
+          <span className="text-slate-500 font-medium shrink-0">{fmtAmount(r.amount_paid)}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export default function EvenementsPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [registeringId, setRegisteringId] = useState<string | null>(null)
+  const [amountDraftId, setAmountDraftId] = useState<string | null>(null)
+  const [amountDrafts, setAmountDrafts] = useState<Record<string, string>>({})
+  const [expandedRegistrants, setExpandedRegistrants] = useState<Record<string, boolean>>({})
+  const [showPast, setShowPast] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { data: eventsList, isLoading } = useQuery({
@@ -40,15 +71,18 @@ export default function EvenementsPage() {
   const regsByEvent = new Map(myRegs?.map(r => [r.event_id, r]) ?? [])
 
   const { mutate: register } = useMutation({
-    mutationFn: ({ eventId }: { eventId: string }) =>
-      events.register(eventId, user!.id),
+    mutationFn: ({ eventId, amount }: { eventId: string; amount: number }) =>
+      events.register(eventId, user!.id, amount),
     onSuccess: (_, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['my-registrations'] })
       queryClient.invalidateQueries({ queryKey: ['events-published'] })
+      queryClient.invalidateQueries({ queryKey: ['event-registrations', eventId] })
       setRegisteringId(null)
+      setAmountDraftId(null)
       setErrors(prev => { const n = { ...prev }; delete n[eventId]; return n })
     },
     onError: (err: unknown, { eventId }) => {
+      setRegisteringId(null)
       setErrors(prev => ({
         ...prev,
         [eventId]: err instanceof ApiError ? err.message : 'Erreur inattendue',
@@ -59,9 +93,10 @@ export default function EvenementsPage() {
   const { mutate: unregister } = useMutation({
     mutationFn: ({ eventId, regId }: { eventId: string; regId: string }) =>
       events.unregister(eventId, regId),
-    onSuccess: () => {
+    onSuccess: (_, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['my-registrations'] })
       queryClient.invalidateQueries({ queryKey: ['events-published'] })
+      queryClient.invalidateQueries({ queryKey: ['event-registrations', eventId] })
     },
     onError: (err: unknown, { eventId }) => {
       setErrors(prev => ({
@@ -71,14 +106,26 @@ export default function EvenementsPage() {
     },
   })
 
+  function startRegister(e: EventRead) {
+    setAmountDraftId(e.id)
+    setAmountDrafts(d => ({ ...d, [e.id]: String(e.ticket_price) }))
+  }
+
+  function confirmRegister(eventId: string) {
+    setRegisteringId(eventId)
+    const amount = Number(amountDrafts[eventId]) || 0
+    register({ eventId, amount })
+  }
+
   const now   = new Date()
   const past  = eventsList?.filter(e => new Date(e.event_date) < now) ?? []
   const upcoming = eventsList?.filter(e => new Date(e.event_date) >= now) ?? []
 
-  const renderEvent = (e: import('@/lib/types').EventRead) => {
+  const renderEvent = (e: EventRead) => {
     const reg     = regsByEvent.get(e.id)
     const isPast  = new Date(e.event_date) < now
     const isFull  = e.capacity !== null && e.capacity !== undefined && e.registrations_count >= e.capacity
+    const registrantsOpen = !!expandedRegistrants[e.id]
 
     return (
       <div
@@ -138,6 +185,24 @@ export default function EvenementsPage() {
           </div>
         )}
 
+        {/* Registrants toggle */}
+        {e.registrations_count > 0 && (
+          <div>
+            <button
+              onClick={() => setExpandedRegistrants(m => ({ ...m, [e.id]: !m[e.id] }))}
+              className="flex items-center gap-1 text-xs text-[#6366F1] hover:underline"
+            >
+              {registrantsOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              {registrantsOpen ? 'Masquer les inscrits' : 'Voir les inscrits'}
+            </button>
+            {registrantsOpen && (
+              <div className="mt-2">
+                <RegistrantsList eventId={e.id} />
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Actions */}
         {!isPast && (
           <div className="pt-1">
@@ -150,18 +215,44 @@ export default function EvenementsPage() {
               </button>
             ) : isFull ? (
               <span className="text-xs text-slate-400">Complet</span>
+            ) : amountDraftId === e.id ? (
+              <div className="flex items-center gap-2">
+                <div className="relative w-28">
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={amountDrafts[e.id] ?? '0'}
+                    onChange={ev => setAmountDrafts(d => ({ ...d, [e.id]: ev.target.value }))}
+                    className="bg-white border-slate-200 text-slate-800 h-9 pr-6 text-sm"
+                    autoFocus
+                  />
+                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">€</span>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => confirmRegister(e.id)}
+                  disabled={registeringId === e.id || loadingRegs}
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
+                >
+                  {registeringId === e.id ? 'Inscription…' : 'Confirmer'}
+                </Button>
+                <button
+                  onClick={() => setAmountDraftId(null)}
+                  className="text-xs text-slate-400 hover:text-slate-600"
+                >
+                  Annuler
+                </button>
+              </div>
             ) : (
               <Button
                 size="sm"
-                onClick={() => {
-                  setRegisteringId(e.id)
-                  register({ eventId: e.id })
-                }}
-                disabled={registeringId === e.id || loadingRegs}
+                onClick={() => startRegister(e)}
+                disabled={loadingRegs}
                 className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
               >
                 <CheckCircle2 size={13} />
-                {registeringId === e.id ? 'Inscription…' : "S'inscrire"}
+                S&apos;inscrire
               </Button>
             )}
           </div>
@@ -202,8 +293,18 @@ export default function EvenementsPage() {
 
       {past.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">Passés</p>
-          {past.map(renderEvent)}
+          <button
+            onClick={() => setShowPast(s => !s)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 tracking-wider uppercase hover:text-slate-600"
+          >
+            {showPast ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            Passés ({past.length})
+          </button>
+          {showPast && (
+            <div className="space-y-3">
+              {past.map(renderEvent)}
+            </div>
+          )}
         </div>
       )}
     </div>

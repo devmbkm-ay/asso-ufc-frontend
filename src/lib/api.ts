@@ -352,6 +352,8 @@ export const events = {
     }),
   unregister: (eventId: string, registrationId: string) =>
     apiRequest<void>(`/api/v1/events/${eventId}/registrations/${registrationId}`, { method: 'DELETE' }),
+  registrations: (eventId: string) =>
+    apiRequest<import('./types').EventRegistration[]>(`/api/v1/events/${eventId}/registrations`),
 }
 
 // ── Invitations ───────────────────────────────────────────────────────────────
