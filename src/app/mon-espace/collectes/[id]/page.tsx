@@ -11,14 +11,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn, avatarColor } from '@/lib/utils'
-
-const CATEGORY_LABELS: Record<string, string> = {
-  deces:     'Décès',
-  mariage:   'Mariage',
-  naissance: 'Naissance',
-  maladie:   'Maladie',
-  autre:     'Autre',
-}
+import { categoryLabel } from '@/lib/collecte-categories'
 
 function fmtAmount(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -117,7 +110,7 @@ export default function CollecteDetailPage() {
                 {collecte.beneficiary_name}
                 {collecte.category && (
                   <span className="ml-2 text-xs bg-indigo-50 text-[#6366F1] px-2 py-0.5 rounded-full">
-                    {CATEGORY_LABELS[collecte.category] ?? collecte.category}
+                    {categoryLabel(collecte.category)}
                   </span>
                 )}
               </p>

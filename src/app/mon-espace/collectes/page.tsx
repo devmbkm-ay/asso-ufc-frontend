@@ -5,14 +5,7 @@ import { collectes } from '@/lib/api'
 import Link from 'next/link'
 import { Heart, ChevronRight, Lock, Clock, CheckCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const CATEGORY_LABELS: Record<string, string> = {
-  deces:     'Décès',
-  mariage:   'Mariage',
-  naissance: 'Naissance',
-  maladie:   'Maladie',
-  autre:     'Autre',
-}
+import { categoryLabel } from '@/lib/collecte-categories'
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   active:   { label: 'En cours',  color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200',  icon: Heart },
@@ -112,7 +105,7 @@ export default function CollectesPage() {
                     {/* Beneficiary + category */}
                     <p className="text-xs text-slate-400 mt-0.5">
                       {c.beneficiary_name}
-                      {c.category && ` · ${CATEGORY_LABELS[c.category] ?? c.category}`}
+                      {c.category && ` · ${categoryLabel(c.category)}`}
                     </p>
 
                     {/* Progress */}

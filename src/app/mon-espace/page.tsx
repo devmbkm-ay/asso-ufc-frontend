@@ -6,19 +6,12 @@ import { cotisations, collectes, events, members as membersApi } from '@/lib/api
 import Link from 'next/link'
 import { Heart, Calendar, CreditCard, Users, ChevronRight, CheckCircle2, Circle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { categoryLabel } from '@/lib/collecte-categories'
 
 const CURRENT_YEAR  = new Date().getFullYear()
 const CURRENT_MONTH = new Date().getMonth() + 1
 
 const MONTHS_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-
-const CATEGORY_LABELS: Record<string, string> = {
-  deces:    'Décès',
-  mariage:  'Mariage',
-  naissance:'Naissance',
-  maladie:  'Maladie',
-  autre:    'Autre',
-}
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -191,7 +184,7 @@ export default function MonEspacePage() {
                     <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
                     <p className="text-xs text-slate-400 mt-0.5">
                       {fmtAmount(c.total_collected)} collectés · {c.contributors_count} contributeurs
-                      {c.category && ` · ${CATEGORY_LABELS[c.category] ?? c.category}`}
+                      {c.category && ` · ${categoryLabel(c.category)}`}
                     </p>
                   </div>
                   <ChevronRight size={14} className="text-slate-400 shrink-0" />

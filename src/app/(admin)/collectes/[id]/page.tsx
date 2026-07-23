@@ -14,14 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
-
-const CATEGORY_LABEL: Record<string, string> = {
-  deces: 'Décès',
-  mariage: 'Mariage',
-  naissance: 'Naissance',
-  maladie: 'Maladie',
-  autre: 'Autre',
-}
+import { categoryLabel, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -271,10 +264,10 @@ export default function CollecteDetailPage() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-xl font-semibold text-slate-800">{collecte.title}</h1>
-                <p className="text-sm text-slate-400 mt-0.5">En mémoire de {collecte.beneficiary_name}</p>
+                <p className="text-sm text-slate-400 mt-0.5">{categoryPrefix(collecte.category)} {collecte.beneficiary_name}</p>
                 {collecte.category && (
                   <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-[#6366F1] border border-[rgba(99,102,241,0.2)]">
-                    {CATEGORY_LABEL[collecte.category] ?? collecte.category}
+                    {categoryLabel(collecte.category)}
                   </span>
                 )}
               </div>
@@ -450,8 +443,14 @@ export default function CollecteDetailPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Nom du défunt</label>
-              <Input value={editForm.beneficiary_name} onChange={editField('beneficiary_name')} required className={FIELD} />
+              <label className="text-xs text-slate-500">{categoryFieldLabel(collecte.category)}</label>
+              <Input
+                value={editForm.beneficiary_name}
+                onChange={editField('beneficiary_name')}
+                required
+                placeholder={categoryPlaceholder(collecte.category)}
+                className={FIELD}
+              />
             </div>
 
             {/* Photo */}

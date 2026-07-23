@@ -6,16 +6,9 @@ import { collectes, events } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { Heart, Users, MapPin, Ticket, Archive, CalendarCheck, HandCoins } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { categoryLabel, categoryPrefix } from '@/lib/collecte-categories'
 
 // ── Constants ────────────────────────────────────────────────────────────────
-
-const CATEGORY_LABEL: Record<string, string> = {
-  deces:     'Décès',
-  mariage:   'Mariage',
-  naissance: 'Naissance',
-  maladie:   'Maladie',
-  autre:     'Autre',
-}
 
 const CATEGORIES = [
   { value: '',          label: 'Toutes catégories' },
@@ -203,11 +196,11 @@ export default function HistoriquePage() {
                     <p className="text-sm font-semibold text-slate-800">{c.title}</p>
                     {c.category && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-[#6366F1] border border-[rgba(99,102,241,0.2)]">
-                        {CATEGORY_LABEL[c.category] ?? c.category}
+                        {categoryLabel(c.category)}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400">En mémoire de {c.beneficiary_name}</p>
+                  <p className="text-xs text-slate-400">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
                   <p className="text-[11px] text-slate-400">
                     {fmtDate(c.start_date)} → {fmtDate(c.end_date)}
                     {c.archived_at && (

@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Plus, Heart, Users, Calendar, ImagePlus, X, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { CATEGORY_OPTIONS, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
 
 function today() {
   return new Date().toISOString().split('T')[0]
@@ -37,15 +38,6 @@ const STATUS_BADGE: Record<string, { label: string; className: string }> = {
   expired: { label: 'Expirée', className: 'text-[10px] border bg-slate-100 text-slate-500 border-slate-200' },
   closed: { label: 'Clôturée', className: 'text-[10px] border bg-cyan-50 text-cyan-700 border-cyan-200' },
 }
-
-const CATEGORIES = [
-  { value: '', label: 'Non précisé' },
-  { value: 'deces', label: 'Décès' },
-  { value: 'mariage', label: 'Mariage' },
-  { value: 'naissance', label: 'Naissance' },
-  { value: 'maladie', label: 'Maladie' },
-  { value: 'autre', label: 'Autre' },
-]
 
 const EMPTY_FORM = {
   title: '',
@@ -190,12 +182,25 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Nom du défunt *</label>
+                  <label className="text-xs text-slate-500">Catégorie</label>
+                  <select
+                    value={form.category}
+                    onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                  >
+                    {CATEGORY_OPTIONS.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs text-slate-500">{categoryFieldLabel(form.category)} *</label>
                   <Input
                     value={form.beneficiary_name}
                     onChange={field('beneficiary_name')}
                     required
-                    placeholder="M. Jean Dupont"
+                    placeholder={categoryPlaceholder(form.category)}
                     className={FIELD}
                   />
                 </div>
@@ -233,19 +238,6 @@ export default function CollectesPage() {
                       Choisir une photo
                     </button>
                   )}
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Catégorie</label>
-                  <select
-                    value={form.category}
-                    onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
-                  >
-                    {CATEGORIES.map(c => (
-                      <option key={c.value} value={c.value}>{c.label}</option>
-                    ))}
-                  </select>
                 </div>
 
                 <div className="space-y-1.5">
@@ -407,7 +399,7 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
-              <p className="text-xs text-slate-400 mt-0.5">En mémoire de {c.beneficiary_name}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
             </div>
             <Badge className={STATUS_BADGE[c.status]?.className ?? STATUS_BADGE.expired.className}>
               {STATUS_BADGE[c.status]?.label ?? 'Expirée'}
