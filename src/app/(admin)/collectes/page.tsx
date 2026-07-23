@@ -11,7 +11,12 @@ import { Badge } from '@/components/ui/badge'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Plus, Heart, Users, Calendar, ImagePlus, X } from 'lucide-react'
+import { Plus, Heart, Users, Calendar, ImagePlus, X, Clock } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+function today() {
+  return new Date().toISOString().split('T')[0]
+}
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -48,7 +53,7 @@ const EMPTY_FORM = {
   description: '',
   min_amount: '20',
   goal_amount: '',
-  start_date: new Date().toISOString().split('T')[0],
+  start_date: today(),
   category: '',
 }
 
@@ -61,6 +66,7 @@ export default function CollectesPage() {
 
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [scheduleLater, setScheduleLater] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -87,6 +93,7 @@ export default function CollectesPage() {
   function closeModal() {
     setOpen(false)
     setForm(EMPTY_FORM)
+    setScheduleLater(false)
     setPhotoFile(null)
     setPhotoPreview(null)
     setFormError(null)
@@ -135,7 +142,7 @@ export default function CollectesPage() {
       description: form.description || undefined,
       min_amount: Number(form.min_amount) || 20,
       goal_amount: form.goal_amount ? Number(form.goal_amount) : undefined,
-      start_date: form.start_date,
+      start_date: scheduleLater ? form.start_date : today(),
       category: form.category || undefined,
     })
   }
@@ -280,18 +287,42 @@ export default function CollectesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Date de début</label>
-                  <Input
-                    type="date"
-                    value={form.start_date}
-                    onChange={field('start_date')}
-                    required
-                    className={FIELD}
-                  />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setScheduleLater(s => !s)}
+                  className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  <div className={cn(
+                    'w-4 h-4 rounded border flex items-center justify-center transition-colors',
+                    scheduleLater
+                      ? 'bg-[#6366F1] border-[#6366F1] text-white'
+                      : 'border-slate-300 bg-white',
+                  )}>
+                    {scheduleLater && <span className="text-[8px] font-bold">✓</span>}
+                  </div>
+                  <Clock size={13} className="text-slate-400" />
+                  Programmer le début plus tard
+                </button>
 
-                <p className="text-xs text-slate-400">La collecte durera 14 jours à partir de la date de début.</p>
+                {scheduleLater && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-slate-500">Date de début</label>
+                    <Input
+                      type="date"
+                      value={form.start_date}
+                      onChange={field('start_date')}
+                      min={today()}
+                      required
+                      className={FIELD}
+                    />
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-400">
+                  {scheduleLater
+                    ? 'La collecte durera 14 jours à partir de la date de début.'
+                    : 'La collecte démarre immédiatement et durera 14 jours.'}
+                </p>
 
                 {formError && (
                   <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
