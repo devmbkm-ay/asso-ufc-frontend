@@ -15,12 +15,12 @@ import { MapPin, Users, Ticket, Heart, HandCoins, Plus, Pencil, X, AlertTriangle
 import { cn } from '@/lib/utils'
 import type { EventRead } from '@/lib/types'
 
+// Les événements terminés/annulés vivent dans /historique — cette page ne
+// montre que ce qui reste à gérer, pour éviter la double liste.
 const STATUS_TABS = [
   { value: '',          label: 'Tous' },
   { value: 'published', label: 'Publiés' },
   { value: 'draft',     label: 'Brouillons' },
-  { value: 'completed', label: 'Terminés' },
-  { value: 'cancelled', label: 'Annulés' },
 ]
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
@@ -83,6 +83,11 @@ export default function EvenementsPage() {
     queryKey: ['events', statusFilter],
     queryFn: () => events.list({ status: statusFilter || undefined }),
   })
+
+  // Onglet "Tous" : n'affiche que ce qui reste actionnable (terminés/annulés → /historique)
+  const visibleEvents = statusFilter
+    ? data
+    : data?.filter(ev => ev.status !== 'completed' && ev.status !== 'cancelled')
 
   const { data: allCollectes } = useQuery({
     queryKey: ['collectes'],
@@ -185,7 +190,7 @@ export default function EvenementsPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            {data ? `${data.length} événement${data.length > 1 ? 's' : ''}` : '—'}
+            {visibleEvents ? `${visibleEvents.length} événement${visibleEvents.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
         {canWrite && (
@@ -274,10 +279,10 @@ export default function EvenementsPage() {
         {isLoading && (
           <div className="py-12 text-center text-slate-400 text-sm">Chargement…</div>
         )}
-        {!isLoading && data?.length === 0 && (
+        {!isLoading && visibleEvents?.length === 0 && (
           <div className="py-12 text-center text-slate-400 text-sm">Aucun événement</div>
         )}
-        {data?.map(ev => {
+        {visibleEvents?.map(ev => {
           const d = new Date(ev.event_date)
           const st = STATUS_LABEL[ev.status] ?? { label: ev.status, className: 'bg-gray-100 text-gray-500 border-gray-200' }
           const capacityFull = ev.capacity != null && ev.registrations_count >= ev.capacity
