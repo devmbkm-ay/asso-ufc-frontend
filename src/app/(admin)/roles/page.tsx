@@ -64,7 +64,7 @@ export default function RolesPage() {
   const membersOnly      = data?.items.filter(m => m.roles.every(r => r === 'member')) ?? []
 
   return (
-    <div className="p-8 max-w-3xl space-y-8">
+    <div className="p-8 max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Rôles & accès</h1>
         <p className="text-sm text-slate-400 mt-1">

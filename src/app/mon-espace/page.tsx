@@ -62,7 +62,7 @@ export default function MonEspacePage() {
   const registeredIds   = new Set(myRegs?.map(r => r.event_id) ?? [])
 
   return (
-    <div className="p-6 md:p-8 max-w-3xl space-y-7">
+    <div className="p-6 md:p-8 max-w-3xl mx-auto space-y-7">
 
       {/* Welcome */}
       <div>

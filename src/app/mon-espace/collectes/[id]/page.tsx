@@ -83,7 +83,7 @@ export default function CollecteDetailPage() {
   const minAmount = collecte.min_amount
 
   return (
-    <div className="p-6 md:p-8 max-w-2xl space-y-6">
+    <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
 
       {/* Back */}
       <Link

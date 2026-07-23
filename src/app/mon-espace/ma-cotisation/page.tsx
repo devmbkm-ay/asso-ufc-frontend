@@ -92,7 +92,7 @@ export default function MaCotisationPage() {
     .reduce((s, p) => s + Number(p.amount), 0)
 
   return (
-    <div className="p-6 md:p-8 max-w-2xl space-y-6">
+    <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
 
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Ma cotisation</h1>

@@ -62,7 +62,7 @@ export default function NotificationsPage() {
   const failedCount = data?.filter(n => !n.sent).length ?? 0
 
   return (
-    <div className="p-8 max-w-3xl space-y-8">
+    <div className="p-8 max-w-3xl mx-auto space-y-8">
 
       {/* Header */}
       <div>

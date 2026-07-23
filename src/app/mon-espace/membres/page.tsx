@@ -39,7 +39,7 @@ export default function MembresPage() {
   const total = data?.total ?? 0
 
   return (
-    <div className="p-6 md:p-8 max-w-3xl space-y-6">
+    <div className="p-6 md:p-8 max-w-3xl mx-auto space-y-6">
 
       {/* Header */}
       <div>
