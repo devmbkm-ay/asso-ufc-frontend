@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:full": "concurrently -n api,web -c blue,green \"cd ../assos-ufc && uvicorn app.main:app --reload --port 8000\" \"next dev\"",
+    "dev:full": "concurrently -n api,web -c blue,green \"cd ../assos-ufc && .venv/bin/uvicorn app.main:app --reload --port 8000\" \"next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
