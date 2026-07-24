@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { collectes, events } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton, SkeletonTableRow } from '@/components/ui/skeleton'
 import { Heart, Users, MapPin, Ticket, Archive, CalendarCheck, HandCoins } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { categoryLabel, categoryPrefix } from '@/lib/collecte-categories'
@@ -11,17 +13,17 @@ import { categoryLabel, categoryPrefix } from '@/lib/collecte-categories'
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
-  { value: '',          label: 'Toutes catégories' },
-  { value: 'deces',     label: 'Décès' },
-  { value: 'mariage',   label: 'Mariage' },
+  { value: '', label: 'Toutes catégories' },
+  { value: 'deces', label: 'Décès' },
+  { value: 'mariage', label: 'Mariage' },
   { value: 'naissance', label: 'Naissance' },
-  { value: 'maladie',   label: 'Maladie' },
-  { value: 'autre',     label: 'Autre' },
+  { value: 'maladie', label: 'Maladie' },
+  { value: 'autre', label: 'Autre' },
 ]
 
 const EVENT_STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  completed: { label: 'Terminé',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
-  cancelled: { label: 'Annulé',  className: 'bg-red-50 text-red-600 border-red-200' },
+  completed: { label: 'Terminé', className: 'bg-purple-50 text-purple-600 border-purple-200' },
+  cancelled: { label: 'Annulé', className: 'bg-red-50 text-red-600 border-red-200' },
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
@@ -51,10 +53,10 @@ function uniqueYears(dates: string[]) {
 export default function HistoriquePage() {
   const [tab, setTab] = useState<'collectes' | 'evenements'>('collectes')
 
-  const [collecteYear,     setCollecteYear]     = useState('')
+  const [collecteYear, setCollecteYear] = useState('')
   const [collecteCategory, setCollecteCategory] = useState('')
-  const [eventYear,        setEventYear]        = useState('')
-  const [eventStatus,      setEventStatus]      = useState('')
+  const [eventYear, setEventYear] = useState('')
+  const [eventStatus, setEventStatus] = useState('')
 
   // ── Data ───────────────────────────────────────────────────────────────────
   const { data: allCollectes, isLoading: loadingC } = useQuery({
@@ -72,16 +74,16 @@ export default function HistoriquePage() {
 
   // ── Filters ────────────────────────────────────────────────────────────────
   const filteredCollectes = archived
-    .filter(c => !collecteYear     || yearOf(c.end_date) === Number(collecteYear))
+    .filter(c => !collecteYear || yearOf(c.end_date) === Number(collecteYear))
     .filter(c => !collecteCategory || c.category === collecteCategory)
 
   const filteredEvents = finished
-    .filter(e => !eventYear   || yearOf(e.event_date) === Number(eventYear))
+    .filter(e => !eventYear || yearOf(e.event_date) === Number(eventYear))
     .filter(e => !eventStatus || e.status === eventStatus)
 
   // ── Year options ───────────────────────────────────────────────────────────
   const collecteYears = uniqueYears(archived.map(c => c.end_date))
-  const eventYears    = uniqueYears(finished.map(e => e.event_date))
+  const eventYears = uniqueYears(finished.map(e => e.event_date))
 
   // ── Global stats ───────────────────────────────────────────────────────────
   const totalCollecte = archived.reduce((s, c) => s + Number(c.total_collected), 0)
@@ -118,7 +120,7 @@ export default function HistoriquePage() {
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 w-fit">
         {([
-          { value: 'collectes',  label: 'Collectes archivées' },
+          { value: 'collectes', label: 'Collectes archivées' },
           { value: 'evenements', label: 'Événements terminés' },
         ] as const).map(t => (
           <button
@@ -162,17 +164,24 @@ export default function HistoriquePage() {
 
           {/* Empty */}
           {loadingC && (
-            <div className="py-16 text-center text-slate-400 text-sm">Chargement…</div>
-          )}
-          {!loadingC && archived.length === 0 && (
-            <div className="py-16 text-center space-y-3">
-              <Archive size={36} className="mx-auto text-indigo-200" />
-              <p className="text-sm text-slate-400">Aucune collecte archivée pour le moment</p>
-              <p className="text-xs text-slate-400">Les collectes clôturées et archivées apparaîtront ici</p>
+            <div className="space-y-3 py-4">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
             </div>
           )}
+          {!loadingC && archived.length === 0 && (
+            <EmptyState
+              title="Aucune collecte archivée pour le moment"
+              description="Les collectes clôturées et archivées apparaîtront ici."
+              icon={<Archive className="size-5" />}
+            />
+          )}
           {!loadingC && archived.length > 0 && filteredCollectes.length === 0 && (
-            <div className="py-12 text-center text-slate-400 text-sm">Aucun résultat pour ces filtres</div>
+            <EmptyState
+              title="Aucun résultat pour ces filtres"
+              description="Essayez de réinitialiser les filtres pour afficher davantage de collectes."
+            />
           )}
 
           {/* List */}
@@ -265,17 +274,24 @@ export default function HistoriquePage() {
 
           {/* Empty */}
           {loadingE && (
-            <div className="py-16 text-center text-slate-400 text-sm">Chargement…</div>
-          )}
-          {!loadingE && finished.length === 0 && (
-            <div className="py-16 text-center space-y-3">
-              <CalendarCheck size={36} className="mx-auto text-indigo-200" />
-              <p className="text-sm text-slate-400">Aucun événement terminé pour le moment</p>
-              <p className="text-xs text-slate-400">Les événements marqués "Terminé" ou "Annulé" apparaîtront ici</p>
+            <div className="space-y-3 py-4">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
             </div>
           )}
+          {!loadingE && finished.length === 0 && (
+            <EmptyState
+              title="Aucun événement terminé pour le moment"
+              description="Les événements marqués comme terminés ou annulés apparaîtront ici."
+              icon={<CalendarCheck className="size-5" />}
+            />
+          )}
           {!loadingE && finished.length > 0 && filteredEvents.length === 0 && (
-            <div className="py-12 text-center text-slate-400 text-sm">Aucun résultat pour ces filtres</div>
+            <EmptyState
+              title="Aucun résultat pour ces filtres"
+              description="Réinitialisez les sélecteurs pour retrouver la liste complète."
+            />
           )}
 
           {/* List */}

@@ -6,37 +6,39 @@ import { cotisations, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const MONTHS      = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
 const MONTHS_FULL = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 
 const METHOD_LABELS: Record<string, string> = {
-  cash:          'Espèces',
+  cash: 'Espèces',
   bank_transfer: 'Virement',
-  lydia:         'Lydia',
-  sumeria:       'Sumeria',
-  other:         'Autre',
+  lydia: 'Lydia',
+  sumeria: 'Sumeria',
+  other: 'Autre',
 }
 
 const CELL_STYLE: Record<string, string> = {
   confirmed: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200',
-  declared:  'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
-  pending:   'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
+  declared: 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
+  pending: 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
   cancelled: 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200',
-  none:      'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-[#6366F1]',
+  none: 'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-[#6366F1]',
 }
 
 const CELL_SYMBOL: Record<string, string> = {
   confirmed: '✓',
-  declared:  '~',
-  pending:   '·',
+  declared: '~',
+  pending: '·',
   cancelled: '✕',
-  none:      '+',
+  none: '+',
 }
 
 function fmtEur(n: number) {
@@ -44,34 +46,34 @@ function fmtEur(n: number) {
 }
 
 type SelectedCell = {
-  memberId:   string
+  memberId: string
   memberName: string
-  month:      number
-  year:       number
-  cell:       import('@/lib/types').MonthCell
+  month: number
+  year: number
+  cell: import('@/lib/types').MonthCell
 }
 
 const EMPTY_FORM = {
-  plan_id:      '',
-  amount:       '',
-  method:       'cash',
+  plan_id: '',
+  amount: '',
+  method: 'cash',
   payment_date: new Date().toISOString().split('T')[0],
-  reference:    '',
+  reference: '',
 }
 
 const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
 
 const FREQ_LABELS: Record<string, string> = {
-  monthly:  'Mensuelle',
-  annual:   'Annuelle',
+  monthly: 'Mensuelle',
+  annual: 'Annuelle',
   one_time: 'Ponctuelle',
 }
 
 const EMPTY_PLAN = {
-  label:       '',
-  amount:      '',
-  frequency:   'annual' as 'monthly' | 'annual' | 'one_time',
-  valid_from:  new Date().toISOString().split('T')[0],
+  label: '',
+  amount: '',
+  frequency: 'annual' as 'monthly' | 'annual' | 'one_time',
+  valid_from: new Date().toISOString().split('T')[0],
   valid_until: '',
 }
 
@@ -90,9 +92,9 @@ export default function CotisationsPage() {
   const queryClient = useQueryClient()
   const currentYear = new Date().getFullYear()
 
-  const [year, setYear]         = useState(currentYear)
+  const [year, setYear] = useState(currentYear)
   const [selected, setSelected] = useState<SelectedCell | null>(null)
-  const [form, setForm]         = useState(EMPTY_FORM)
+  const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState<string | null>(null)
 
   // Plan management
@@ -100,27 +102,27 @@ export default function CotisationsPage() {
   const [planForm, setPlanForm] = useState(EMPTY_PLAN)
   const [planError, setPlanError] = useState<string | null>(null)
 
-  const canWrite    = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
+  const canWrite = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
   const canValidate = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary'].includes(r))
-  const canAdmin    = user?.roles.includes('super_admin')
+  const canAdmin = user?.roles.includes('super_admin')
 
   const { data: grid, isLoading } = useQuery({
     queryKey: ['cotisations-grid', year],
-    queryFn:  () => cotisations.grid(year),
+    queryFn: () => cotisations.grid(year),
   })
 
   // Tous les paiements déclarés, y compris les plans annuels/ponctuels
   // (period_month = null) — invisibles dans la grille mensuelle ci-dessous.
   const { data: declaredPayments } = useQuery({
     queryKey: ['cotisations-declared'],
-    queryFn:  () => cotisations.payments({ status: 'declared', size: 200 }),
-    enabled:  !!canValidate,
+    queryFn: () => cotisations.payments({ status: 'declared', size: 200 }),
+    enabled: !!canValidate,
   })
 
   const { data: plans } = useQuery({
     queryKey: ['cotisations-plans'],
-    queryFn:  () => cotisations.plans(),
-    enabled:  !!canWrite,
+    queryFn: () => cotisations.plans(),
+    enabled: !!canWrite,
   })
 
   const { mutate: createPlan, isPending: isCreatingPlan } = useMutation({
@@ -154,10 +156,10 @@ export default function CotisationsPage() {
     e.preventDefault()
     setPlanError(null)
     createPlan({
-      label:       planForm.label,
-      amount:      Number(planForm.amount),
-      frequency:   planForm.frequency,
-      valid_from:  planForm.valid_from,
+      label: planForm.label,
+      amount: Number(planForm.amount),
+      frequency: planForm.frequency,
+      valid_from: planForm.valid_from,
       valid_until: planForm.valid_until || undefined,
     })
   }
@@ -247,24 +249,24 @@ export default function CotisationsPage() {
     if (!selected) return
     setFormError(null)
     record({
-      member_id:          selected.memberId,
+      member_id: selected.memberId,
       cotisation_plan_id: form.plan_id,
-      amount:             Number(form.amount),
-      payment_date:       form.payment_date,
-      period_month:       selected.month,
-      period_year:        selected.year,
-      method:             form.method,
-      reference:          form.reference || undefined,
+      amount: Number(form.amount),
+      payment_date: form.payment_date,
+      period_month: selected.month,
+      period_year: selected.year,
+      method: form.method,
+      reference: form.reference || undefined,
     })
   }
 
-  const totalRevenue   = grid?.reduce((sum, row) =>
+  const totalRevenue = grid?.reduce((sum, row) =>
     sum + row.months.reduce((s, m) => s + (m.status === 'confirmed' ? (m.amount ?? 0) : 0), 0), 0) ?? 0
   const confirmedCount = grid?.reduce((sum, row) =>
     sum + row.months.filter(m => m.status === 'confirmed').length, 0) ?? 0
-  const declaredCount  = grid?.reduce((sum, row) =>
+  const declaredCount = grid?.reduce((sum, row) =>
     sum + row.months.filter(m => m.status === 'declared').length, 0) ?? 0
-  const pendingCount   = grid?.reduce((sum, row) =>
+  const pendingCount = grid?.reduce((sum, row) =>
     sum + row.months.filter(m => m.status === 'pending').length, 0) ?? 0
 
   const dialogTitle = selected
@@ -425,12 +427,23 @@ export default function CotisationsPage() {
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={14} className="px-4 py-12 text-center text-slate-400">Chargement…</td>
+                <td colSpan={14} className="px-4 py-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </td>
               </tr>
             )}
             {!isLoading && grid?.length === 0 && (
               <tr>
-                <td colSpan={14} className="px-4 py-12 text-center text-slate-400">Aucune donnée pour {year}</td>
+                <td colSpan={14} className="px-4 py-4">
+                  <EmptyState
+                    title={`Aucune donnée pour ${year}`}
+                    description="Aucune cotisation n’a encore été enregistrée pour cette année."
+                  />
+                </td>
               </tr>
             )}
             {grid?.map(row => {

@@ -7,6 +7,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Toast } from '@/components/ui/toast'
 
 function LoginForm() {
   const { login } = useAuth()
@@ -39,7 +40,7 @@ function LoginForm() {
   const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
@@ -51,9 +52,11 @@ function LoginForm() {
           </div>
 
           {justRegistered && (
-            <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">
-              Compte créé ! Connectez-vous.
-            </p>
+            <Toast
+              variant="success"
+              title="Compte créé !"
+              description="Connectez-vous pour accéder à votre espace."
+            />
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,15 +92,17 @@ function LoginForm() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                {error}
-              </p>
+              <Toast
+                variant="error"
+                title="Connexion impossible"
+                description={error}
+              />
             )}
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+              className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold h-11"
             >
               {loading ? 'Connexion…' : 'Se connecter'}
             </Button>
@@ -117,7 +122,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen mboka-bg" />}>
+    <Suspense fallback={<div className="min-h-screen brand-bg" />}>
       <LoginForm />
     </Suspense>
   )

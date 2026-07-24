@@ -9,6 +9,8 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
@@ -600,11 +602,18 @@ export default function CollecteDetailPage() {
         </div>
 
         {!contributions && (
-          <div className="px-5 py-8 text-center text-slate-400 text-sm">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         )}
         {contributions?.length === 0 && (
-          <div className="px-5 py-10 text-center text-slate-400 text-sm">
-            Soyez le premier à contribuer
+          <div className="px-5 py-5">
+            <EmptyState
+              title="Soyez le premier à contribuer"
+              description="La liste des contributions apparaîtra ici dès qu’une première participation sera enregistrée."
+              icon={<Heart className="size-5" />}
+            />
           </div>
         )}
         {contributions && contributions.length > 0 && (

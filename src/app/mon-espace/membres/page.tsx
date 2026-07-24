@@ -5,13 +5,15 @@ import { useQuery } from '@tanstack/react-query'
 import { members as membersApi } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Search, Crown, BookOpen, Wallet, User } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn, avatarColor } from '@/lib/utils'
 
 const ROLE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
-  super_admin: { label: 'Admin',      icon: Crown,    color: 'text-[#6366F1]',   bg: 'bg-indigo-50',    border: 'border-indigo-200' },
-  treasurer:   { label: 'Trésorier', icon: Wallet,   color: 'text-purple-700',  bg: 'bg-purple-50',     border: 'border-purple-200' },
-  secretary:   { label: 'Secrétaire',icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50',    border: 'border-emerald-200' },
-  member:      { label: 'Membre',     icon: User,     color: 'text-gray-500',    bg: 'bg-gray-100',      border: 'border-gray-200' },
+  super_admin: { label: 'Admin', icon: Crown, color: 'text-[#6366F1]', bg: 'bg-indigo-50', border: 'border-indigo-200' },
+  treasurer: { label: 'Trésorier', icon: Wallet, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
+  secretary: { label: 'Secrétaire', icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  member: { label: 'Membre', icon: User, color: 'text-gray-500', bg: 'bg-gray-100', border: 'border-gray-200' },
 }
 
 function fmtDate(iso: string) {
@@ -65,11 +67,20 @@ export default function MembresPage() {
       <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
 
         {isLoading && (
-          <div className="px-5 py-12 text-center text-sm text-slate-400">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         )}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="px-5 py-12 text-center text-sm text-slate-400">Aucun résultat</div>
+          <div className="px-5 py-5">
+            <EmptyState
+              title="Aucun résultat"
+              description="Ajustez votre recherche pour retrouver un membre dans la liste."
+            />
+          </div>
         )}
 
         {!isLoading && filtered.length > 0 && (

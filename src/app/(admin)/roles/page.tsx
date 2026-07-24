@@ -6,6 +6,9 @@ import { members as membersApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { SkeletonTableRow } from '@/components/ui/skeleton'
+import { Toast } from '@/components/ui/toast'
 import { Shield, Crown, Award, BookOpen, Wallet, User, X, Plus } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
@@ -16,11 +19,11 @@ const ROLE_META: Record<string, {
   bg: string
   border: string
 }> = {
-  super_admin: { label: 'Super admin', icon: Crown,    color: 'text-[#6366F1]',  bg: 'bg-indigo-50',    border: 'border-indigo-200' },
-  president:   { label: 'Président',   icon: Award,    color: 'text-amber-700',  bg: 'bg-amber-50',     border: 'border-amber-200' },
-  treasurer:   { label: 'Trésorier',   icon: Wallet,   color: 'text-purple-700', bg: 'bg-purple-50',    border: 'border-purple-200' },
-  secretary:   { label: 'Secrétaire',  icon: BookOpen, color: 'text-emerald-700',bg: 'bg-emerald-50',   border: 'border-emerald-200' },
-  member:      { label: 'Membre',      icon: User,     color: 'text-gray-500',   bg: 'bg-gray-100',     border: 'border-gray-200' },
+  super_admin: { label: 'Super admin', icon: Crown, color: 'text-[#6366F1]', bg: 'bg-indigo-50', border: 'border-indigo-200' },
+  president: { label: 'Président', icon: Award, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' },
+  treasurer: { label: 'Trésorier', icon: Wallet, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
+  secretary: { label: 'Secrétaire', icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  member: { label: 'Membre', icon: User, color: 'text-gray-500', bg: 'bg-gray-100', border: 'border-gray-200' },
 }
 
 const ALL_ROLES = ['super_admin', 'president', 'treasurer', 'secretary', 'member']
@@ -29,15 +32,15 @@ export default function RolesPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  const [addingFor, setAddingFor]     = useState<string | null>(null)
+  const [addingFor, setAddingFor] = useState<string | null>(null)
   const [selectedRole, setSelectedRole] = useState('')
-  const [error, setError]             = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const canAdmin = user?.roles.includes('super_admin')
 
   const { data, isLoading } = useQuery({
     queryKey: ['members-all'],
-    queryFn:  () => membersApi.list({ size: 500 }),
+    queryFn: () => membersApi.list({ size: 500 }),
   })
 
   const { mutate: assign, isPending: isAssigning } = useMutation({
@@ -62,7 +65,7 @@ export default function RolesPage() {
   })
 
   const membersWithRoles = data?.items.filter(m => m.roles.some(r => r !== 'member')) ?? []
-  const membersOnly      = data?.items.filter(m => m.roles.every(r => r === 'member')) ?? []
+  const membersOnly = data?.items.filter(m => m.roles.every(r => r === 'member')) ?? []
 
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-8">
@@ -96,10 +99,23 @@ export default function RolesPage() {
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <SkeletonTableRow />
+            <SkeletonTableRow />
+            <SkeletonTableRow />
+          </div>
         )}
 
-        {!isLoading && (
+        {!isLoading && membersWithRoles.length === 0 && membersOnly.length === 0 && (
+          <div className="px-5 py-5">
+            <EmptyState
+              title="Aucun membre trouvé"
+              description="Les profils apparaîtront ici une fois que des membres seront disponibles."
+            />
+          </div>
+        )}
+
+        {!isLoading && (membersWithRoles.length > 0 || membersOnly.length > 0) && (
           <ul className="divide-y divide-slate-100">
             {[...membersWithRoles, ...membersOnly].map(m => {
               const isAdding = addingFor === m.id
@@ -204,9 +220,13 @@ export default function RolesPage() {
 
       {/* Error toast */}
       {error && (
-        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          {error}
-        </p>
+        <Toast
+          variant="error"
+          title="Impossible de mettre à jour le rôle"
+          description={error}
+          closeable
+          onClose={() => setError(null)}
+        />
       )}
 
       {/* Bottom note */}

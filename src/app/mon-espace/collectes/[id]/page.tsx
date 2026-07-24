@@ -6,6 +6,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { collectes, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toast } from '@/components/ui/toast'
 import {
   ArrowLeft, Heart, Users, EyeOff, Eye, AlertCircle,
 } from 'lucide-react'
@@ -30,11 +33,11 @@ export default function CollecteDetailPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  const [showForm, setShowForm]       = useState(false)
-  const [amount, setAmount]           = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [amount, setAmount] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
-  const [formError, setFormError]     = useState<string | null>(null)
-  const [success, setSuccess]         = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const { data: collecte, isLoading: loadingCollecte } = useQuery({
     queryKey: ['collecte', id],
@@ -68,8 +71,10 @@ export default function CollecteDetailPage() {
 
   if (loadingCollecte) {
     return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+      <div className="p-8 max-w-2xl mx-auto space-y-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-24 w-full" />
       </div>
     )
   }
@@ -77,8 +82,8 @@ export default function CollecteDetailPage() {
   if (!collecte) return null
 
   const canContribute = collecte.status === 'active'
-  const myContribs    = contributions?.filter(c => c.member_id === user?.id) ?? []
-  const myTotal       = myContribs.reduce((s, c) => s + c.amount, 0)
+  const myContribs = contributions?.filter(c => c.member_id === user?.id) ?? []
+  const myTotal = myContribs.reduce((s, c) => s + c.amount, 0)
 
   const minAmount = collecte.min_amount
 
@@ -117,15 +122,15 @@ export default function CollecteDetailPage() {
             </div>
             <span className={cn(
               'text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0',
-              collecte.status === 'active'   && 'bg-emerald-50 text-emerald-700 border-emerald-200',
+              collecte.status === 'active' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
               collecte.status === 'upcoming' && 'bg-blue-50 text-blue-600 border-blue-200',
-              collecte.status === 'expired'  && 'bg-amber-50 text-amber-600 border-amber-200',
-              collecte.status === 'closed'   && 'bg-gray-100 text-gray-500 border-gray-200',
+              collecte.status === 'expired' && 'bg-amber-50 text-amber-600 border-amber-200',
+              collecte.status === 'closed' && 'bg-gray-100 text-gray-500 border-gray-200',
             )}>
               {collecte.status === 'active' ? 'En cours'
                 : collecte.status === 'upcoming' ? 'À venir'
-                : collecte.status === 'expired' ? 'Expirée'
-                : 'Clôturée'}
+                  : collecte.status === 'expired' ? 'Expirée'
+                    : 'Clôturée'}
             </span>
           </div>
 
@@ -179,10 +184,11 @@ export default function CollecteDetailPage() {
       {canContribute && (
         <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
           {success && (
-            <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
-              <Heart size={14} className="fill-emerald-500 text-emerald-500" />
-              Merci pour votre contribution !
-            </div>
+            <Toast
+              variant="success"
+              title="Merci pour votre contribution !"
+              description="Votre participation a bien été enregistrée."
+            />
           )}
 
           {!showForm ? (
@@ -249,10 +255,13 @@ export default function CollecteDetailPage() {
               )}
 
               {formError && (
-                <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  <AlertCircle size={12} />
-                  {formError}
-                </div>
+                <Toast
+                  variant="error"
+                  title="Contribution non enregistrée"
+                  description={formError}
+                  closeable
+                  onClose={() => setFormError(null)}
+                />
               )}
 
               <div className="flex gap-2">
@@ -286,13 +295,20 @@ export default function CollecteDetailPage() {
         </div>
 
         {loadingContribs && (
-          <div className="px-5 py-8 text-center text-sm text-slate-400">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         )}
 
         {!loadingContribs && contributions?.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <Heart size={24} className="text-slate-300" />
-            <p className="text-sm text-slate-400">Soyez le premier à contribuer</p>
+          <div className="px-5 py-5">
+            <EmptyState
+              title="Soyez le premier à contribuer"
+              description="La liste des participations apparaîtra ici dès qu’un premier montant sera enregistré."
+              icon={<Heart className="size-5" />}
+            />
           </div>
         )}
 

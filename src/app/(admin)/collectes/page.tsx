@@ -8,6 +8,8 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
@@ -346,7 +348,10 @@ export default function CollectesPage() {
       </div>
 
       {isLoading && (
-        <div className="py-16 text-center text-slate-400 text-sm">Chargement…</div>
+        <div className="space-y-3">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>
       )}
 
       {/* Collectes actives */}
@@ -370,10 +375,11 @@ export default function CollectesPage() {
       )}
 
       {!isLoading && data?.length === 0 && (
-        <div className="py-16 text-center space-y-2">
-          <Heart size={32} className="mx-auto text-indigo-200" />
-          <p className="text-sm text-slate-400">Aucune collecte pour le moment</p>
-        </div>
+        <EmptyState
+          title="Aucune collecte pour le moment"
+          description="Les collectes de solidarité apparaîtront ici dès leur création."
+          icon={<Heart className="size-5" />}
+        />
       )}
     </div>
   )
