@@ -271,11 +271,12 @@ export default function MaCotisationPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  {['Période', 'Plan', 'Méthode', 'Date', 'Montant', 'Statut'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      {h}
-                    </th>
-                  ))}
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Période</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Plan</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Méthode</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Date</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Montant</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Statut</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -286,11 +287,11 @@ export default function MaCotisationPage() {
                       <td className="px-4 py-3 text-foreground font-medium whitespace-nowrap">
                         {periodLabel(p)}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{p.plan_label}</td>
-                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap hidden sm:table-cell">{p.plan_label}</td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap hidden md:table-cell">
                         {METHOD_LABELS[p.method] ?? p.method}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{fmtDate(p.payment_date)}</td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap hidden md:table-cell">{fmtDate(p.payment_date)}</td>
                       <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
                       <td className="px-4 py-3">
                         <span className={cn(

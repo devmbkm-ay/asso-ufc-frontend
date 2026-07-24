@@ -567,7 +567,7 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">

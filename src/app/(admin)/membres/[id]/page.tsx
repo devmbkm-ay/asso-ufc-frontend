@@ -346,7 +346,7 @@ export default function MembrePage() {
       </div>
 
       {/* Payment history */}
-      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4">
           <h2 className="text-sm font-semibold text-foreground">Historique des paiements</h2>
           <div className="flex items-center gap-2 bg-muted border border-border rounded-lg px-2.5 py-1.5">

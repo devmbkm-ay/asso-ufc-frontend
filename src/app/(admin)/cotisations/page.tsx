@@ -467,7 +467,7 @@ export default function CotisationsPage() {
                             : canWrite ? 'Enregistrer un paiement' : undefined
                         }
                         className={cn(
-                          'mx-auto w-8 h-7 rounded border flex items-center justify-center text-[11px] font-semibold transition-colors',
+                          'mx-auto w-9 h-9 rounded border flex items-center justify-center text-[11px] font-semibold transition-colors',
                           CELL_STYLE[cell.status],
                           canWrite ? 'cursor-pointer' : 'cursor-default',
                           cell.status === 'none' && !canWrite && 'opacity-60',
