@@ -5,14 +5,16 @@ import { dashboard, members, events } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { AlertTriangle, CalendarDays, Users, MapPin, ChevronRight } from 'lucide-react'
 import { avatarColor, cn } from '@/lib/utils'
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive:  { label: 'Inactif',    className: 'bg-gray-100 text-gray-500 border-gray-200' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary:  { label: 'Honoraire',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
+  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  inactive: { label: 'Inactif', className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
+  honorary: { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
@@ -39,7 +41,7 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const today = new Date()
 
-  const { data: kpis }    = useQuery({ queryKey: ['dashboard'], queryFn: dashboard.treasurer })
+  const { data: kpis } = useQuery({ queryKey: ['dashboard'], queryFn: dashboard.treasurer })
   const { data: membersData } = useQuery({
     queryKey: ['members', 'recent'],
     queryFn: () => members.list({ page: 1, size: 5 }),
@@ -74,7 +76,7 @@ export default function DashboardPage() {
       {/* Événement en avant */}
       {!publishedEvents ? (
         <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
-          <p className="text-sm text-slate-400">Chargement…</p>
+          <Skeleton className="h-6 w-40" />
         </div>
       ) : featuredEvent ? (
         <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -114,16 +116,17 @@ export default function DashboardPage() {
           </a>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-              <CalendarDays size={16} className="text-[#6366F1]" />
-            </div>
-            <p className="text-sm text-slate-400">Aucun événement publié pour le moment</p>
-          </div>
-          <a href="/evenements" className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0">
-            Voir les événements <ChevronRight size={13} />
-          </a>
+        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+          <EmptyState
+            title="Aucun événement publié pour le moment"
+            description="Les événements à venir apparaîtront ici dès leur publication."
+            action={
+              <a href="/evenements" className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0">
+                Voir les événements <ChevronRight size={13} />
+              </a>
+            }
+            icon={<CalendarDays className="size-5" />}
+          />
         </div>
       )}
 
@@ -184,7 +187,9 @@ export default function DashboardPage() {
               )
             })}
             {!membersData && (
-              <li className="text-sm text-slate-400 text-center py-4">Chargement…</li>
+              <li className="py-2">
+                <Skeleton className="h-10 w-full" />
+              </li>
             )}
           </ul>
         </div>
@@ -230,7 +235,9 @@ export default function DashboardPage() {
                 </li>
               )}
               {!publishedEvents && (
-                <li className="text-xs text-slate-400">Chargement…</li>
+                <li className="py-1">
+                  <Skeleton className="h-4 w-24" />
+                </li>
               )}
             </ul>
           </div>

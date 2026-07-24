@@ -29,11 +29,11 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
   return (
     <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
         <Logo variant="icon" size="sm" href="/mon-espace" className="shrink-0" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">Météo Assistance</p>
-          <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">Espace membre</p>
+          <p className="text-sm font-semibold text-sidebar-foreground truncate">Météo Assistance</p>
+          <p className="text-xs text-sidebar-foreground/55 truncate">Espace membre</p>
         </div>
       </div>
 
@@ -49,8 +49,8 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
               className={cn(
                 'flex items-center gap-2.5 px-2 py-2 rounded-md text-sm transition-colors',
                 active
-                  ? 'bg-[rgba(255,255,255,0.15)] text-white font-medium'
-                  : 'text-[rgba(255,255,255,0.65)] hover:text-white hover:bg-[rgba(255,255,255,0.08)]',
+                  ? 'bg-sidebar-accent text-sidebar-primary font-medium'
+                  : 'text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-foreground/8',
               )}
             >
               <Icon size={15} />
@@ -66,7 +66,7 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
           <Link
             href="/dashboard"
             onClick={onClose}
-            className="flex items-center gap-2.5 px-2 py-2 rounded-md text-xs text-muted-foreground hover:text-primary hover:bg-sidebar-accent transition-colors"
+            className="flex items-center gap-2.5 px-2 py-2 rounded-md text-xs text-sidebar-foreground/65 hover:text-sidebar-primary hover:bg-sidebar-accent transition-colors"
           >
             <Settings2 size={13} />
             Espace administration
@@ -75,21 +75,21 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
       )}
 
       {/* User footer */}
-      <div className="border-t border-[rgba(255,255,255,0.10)] p-3">
+      <div className="border-t border-sidebar-border p-3">
         <div className="flex items-center gap-2.5 px-2 py-2">
-          <div className="w-7 h-7 rounded-full bg-[rgba(0,0,0,0.2)] flex items-center justify-center shrink-0">
-            <span className="text-xs font-semibold text-white">
+          <div className="w-7 h-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center shrink-0">
+            <span className="text-xs font-semibold text-sidebar-foreground">
               {user?.first_name?.[0]}{user?.last_name?.[0]}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-white truncate">
+            <p className="text-xs font-medium text-sidebar-foreground truncate">
               {user?.first_name} {user?.last_name}
             </p>
           </div>
           <button
             onClick={logout}
-            className="text-[rgba(255,255,255,0.40)] hover:text-red-300 transition-colors"
+            className="text-sidebar-foreground/40 hover:text-error transition-colors"
             title="Déconnexion"
           >
             <LogOut size={14} />

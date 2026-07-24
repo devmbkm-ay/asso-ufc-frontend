@@ -1,4 +1,8 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL!
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? ''
+
+function buildUrl(path: string) {
+  return BASE_URL ? `${BASE_URL}${path}` : path
+}
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -25,7 +29,7 @@ async function tryRefresh(): Promise<string | null> {
     const refresh = getRefreshToken()
     if (!refresh) return null
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
+      const res = await fetch(buildUrl('/api/v1/auth/refresh'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refresh }),
@@ -56,7 +60,7 @@ export async function apiRequest<T>(
   options?: RequestInit,
 ): Promise<T> {
   const doFetch = (token: string | null) =>
-    fetch(`${BASE_URL}${path}`, {
+    fetch(buildUrl(path), {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -93,7 +97,7 @@ export async function apiUpload(path: string, file: File): Promise<{ url: string
   const form = new FormData()
   form.append('file', file)
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(buildUrl(path), {
     method: 'POST',
     headers: { ...(token && { Authorization: `Bearer ${token}` }) },
     body: form,
@@ -112,7 +116,7 @@ export async function apiUpload(path: string, file: File): Promise<{ url: string
 
 export async function apiDownload(path: string, filename: string): Promise<void> {
   const token = getToken()
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(buildUrl(path), {
     headers: { ...(token && { Authorization: `Bearer ${token}` }) },
   })
   if (res.status === 401) {
@@ -173,8 +177,8 @@ export const auth = {
 export const members = {
   list: (params?: { page?: number; size?: number; status?: string; search?: string }) => {
     const q = new URLSearchParams()
-    if (params?.page)   q.set('page', String(params.page))
-    if (params?.size)   q.set('size', String(params.size))
+    if (params?.page) q.set('page', String(params.page))
+    if (params?.size) q.set('size', String(params.size))
     if (params?.status) q.set('status', params.status)
     if (params?.search) q.set('search', params.search)
     return apiRequest<import('./types').PaginatedMembers>(`/api/v1/members?${q}`)
@@ -216,7 +220,7 @@ export const notifications = {
   list: (params?: { sent?: boolean; limit?: number }) => {
     const q = new URLSearchParams()
     if (params?.sent !== undefined) q.set('sent', String(params.sent))
-    if (params?.limit)              q.set('limit', String(params.limit))
+    if (params?.limit) q.set('limit', String(params.limit))
     return apiRequest<import('./types').NotificationRead[]>(`/api/v1/notifications?${q}`)
   },
   remindOverdue: (month: number, year: number) =>
@@ -241,28 +245,28 @@ export const cotisations = {
     apiRequest<import('./types').PaymentGridRow[]>(`/api/v1/payments/grid?year=${year}`),
   payments: (params?: { page?: number; size?: number; member_id?: string; year?: number; status?: string }) => {
     const q = new URLSearchParams()
-    if (params?.page)      q.set('page', String(params.page))
-    if (params?.size)      q.set('size', String(params.size))
+    if (params?.page) q.set('page', String(params.page))
+    if (params?.size) q.set('size', String(params.size))
     if (params?.member_id) q.set('member_id', params.member_id)
-    if (params?.year)      q.set('year', String(params.year))
-    if (params?.status)    q.set('status', params.status)
+    if (params?.year) q.set('year', String(params.year))
+    if (params?.status) q.set('status', params.status)
     return apiRequest<import('./types').PaginatedPayments>(`/api/v1/payments?${q}`)
   },
   createPlan: (data: {
-    label:       string
-    amount:      number
-    frequency:   'monthly' | 'annual' | 'one_time'
-    valid_from:  string
+    label: string
+    amount: number
+    frequency: 'monthly' | 'annual' | 'one_time'
+    valid_from: string
     valid_until?: string
   }) => apiRequest<import('./types').CotisationPlan>('/api/v1/cotisation-plans', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
   updatePlan: (id: string, data: {
-    label?:       string
-    amount?:      number
+    label?: string
+    amount?: number
     valid_until?: string
-    is_active?:   boolean
+    is_active?: boolean
   }) => apiRequest<import('./types').CotisationPlan>(`/api/v1/cotisation-plans/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
@@ -314,7 +318,7 @@ export const events = {
   list: (params?: { upcoming_only?: boolean; status?: string }) => {
     const q = new URLSearchParams()
     if (params?.upcoming_only) q.set('upcoming_only', 'true')
-    if (params?.status)        q.set('status', params.status)
+    if (params?.status) q.set('status', params.status)
     return apiRequest<import('./types').EventRead[]>(`/api/v1/events?${q}`)
   },
   create: (data: {
@@ -388,7 +392,7 @@ export const upload = {
 export const collectes = {
   list: (params?: { active_only?: boolean; include_archived?: boolean }) => {
     const q = new URLSearchParams()
-    if (params?.active_only)     q.set('active_only',     'true')
+    if (params?.active_only) q.set('active_only', 'true')
     if (params?.include_archived) q.set('include_archived', 'true')
     return apiRequest<import('./types').CollecteRead[]>(`/api/v1/collectes?${q}`)
   },

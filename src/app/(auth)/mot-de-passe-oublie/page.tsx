@@ -6,6 +6,7 @@ import { auth } from '@/lib/api'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Toast } from '@/components/ui/toast'
 import { MailCheck } from 'lucide-react'
 
 const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
@@ -28,7 +29,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
@@ -43,13 +44,19 @@ export default function ForgotPasswordPage() {
           </div>
 
           {sent ? (
-            <div className="text-center space-y-3 py-2">
-              <MailCheck size={40} className="mx-auto text-emerald-500" />
-              <p className="text-sm font-medium text-card-foreground">Email envoyé si le compte existe</p>
-              <p className="text-xs text-muted-foreground">
-                Vérifiez votre boîte de réception (et les indésirables). Le lien est valable 1 heure.
+            <div className="space-y-3">
+              <Toast
+                variant="success"
+                title="Email envoyé"
+                description="Si le compte existe, vous recevrez un lien de réinitialisation valable 1 heure."
+              />
+              <div className="text-center">
+                <MailCheck size={40} className="mx-auto text-emerald-500" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                Vérifiez votre boîte de réception (et les indésirables).
               </p>
-              <Link href="/login" className="block text-sm text-primary hover:underline mt-2">
+              <Link href="/login" className="block text-sm text-primary hover:underline mt-2 text-center">
                 Retour à la connexion
               </Link>
             </div>
@@ -71,7 +78,7 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+                className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold h-11"
               >
                 {loading ? 'Envoi…' : 'Envoyer le lien'}
               </Button>

@@ -7,32 +7,34 @@ import { events, collectes, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { MapPin, Users, Ticket, Heart, HandCoins, Plus, Pencil, X, AlertTriangle } from 'lucide-react'
+import { MapPin, Users, Ticket, Heart, HandCoins, Plus, Pencil, X, AlertTriangle, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { EventRead } from '@/lib/types'
 
 // Les événements terminés/annulés vivent dans /historique — cette page ne
 // montre que ce qui reste à gérer, pour éviter la double liste.
 const STATUS_TABS = [
-  { value: '',          label: 'Tous' },
+  { value: '', label: 'Tous' },
   { value: 'published', label: 'Publiés' },
-  { value: 'draft',     label: 'Brouillons' },
+  { value: 'draft', label: 'Brouillons' },
 ]
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  draft:     { label: 'Brouillon', className: 'bg-gray-100 text-gray-500 border-gray-200' },
-  published: { label: 'Publié',    className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  cancelled: { label: 'Annulé',   className: 'bg-red-50 text-red-600 border-red-200' },
-  completed: { label: 'Terminé',  className: 'bg-purple-50 text-purple-600 border-purple-200' },
+  draft: { label: 'Brouillon', className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  published: { label: 'Publié', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  cancelled: { label: 'Annulé', className: 'bg-red-50 text-red-600 border-red-200' },
+  completed: { label: 'Terminé', className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 const COLLECTE_STATUS_BADGE: Record<string, string> = {
   upcoming: 'text-[10px] border bg-blue-50 text-blue-600 border-blue-200',
-  active:   'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200',
+  active: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200',
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
@@ -49,11 +51,11 @@ function daysLeft(endDate: string) {
 }
 
 const EMPTY_CREATE = {
-  title:        '',
-  event_date:   new Date(Date.now() + 86400000).toISOString().split('T')[0],
-  location:     '',
-  description:  '',
-  capacity:     '',
+  title: '',
+  event_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+  location: '',
+  description: '',
+  capacity: '',
   ticket_price: '0',
 }
 
@@ -65,13 +67,13 @@ export default function EvenementsPage() {
 
   const [statusFilter, setStatusFilter] = useState('')
 
-  const [createOpen, setCreateOpen]   = useState(false)
-  const [createForm, setCreateForm]   = useState(EMPTY_CREATE)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [createForm, setCreateForm] = useState(EMPTY_CREATE)
   const [createError, setCreateError] = useState<string | null>(null)
 
   const [editTarget, setEditTarget] = useState<EventRead | null>(null)
-  const [editForm, setEditForm]     = useState<EditForm>({ ...EMPTY_CREATE, status: 'draft' })
-  const [editError, setEditError]   = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<EditForm>({ ...EMPTY_CREATE, status: 'draft' })
+  const [editError, setEditError] = useState<string | null>(null)
 
   const [cancelTarget, setCancelTarget] = useState<EventRead | null>(null)
 
@@ -130,13 +132,13 @@ export default function EvenementsPage() {
   function openEdit(ev: EventRead) {
     setEditTarget(ev)
     setEditForm({
-      title:        ev.title,
-      event_date:   ev.event_date,
-      location:     ev.location ?? '',
-      description:  ev.description ?? '',
-      capacity:     ev.capacity ? String(ev.capacity) : '',
+      title: ev.title,
+      event_date: ev.event_date,
+      location: ev.location ?? '',
+      description: ev.description ?? '',
+      capacity: ev.capacity ? String(ev.capacity) : '',
       ticket_price: String(ev.ticket_price),
-      status:       ev.status,
+      status: ev.status,
     })
     setEditError(null)
   }
@@ -145,11 +147,11 @@ export default function EvenementsPage() {
     e.preventDefault()
     setCreateError(null)
     create({
-      title:        createForm.title,
-      event_date:   createForm.event_date,
-      location:     createForm.location || undefined,
-      description:  createForm.description || undefined,
-      capacity:     createForm.capacity ? Number(createForm.capacity) : undefined,
+      title: createForm.title,
+      event_date: createForm.event_date,
+      location: createForm.location || undefined,
+      description: createForm.description || undefined,
+      capacity: createForm.capacity ? Number(createForm.capacity) : undefined,
       ticket_price: Number(createForm.ticket_price) || 0,
     })
   }
@@ -161,13 +163,13 @@ export default function EvenementsPage() {
     update({
       id: editTarget.id,
       data: {
-        title:        editForm.title || undefined,
-        event_date:   editForm.event_date || undefined,
-        location:     editForm.location || undefined,
-        description:  editForm.description || undefined,
-        capacity:     editForm.capacity ? Number(editForm.capacity) : undefined,
+        title: editForm.title || undefined,
+        event_date: editForm.event_date || undefined,
+        location: editForm.location || undefined,
+        description: editForm.description || undefined,
+        capacity: editForm.capacity ? Number(editForm.capacity) : undefined,
         ticket_price: Number(editForm.ticket_price),
-        status:       editForm.status || undefined,
+        status: editForm.status || undefined,
       },
     })
   }
@@ -277,10 +279,17 @@ export default function EvenementsPage() {
       {/* Liste événements */}
       <div className="space-y-3">
         {isLoading && (
-          <div className="py-12 text-center text-slate-400 text-sm">Chargement…</div>
+          <div className="space-y-3">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
         )}
         {!isLoading && visibleEvents?.length === 0 && (
-          <div className="py-12 text-center text-slate-400 text-sm">Aucun événement</div>
+          <EmptyState
+            title="Aucun événement"
+            description="Aucune donnée n’est disponible pour ce filtre pour le moment."
+            icon={<Calendar size={16} />}
+          />
         )}
         {visibleEvents?.map(ev => {
           const d = new Date(ev.event_date)

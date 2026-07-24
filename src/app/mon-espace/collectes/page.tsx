@@ -4,14 +4,16 @@ import { useQuery } from '@tanstack/react-query'
 import { collectes } from '@/lib/api'
 import Link from 'next/link'
 import { Heart, ChevronRight, Lock, Clock, CheckCheck } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { categoryLabel } from '@/lib/collecte-categories'
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  active:   { label: 'En cours',  color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200',  icon: Heart },
-  upcoming: { label: 'À venir',   color: 'text-blue-600',    bg: 'bg-blue-50 border-blue-200',        icon: Clock },
-  expired:  { label: 'Expirée',   color: 'text-amber-600',   bg: 'bg-amber-50 border-amber-200',      icon: Clock },
-  closed:   { label: 'Clôturée',  color: 'text-gray-500',    bg: 'bg-gray-100 border-gray-200',       icon: Lock },
+  active: { label: 'En cours', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: Heart },
+  upcoming: { label: 'À venir', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', icon: Clock },
+  expired: { label: 'Expirée', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200', icon: Clock },
+  closed: { label: 'Clôturée', color: 'text-gray-500', bg: 'bg-gray-100 border-gray-200', icon: Lock },
 }
 
 function fmtAmount(n: number) {
@@ -45,25 +47,28 @@ export default function CollectesPage() {
       </div>
 
       {isLoading && (
-        <div className="py-12 text-center text-sm text-slate-400">Chargement…</div>
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
       )}
 
       {!isLoading && sorted.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-            <Heart size={20} className="text-slate-400" />
-          </div>
-          <p className="text-sm text-slate-400">Aucune collecte pour le moment</p>
-        </div>
+        <EmptyState
+          title="Aucune collecte pour le moment"
+          description="Les collectes de solidarité actives ou à venir apparaîtront ici."
+          icon={<Heart className="size-5" />}
+        />
       )}
 
       {sorted.length > 0 && (
         <div className="space-y-3">
           {sorted.map(c => {
-            const meta    = STATUS_META[c.status] ?? STATUS_META.expired
-            const Icon    = meta.icon
-            const goal    = c.goal_amount ?? (c.min_amount > 0 ? c.min_amount * 5 : 0)
-            const pct     = goal > 0
+            const meta = STATUS_META[c.status] ?? STATUS_META.expired
+            const Icon = meta.icon
+            const goal = c.goal_amount ?? (c.min_amount > 0 ? c.min_amount * 5 : 0)
+            const pct = goal > 0
               ? Math.min((c.total_collected / goal) * 100, 100)
               : 0
 

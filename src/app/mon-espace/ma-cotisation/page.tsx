@@ -5,30 +5,32 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cotisations } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, ChevronRight, CreditCard, CheckCircle2, Clock, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const CURRENT_YEAR = new Date().getFullYear()
 
 const MONTHS_SHORT = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-const MONTHS_FULL  = [
+const MONTHS_FULL = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ]
 
 const METHOD_LABELS: Record<string, string> = {
-  cash:          'Espèces',
+  cash: 'Espèces',
   bank_transfer: 'Virement',
-  lydia:         'Lydia',
-  sumeria:       'Sumeria',
-  other:         'Autre',
+  lydia: 'Lydia',
+  sumeria: 'Sumeria',
+  other: 'Autre',
 }
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  confirmed: { label: 'Validé',           color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  declared:  { label: 'En vérification',  color: 'text-blue-700',    bg: 'bg-blue-50',    border: 'border-blue-200'   },
-  pending:   { label: 'En attente',       color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200'  },
-  cancelled: { label: 'Annulé',           color: 'text-red-600',     bg: 'bg-red-50',     border: 'border-red-200'    },
+  confirmed: { label: 'Validé', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  declared: { label: 'En vérification', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' },
+  pending: { label: 'En attente', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' },
+  cancelled: { label: 'Annulé', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
 }
 
 function fmtDate(iso: string) {
@@ -53,14 +55,14 @@ export default function MaCotisationPage() {
 
   const { data: allData } = useQuery({
     queryKey: ['my-payments-all', user?.id],
-    queryFn:  () => cotisations.payments({ member_id: user?.id, size: 500 }),
-    enabled:  !!user,
+    queryFn: () => cotisations.payments({ member_id: user?.id, size: 500 }),
+    enabled: !!user,
   })
 
   const { data: yearData, isLoading } = useQuery({
     queryKey: ['my-payments-year', user?.id, year],
-    queryFn:  () => cotisations.payments({ member_id: user?.id, year, size: 100 }),
-    enabled:  !!user,
+    queryFn: () => cotisations.payments({ member_id: user?.id, year, size: 100 }),
+    enabled: !!user,
   })
 
   const { mutate: confirmPayment } = useMutation({
@@ -73,22 +75,22 @@ export default function MaCotisationPage() {
     onError: () => setConfirmingId(null),
   })
 
-  const allPayments  = allData?.items  ?? []
+  const allPayments = allData?.items ?? []
   const yearPayments = yearData?.items ?? []
 
-  const pendingYear    = yearPayments.filter(p => p.status === 'pending')
-  const declaredYear   = yearPayments.filter(p => p.status === 'declared')
-  const confirmedYear  = yearPayments.filter(p => p.status === 'confirmed')
-  const cancelledYear  = yearPayments.filter(p => p.status === 'cancelled')
-  const displayedYear  = [...confirmedYear, ...cancelledYear] // pending + declared shown separately
+  const pendingYear = yearPayments.filter(p => p.status === 'pending')
+  const declaredYear = yearPayments.filter(p => p.status === 'declared')
+  const confirmedYear = yearPayments.filter(p => p.status === 'confirmed')
+  const cancelledYear = yearPayments.filter(p => p.status === 'cancelled')
+  const displayedYear = [...confirmedYear, ...cancelledYear] // pending + declared shown separately
 
   // Monthly view: only payments with period_month set
   const monthlyConfirmed = confirmedYear.filter(p => p.period_month !== null)
-  const confirmedMonths  = new Set(monthlyConfirmed.map(p => p.period_month))
-  const isMonthlyPlan    = yearPayments.some(p => p.period_month !== null)
+  const confirmedMonths = new Set(monthlyConfirmed.map(p => p.period_month))
+  const isMonthlyPlan = yearPayments.some(p => p.period_month !== null)
 
   const totalPaidThisYear = confirmedYear.reduce((s, p) => s + Number(p.amount), 0)
-  const totalAllTime      = allPayments.filter(p => p.status === 'confirmed')
+  const totalAllTime = allPayments.filter(p => p.status === 'confirmed')
     .reduce((s, p) => s + Number(p.amount), 0)
 
   return (
@@ -108,8 +110,8 @@ export default function MaCotisationPage() {
               ? `${confirmedMonths.size}/12`
               : `${confirmedYear.length}`,
           },
-          { label: `Total ${year}`,  value: fmtAmount(totalPaidThisYear) },
-          { label: 'Total cumulé',   value: fmtAmount(totalAllTime) },
+          { label: `Total ${year}`, value: fmtAmount(totalPaidThisYear) },
+          { label: 'Total cumulé', value: fmtAmount(totalAllTime) },
         ].map(({ label, value }) => (
           <div key={label} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
             <p className="text-lg font-bold text-slate-800">{value}</p>
@@ -208,16 +210,16 @@ export default function MaCotisationPage() {
 
           <div className="grid grid-cols-12 gap-1">
             {MONTHS_SHORT.map((m, i) => {
-              const month  = i + 1
-              const paid   = confirmedMonths.has(month)
+              const month = i + 1
+              const paid = confirmedMonths.has(month)
               const future = year === CURRENT_YEAR && month > new Date().getMonth() + 1
               return (
                 <div key={month} className="flex flex-col items-center gap-1">
                   <div className={cn(
                     'w-full aspect-square rounded flex items-center justify-center text-[9px] font-semibold transition-colors',
-                    paid    ? 'bg-emerald-500 text-white'
-                    : future ? 'bg-slate-100 text-slate-300'
-                    :          'bg-red-100 text-red-300',
+                    paid ? 'bg-emerald-500 text-white'
+                      : future ? 'bg-slate-100 text-slate-300'
+                        : 'bg-red-100 text-red-300',
                   )}>
                     {paid ? '✓' : future ? '' : '✗'}
                   </div>
@@ -236,19 +238,30 @@ export default function MaCotisationPage() {
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         )}
 
         {!isLoading && displayedYear.length === 0 && pendingYear.length === 0 && declaredYear.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <CreditCard size={24} className="text-slate-300" />
-            <p className="text-sm text-slate-400">Aucun paiement enregistré pour {year}</p>
+          <div className="px-5 py-5">
+            <EmptyState
+              title={`Aucun paiement enregistré pour ${year}`}
+              description="Vos paiements seront affichés ici une fois qu’ils seront renseignés."
+              icon={<CreditCard className="size-5" />}
+            />
           </div>
         )}
 
         {!isLoading && displayedYear.length === 0 && (pendingYear.length > 0 || declaredYear.length > 0) && (
-          <div className="px-5 py-6 text-center text-sm text-slate-400">
-            Aucun paiement confirmé pour {year}
+          <div className="px-5 py-5">
+            <EmptyState
+              title={`Aucun paiement confirmé pour ${year}`}
+              description="Les paiements en attente ou en vérification apparaîtront ici jusqu’à leur validation."
+              icon={<CreditCard className="size-5" />}
+            />
           </div>
         )}
 

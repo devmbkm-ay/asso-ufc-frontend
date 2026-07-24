@@ -6,6 +6,9 @@ import { notifications, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toast } from '@/components/ui/toast'
 import {
   UserPlus, CreditCard, Calendar, BellRing,
   CheckCircle2, XCircle, ChevronLeft, ChevronRight, Send,
@@ -138,21 +141,20 @@ export default function NotificationsPage() {
 
           {/* Result */}
           {result && (
-            <div className="ml-12 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-              <p className="text-xs font-semibold text-emerald-800 mb-1.5">Rappels envoyés</p>
-              <div className="flex gap-4 text-xs text-emerald-700">
-                <span><strong>{result.sent_count}</strong> envoyés</span>
-                {result.failed_count > 0 && (
-                  <span className="text-red-600"><strong>{result.failed_count}</strong> échoués</span>
-                )}
-                <span className="text-emerald-600"><strong>{result.skipped_count}</strong> déjà cotisés</span>
-              </div>
-            </div>
+            <Toast
+              variant="success"
+              title="Rappels envoyés"
+              description={`${result.sent_count} envoyés · ${result.failed_count} échoués · ${result.skipped_count} déjà cotisés`}
+            />
           )}
           {resultError && (
-            <p className="ml-12 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-              {resultError}
-            </p>
+            <Toast
+              variant="error"
+              title="Échec de l’envoi"
+              description={resultError}
+              closeable
+              onClose={() => setResultError(null)}
+            />
           )}
         </div>
       )}
@@ -164,15 +166,20 @@ export default function NotificationsPage() {
         </div>
 
         {isLoading && (
-          <div className="px-5 py-10 text-center text-sm text-slate-400">Chargement…</div>
+          <div className="space-y-3 px-5 py-5">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         )}
 
         {!isLoading && data?.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-12 text-center">
-            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-              <BellRing size={20} className="text-slate-300" />
-            </div>
-            <p className="text-sm text-slate-400">Aucune notification envoyée pour le moment</p>
+          <div className="px-5 py-5">
+            <EmptyState
+              title="Aucune notification envoyée pour le moment"
+              description="Les rappels et invitations apparaîtront ici une fois envoyés."
+              icon={<BellRing className="size-5" />}
+            />
           </div>
         )}
 

@@ -6,6 +6,9 @@ import { events, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toast } from '@/components/ui/toast'
 import {
   Calendar, MapPin, Users, Ticket, CheckCircle2, AlertCircle, ChevronDown, ChevronUp,
 } from 'lucide-react'
@@ -30,10 +33,10 @@ function RegistrantsList({ eventId }: { eventId: string }) {
   })
 
   if (isLoading) {
-    return <p className="text-xs text-slate-400 py-2">Chargement des inscrits…</p>
+    return <Skeleton className="h-8 w-full" />
   }
   if (!data || data.length === 0) {
-    return <p className="text-xs text-slate-400 py-2">Aucun inscrit pour le moment.</p>
+    return <EmptyState title="Aucun inscrit pour le moment" description="Les inscriptions apparaîtront ici dès qu’elles seront enregistrées." className="px-3 py-4" />
   }
 
   return (
@@ -117,14 +120,14 @@ export default function EvenementsPage() {
     register({ eventId, amount })
   }
 
-  const now   = new Date()
-  const past  = eventsList?.filter(e => new Date(e.event_date) < now) ?? []
+  const now = new Date()
+  const past = eventsList?.filter(e => new Date(e.event_date) < now) ?? []
   const upcoming = eventsList?.filter(e => new Date(e.event_date) >= now) ?? []
 
   const renderEvent = (e: EventRead) => {
-    const reg     = regsByEvent.get(e.id)
-    const isPast  = new Date(e.event_date) < now
-    const isFull  = e.capacity !== null && e.capacity !== undefined && e.registrations_count >= e.capacity
+    const reg = regsByEvent.get(e.id)
+    const isPast = new Date(e.event_date) < now
+    const isFull = e.capacity !== null && e.capacity !== undefined && e.registrations_count >= e.capacity
     const registrantsOpen = !!expandedRegistrants[e.id]
 
     return (
@@ -179,10 +182,13 @@ export default function EvenementsPage() {
 
         {/* Error */}
         {errors[e.id] && (
-          <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-            <AlertCircle size={12} />
-            {errors[e.id]}
-          </div>
+          <Toast
+            variant="error"
+            title="Action impossible"
+            description={errors[e.id]}
+            closeable
+            onClose={() => setErrors(prev => ({ ...prev, [e.id]: '' }))}
+          />
         )}
 
         {/* Registrants toggle */}
@@ -273,16 +279,18 @@ export default function EvenementsPage() {
       </div>
 
       {isLoading && (
-        <div className="py-12 text-center text-sm text-slate-400">Chargement…</div>
+        <div className="space-y-3">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>
       )}
 
       {!isLoading && eventsList?.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-            <Calendar size={20} className="text-slate-400" />
-          </div>
-          <p className="text-sm text-slate-400">Aucun événement à venir pour le moment</p>
-        </div>
+        <EmptyState
+          title="Aucun événement à venir pour le moment"
+          description="Les événements publiés apparaîtront ici dès leur ouverture."
+          icon={<Calendar className="size-5" />}
+        />
       )}
 
       {upcoming.length > 0 && (

@@ -8,6 +8,8 @@ import { members, cotisations, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -19,27 +21,27 @@ const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-4
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-const MONTHS_FULL  = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+const MONTHS_FULL = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
 
 const METHOD_LABELS: Record<string, string> = {
-  cash:          'Espèces',
+  cash: 'Espèces',
   bank_transfer: 'Virement',
-  lydia:         'Lydia',
-  sumeria:       'Sumeria',
-  other:         'Autre',
+  lydia: 'Lydia',
+  sumeria: 'Sumeria',
+  other: 'Autre',
 }
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',     className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive:  { label: 'Inactif',   className: 'bg-gray-100 text-gray-500 border-gray-200' },
-  suspended: { label: 'Suspendu',  className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary:  { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
+  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  inactive: { label: 'Inactif', className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
+  honorary: { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
 
 const PAYMENT_STATUS: Record<string, { label: string; className: string }> = {
-  confirmed: { label: 'Confirmé',   className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  pending:   { label: 'En attente', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  cancelled: { label: 'Annulé',     className: 'bg-red-50 text-red-600 border-red-200' },
+  confirmed: { label: 'Confirmé', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  pending: { label: 'En attente', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  cancelled: { label: 'Annulé', className: 'bg-red-50 text-red-600 border-red-200' },
 }
 
 function fmtDate(iso: string) {
@@ -132,11 +134,11 @@ export default function MembrePage() {
 
   if (!member) return null
 
-  const st       = STATUS_LABEL[member.status]
+  const st = STATUS_LABEL[member.status]
   const allItems = allPayments?.items ?? []
   const yearItems = yearPayments?.items ?? []
 
-  const totalPaid    = allItems.filter(p => p.status === 'confirmed').reduce((s, p) => s + p.amount, 0)
+  const totalPaid = allItems.filter(p => p.status === 'confirmed').reduce((s, p) => s + p.amount, 0)
   const pendingCount = allItems.filter(p => p.status === 'pending').length
 
   // Current-year confirmed months
@@ -326,11 +328,10 @@ export default function MembrePage() {
                   <div
                     key={monthNum}
                     title={`${MONTHS_FULL[i]} ${CURRENT_YEAR}`}
-                    className={`flex-1 h-5 rounded-sm flex items-center justify-center text-[9px] font-semibold transition-colors ${
-                      paid
+                    className={`flex-1 h-5 rounded-sm flex items-center justify-center text-[9px] font-semibold transition-colors ${paid
                         ? 'bg-emerald-500 text-white'
                         : 'bg-slate-100 text-slate-400'
-                    }`}
+                      }`}
                   >
                     {m}
                   </div>
@@ -376,12 +377,19 @@ export default function MembrePage() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoadingYear && (
-              <tr><td colSpan={6} className="px-5 py-8 text-center text-slate-400">Chargement…</td></tr>
+              <tr>
+                <td colSpan={6} className="px-5 py-5">
+                  <Skeleton className="h-10 w-full" />
+                </td>
+              </tr>
             )}
             {!isLoadingYear && yearItems.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-5 py-8 text-center text-slate-400">
-                  Aucun paiement enregistré en {tableYear}
+                <td colSpan={6} className="px-5 py-5">
+                  <EmptyState
+                    title={`Aucun paiement enregistré en ${tableYear}`}
+                    description="Les paiements de ce membre apparaîtront ici une fois enregistrés."
+                  />
                 </td>
               </tr>
             )}

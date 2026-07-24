@@ -8,6 +8,8 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { SkeletonTableRow } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
@@ -17,26 +19,26 @@ import { cn, avatarColor } from '@/lib/utils'
 const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
 
 const STATUS_TABS = [
-  { value: '',          label: 'Tous' },
-  { value: 'active',    label: 'Actifs' },
-  { value: 'inactive',  label: 'Inactifs' },
+  { value: '', label: 'Tous' },
+  { value: 'active', label: 'Actifs' },
+  { value: 'inactive', label: 'Inactifs' },
   { value: 'suspended', label: 'Suspendus' },
-  { value: 'honorary',  label: 'Honoraires' },
+  { value: 'honorary', label: 'Honoraires' },
 ]
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active:    { label: 'Actif',      className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive:  { label: 'Inactif',    className: 'bg-slate-100 text-slate-500 border-slate-200' },
-  suspended: { label: 'Suspendu',   className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary:  { label: 'Honoraire',  className: 'bg-violet-50 text-violet-600 border-violet-200' },
+  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  inactive: { label: 'Inactif', className: 'bg-slate-100 text-slate-500 border-slate-200' },
+  suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
+  honorary: { label: 'Honoraire', className: 'bg-violet-50 text-violet-600 border-violet-200' },
 }
 
 const ROLE_LABEL: Record<string, string> = {
-  super_admin:    'Administrateur',
-  president:      'Président(e)',
-  treasurer:      'Trésorier(ère)',
-  secretary:      'Secrétaire',
-  member:         'Adhérent(e)',
+  super_admin: 'Administrateur',
+  president: 'Président(e)',
+  treasurer: 'Trésorier(ère)',
+  secretary: 'Secrétaire',
+  member: 'Adhérent(e)',
 }
 
 function fmtDate(iso: string) {
@@ -64,28 +66,28 @@ const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-s
 
 export default function MembresPage() {
   const { user } = useAuth()
-  const isAdmin      = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
+  const isAdmin = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
   const isSuperAdmin = user?.roles?.includes('super_admin') ?? false
-  const isPresident  = user?.roles?.includes('president') ?? false
-  const canInvite    = isSuperAdmin || isPresident
+  const isPresident = user?.roles?.includes('president') ?? false
+  const canInvite = isSuperAdmin || isPresident
 
-  const [search, setSearch]               = useState('')
+  const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [status, setStatus]               = useState('')
-  const [page, setPage]                   = useState(1)
-  const [open, setOpen]                   = useState(false)
-  const [form, setForm]                   = useState(EMPTY_FORM)
-  const [formError, setFormError]         = useState<string | null>(null)
+  const [status, setStatus] = useState('')
+  const [page, setPage] = useState(1)
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [formError, setFormError] = useState<string | null>(null)
 
   // Invite modal state
-  const [inviteOpen, setInviteOpen]       = useState(false)
-  const [inviteMode, setInviteMode]       = useState<'single' | 'bulk'>('single')
-  const [inviteEmail, setInviteEmail]     = useState('')
-  const [inviteError, setInviteError]     = useState<string | null>(null)
-  const [inviteLink, setInviteLink]       = useState<string | null>(null)
-  const [copied, setCopied]               = useState(false)
-  const [bulkEmails, setBulkEmails]       = useState('')
-  const [bulkResult, setBulkResult]       = useState<import('@/lib/types').BulkInviteResult | null>(null)
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [inviteMode, setInviteMode] = useState<'single' | 'bulk'>('single')
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteError, setInviteError] = useState<string | null>(null)
+  const [inviteLink, setInviteLink] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [bulkEmails, setBulkEmails] = useState('')
+  const [bulkResult, setBulkResult] = useState<import('@/lib/types').BulkInviteResult | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -106,9 +108,9 @@ export default function MembresPage() {
 
   const { data: pendingInvites } = useQuery({
     queryKey: ['invites'],
-    queryFn:  invites.list,
-    enabled:  canInvite,
-    select:   data => data.filter(i => i.is_valid),
+    queryFn: invites.list,
+    enabled: canInvite,
+    select: data => data.filter(i => i.is_valid),
   })
 
   const { mutate: createMember, isPending } = useMutation({
@@ -214,11 +216,11 @@ export default function MembresPage() {
     setFormError(null)
     createMember({
       first_name: form.first_name,
-      last_name:  form.last_name,
-      email:      form.email,
-      password:   form.password,
-      phone:      form.phone      || undefined,
-      address:    form.address    || undefined,
+      last_name: form.last_name,
+      email: form.email,
+      password: form.password,
+      phone: form.phone || undefined,
+      address: form.address || undefined,
       birth_date: form.birth_date || undefined,
     })
   }
@@ -411,93 +413,93 @@ export default function MembresPage() {
               </DialogContent>
             </Dialog>}
 
-          <Dialog open={open} onOpenChange={handleOpenChange}>
-            <Button
-              onClick={() => setOpen(true)}
-              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-medium gap-1.5 shrink-0"
-            >
-              <Plus size={14} />
-              Nouveau membre
-            </Button>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
+              <Button
+                onClick={() => setOpen(true)}
+                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-medium gap-1.5 shrink-0"
+              >
+                <Plus size={14} />
+                Nouveau membre
+              </Button>
 
-            <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
-              </DialogHeader>
+              <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
+                </DialogHeader>
 
-              <form onSubmit={handleSubmit} className="space-y-4 mt-1">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Prénom *</label>
-                    <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
+                <form onSubmit={handleSubmit} className="space-y-4 mt-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-xs text-slate-500">Prénom *</label>
+                      <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs text-slate-500">Nom *</label>
+                      <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
+                    </div>
                   </div>
+
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Nom *</label>
-                    <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
+                    <label className="text-xs text-slate-500">Email *</label>
+                    <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
                   </div>
-                </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Email *</label>
-                  <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-slate-500">
+                      Mot de passe *{' '}
+                      <span className="text-slate-400">8 car. min, 1 chiffre requis</span>
+                    </label>
+                    <Input
+                      type="password"
+                      value={form.password}
+                      onChange={field('password')}
+                      required
+                      minLength={8}
+                      className={FIELD_CLASS}
+                    />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">
-                    Mot de passe *{' '}
-                    <span className="text-slate-400">8 car. min, 1 chiffre requis</span>
-                  </label>
-                  <Input
-                    type="password"
-                    value={form.password}
-                    onChange={field('password')}
-                    required
-                    minLength={8}
-                    className={FIELD_CLASS}
-                  />
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-slate-500">Téléphone</label>
+                    <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Téléphone</label>
-                  <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-slate-500">Adresse</label>
+                    <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Adresse</label>
-                  <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-slate-500">Date de naissance</label>
+                    <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Date de naissance</label>
-                  <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
-                </div>
+                  {formError && (
+                    <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                      {formError}
+                    </p>
+                  )}
 
-                {formError && (
-                  <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                    {formError}
-                  </p>
-                )}
-
-                <DialogFooter className="gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={closeModal}
-                    className="border-slate-200 text-slate-500 hover:text-slate-800 bg-transparent"
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isPending}
-                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                  >
-                    {isPending ? 'Création…' : 'Créer le membre'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <DialogFooter className="gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={closeModal}
+                      className="border-slate-200 text-slate-500 hover:text-slate-800 bg-transparent"
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isPending}
+                      className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                    >
+                      {isPending ? 'Création…' : 'Créer le membre'}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>
@@ -585,12 +587,23 @@ export default function MembresPage() {
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={colCount} className="px-5 py-12 text-center text-slate-400">Chargement…</td>
+                <td colSpan={colCount} className="px-5 py-5">
+                  <div className="space-y-3">
+                    <SkeletonTableRow />
+                    <SkeletonTableRow />
+                    <SkeletonTableRow />
+                  </div>
+                </td>
               </tr>
             )}
             {!isLoading && data?.items.length === 0 && (
               <tr>
-                <td colSpan={colCount} className="px-5 py-12 text-center text-slate-400">Aucun membre trouvé</td>
+                <td colSpan={colCount} className="px-5 py-5">
+                  <EmptyState
+                    title="Aucun membre trouvé"
+                    description="Ajustez vos filtres ou ajoutez un nouveau membre pour commencer."
+                  />
+                </td>
               </tr>
             )}
             {data?.items.map(m => {

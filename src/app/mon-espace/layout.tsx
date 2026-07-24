@@ -27,7 +27,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   if (!user) return null
 
   return (
-    <div className="flex h-screen overflow-hidden mboka-bg">
+    <div className="flex h-screen overflow-hidden brand-bg">
       {/* Desktop sidebar */}
       <div className="hidden md:flex h-full">
         <MemberSidebar />

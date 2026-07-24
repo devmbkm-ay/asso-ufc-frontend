@@ -7,6 +7,7 @@ import { auth, ApiError } from '@/lib/api'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Toast } from '@/components/ui/toast'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -55,7 +56,7 @@ export default function RegisterPage() {
   const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
@@ -99,15 +100,17 @@ export default function RegisterPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                {error}
-              </p>
+              <Toast
+                variant="error"
+                title="Création du compte impossible"
+                description={error}
+              />
             )}
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+              className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold h-11"
             >
               {loading ? 'Création…' : 'Créer le compte administrateur'}
             </Button>

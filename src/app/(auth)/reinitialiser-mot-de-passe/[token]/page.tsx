@@ -7,6 +7,7 @@ import { auth, ApiError } from '@/lib/api'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Toast } from '@/components/ui/toast'
 import { CheckCircle2 } from 'lucide-react'
 
 const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
@@ -46,7 +47,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
@@ -58,10 +59,15 @@ export default function ResetPasswordPage() {
           </div>
 
           {done ? (
-            <div className="text-center space-y-3 py-2">
-              <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
-              <p className="text-sm font-medium text-card-foreground">Mot de passe réinitialisé !</p>
-              <p className="text-xs text-muted-foreground">Redirection vers la page de connexion…</p>
+            <div className="space-y-3">
+              <Toast
+                variant="success"
+                title="Mot de passe réinitialisé !"
+                description="Redirection vers la page de connexion…"
+              />
+              <div className="text-center">
+                <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,23 +99,17 @@ export default function ResetPasswordPage() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  {error}
-                  {error.toLowerCase().includes('invalide') && (
-                    <>
-                      {' '}
-                      <Link href="/mot-de-passe-oublie" className="underline font-medium">
-                        Demander un nouveau lien
-                      </Link>
-                    </>
-                  )}
-                </p>
+                <Toast
+                  variant="error"
+                  title="Réinitialisation impossible"
+                  description={error}
+                />
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+                className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold h-11"
               >
                 {loading ? 'Réinitialisation…' : 'Réinitialiser mon mot de passe'}
               </Button>

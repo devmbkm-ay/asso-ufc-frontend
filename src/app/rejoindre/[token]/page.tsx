@@ -65,7 +65,7 @@ export default function RejoindreTokenPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
@@ -150,7 +150,7 @@ export default function RejoindreTokenPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+                  className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold h-11"
                 >
                   {loading ? 'Création…' : 'Créer mon compte'}
                 </Button>
