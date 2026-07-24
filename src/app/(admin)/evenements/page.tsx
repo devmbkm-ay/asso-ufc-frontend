@@ -191,7 +191,7 @@ export default function EvenementsPage() {
     <div className="p-8 max-w-5xl mx-auto space-y-6">
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
           <p className="text-sm text-slate-400 mt-0.5">

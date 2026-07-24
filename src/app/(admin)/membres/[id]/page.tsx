@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
 import { members, cotisations, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
@@ -11,11 +10,12 @@ import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import {
-  ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
+  Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
   CheckCircle2, XCircle, Circle, Info,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
@@ -153,13 +153,13 @@ export default function MembrePage() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-6">
-      <Link
-        href="/membres"
-        className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-800 transition-colors w-fit"
-      >
-        <ArrowLeft size={14} />
-        Retour aux membres
-      </Link>
+      <Breadcrumb
+        items={[
+          { label: 'Tableau de bord', href: '/dashboard' },
+          { label: 'Membres', href: '/membres' },
+          { label: `${member.first_name} ${member.last_name}` },
+        ]}
+      />
 
       {/* Identity */}
       <div className="flex items-start gap-4">

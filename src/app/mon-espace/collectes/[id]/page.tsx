@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toast } from '@/components/ui/toast'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
-  ArrowLeft, Heart, Users, EyeOff, Eye, AlertCircle,
+  Heart, Users, EyeOff, Eye, AlertCircle,
 } from 'lucide-react'
-import Link from 'next/link'
 import { cn, avatarColor } from '@/lib/utils'
 import { categoryLabel } from '@/lib/collecte-categories'
 
@@ -90,13 +90,13 @@ export default function CollecteDetailPage() {
   return (
     <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
 
-      {/* Back */}
-      <Link
-        href="/mon-espace/collectes"
-        className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-800 transition-colors"
-      >
-        <ArrowLeft size={13} /> Collectes
-      </Link>
+      <Breadcrumb
+        items={[
+          { label: 'Mon espace', href: '/mon-espace' },
+          { label: 'Collectes', href: '/mon-espace/collectes' },
+          { label: collecte.title },
+        ]}
+      />
 
       {/* Header card */}
       <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">

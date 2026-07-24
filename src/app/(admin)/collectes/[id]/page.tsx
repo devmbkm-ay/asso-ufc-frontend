@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
 import { collectes, upload, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
@@ -11,11 +10,12 @@ import { Input } from '@/components/ui/input'
 import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import {
-  ArrowLeft, Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle,
+  Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle,
   CheckCircle2, Circle,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
@@ -247,13 +247,13 @@ export default function CollecteDetailPage() {
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
 
-      <Link
-        href="/collectes"
-        className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-800 transition-colors w-fit"
-      >
-        <ArrowLeft size={14} />
-        Retour aux collectes
-      </Link>
+      <Breadcrumb
+        items={[
+          { label: 'Tableau de bord', href: '/dashboard' },
+          { label: 'Collectes', href: '/collectes' },
+          { label: collecte.title },
+        ]}
+      />
 
       {/* Header */}
       <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-6">
