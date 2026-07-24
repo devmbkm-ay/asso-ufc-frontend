@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
+import { Logo } from '@/components/Logo'
 import {
   LayoutDashboard, Users, CreditCard, Calendar,
   Bell, Download, Shield, Settings, LogOut, Heart, History,
@@ -45,11 +46,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     <aside className="flex flex-col w-56 h-full bg-[#1F2139] border-r border-[rgba(99,102,241,0.20)] shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-lg">
-          <span className="text-sm font-bold text-white">M</span>
-        </div>
+        <Logo variant="icon" size="sm" href="/dashboard" className="shrink-0" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">Fondation Météo Assistance</p>
+          <p className="text-sm font-semibold text-white truncate">Météo Assistance</p>
           <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">{user?.roles?.[0] ?? 'Membre'}</p>
         </div>
       </div>

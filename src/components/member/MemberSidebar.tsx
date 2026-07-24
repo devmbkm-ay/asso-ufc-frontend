@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
+import { Logo } from '@/components/Logo'
 import {
   LayoutDashboard, Users, Heart, Calendar, CreditCard, LogOut, Settings2, User,
 } from 'lucide-react'
@@ -29,11 +30,9 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
     <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-lg">
-          <span className="text-sm font-bold text-white">M</span>
-        </div>
+        <Logo variant="icon" size="sm" href="/mon-espace" className="shrink-0" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">Fondation Météo Assistance</p>
+          <p className="text-sm font-semibold text-white truncate">Météo Assistance</p>
           <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">Espace membre</p>
         </div>
       </div>

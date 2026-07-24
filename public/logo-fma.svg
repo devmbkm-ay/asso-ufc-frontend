@@ -1,0 +1,49 @@
+<svg viewBox="0 0 1200 450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define gradients and filters -->
+  <defs>
+    <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFC700;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  
+  <!-- Left Side: Icon -->
+  <g filter="url(#shadow)">
+    <!-- Dark blue background with rounded corners -->
+    <rect x="20" y="30" width="360" height="390" rx="45" fill="#001a4d"/>
+    
+    <!-- Circular arcs -->
+    <!-- Yellow/Gold arc (top) -->
+    <path d="M 80 120 A 130 130 0 0 1 240 70" stroke="#FFD700" stroke-width="18" fill="none" stroke-linecap="round"/>
+    
+    <!-- Green arc (left bottom) -->
+    <path d="M 95 270 A 130 130 0 0 0 130 350" stroke="#1a8a3e" stroke-width="16" fill="none" stroke-linecap="round"/>
+    
+    <!-- Red arc (right bottom) -->
+    <path d="M 310 300 A 130 130 0 0 1 270 360" stroke="#e63946" stroke-width="16" fill="none" stroke-linecap="round"/>
+    
+    <!-- FMA Text -->
+    <text x="200" y="280" font-family="Arial, sans-serif" font-size="140" font-weight="900" fill="white" text-anchor="middle" letter-spacing="8">FMA</text>
+  </g>
+  
+  <!-- Right Side: Text Branding -->
+  <g>
+    <!-- FONDATION -->
+    <text x="460" y="110" font-family="Arial, sans-serif" font-size="32" font-weight="300" fill="#001a4d" letter-spacing="4">FONDATION</text>
+    
+    <!-- MÉTÉO -->
+    <text x="460" y="190" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#001a4d" letter-spacing="2">MÉTÉO</text>
+    
+    <!-- ASSISTANCE -->
+    <text x="460" y="270" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#1a8a3e" letter-spacing="2">ASSISTANCE</text>
+    
+    <!-- Yellow underline -->
+    <line x1="460" y1="295" x2="1100" y2="295" stroke="#FFD700" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- L'UNION FAIT LA FORCE -->
+    <text x="460" y="360" font-family="Arial, sans-serif" font-size="28" font-weight="400" fill="#333" letter-spacing="3">L'UNION FAIT LA FORCE</text>
+  </g>
+</svg>

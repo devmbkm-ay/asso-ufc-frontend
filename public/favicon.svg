@@ -1,0 +1,23 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Dark blue background with rounded corners -->
+  <rect x="0" y="0" width="200" height="200" rx="32" fill="#001a4d"/>
+  
+  <!-- Circular arcs forming the circle -->
+  <!-- Yellow/Gold arc (top right) -->
+  <path d="M 40 60 A 70 70 0 0 1 120 30" stroke="#FFD700" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Green arc (left bottom) -->
+  <path d="M 50 140 A 70 70 0 0 0 65 170" stroke="#1a8a3e" stroke-width="10" fill="none" stroke-linecap="round"/>
+  
+  <!-- Red arc (right bottom) -->
+  <path d="M 155 150 A 70 70 0 0 1 135 175" stroke="#e63946" stroke-width="10" fill="none" stroke-linecap="round"/>
+  
+  <!-- FMA Text - optimized for small sizes -->
+  <text x="100" y="130" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="2">FMA</text>
+</svg>
