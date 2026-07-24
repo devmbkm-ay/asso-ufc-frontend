@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { members, cotisations, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,10 +14,13 @@ import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
+import {
+  ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
+  CheckCircle2, XCircle, Circle, Info,
+} from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -31,17 +34,17 @@ const METHOD_LABELS: Record<string, string> = {
   other: 'Autre',
 }
 
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive: { label: 'Inactif', className: 'bg-gray-100 text-gray-500 border-gray-200' },
-  suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary: { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
+const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
+  active: { label: 'Actif', status: 'active', icon: <CheckCircle2 size={11} /> },
+  inactive: { label: 'Inactif', status: 'inactive', icon: <Circle size={11} /> },
+  suspended: { label: 'Suspendu', status: 'cancelled', icon: <XCircle size={11} /> },
+  honorary: { label: 'Honoraire', status: 'info', icon: <Info size={11} /> },
 }
 
-const PAYMENT_STATUS: Record<string, { label: string; className: string }> = {
-  confirmed: { label: 'Confirmé', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  pending: { label: 'En attente', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  cancelled: { label: 'Annulé', className: 'bg-red-50 text-red-600 border-red-200' },
+const PAYMENT_STATUS: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
+  confirmed: { label: 'Confirmé', status: 'completed', icon: <CheckCircle2 size={11} /> },
+  pending: { label: 'En attente', status: 'pending', icon: <Clock size={11} /> },
+  cancelled: { label: 'Annulé', status: 'cancelled', icon: <XCircle size={11} /> },
 }
 
 function fmtDate(iso: string) {
@@ -127,7 +130,7 @@ export default function MembrePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -170,11 +173,11 @@ export default function MembrePage() {
             <h1 className="text-2xl font-semibold text-slate-800">
               {member.first_name} {member.last_name}
             </h1>
-            <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+            <StatusBadge status={st.status} label={st.label} icon={st.icon} />
             {canEdit && (
               <button
                 onClick={openEditModal}
-                className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
+                className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
                 title="Modifier le profil"
               >
                 <Pencil size={13} />
@@ -184,7 +187,7 @@ export default function MembrePage() {
           {member.roles.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {member.roles.map(r => (
-                <span key={r} className="text-xs text-[#6366F1] bg-indigo-50 px-2 py-0.5 rounded">
+                <span key={r} className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded">
                   {r}
                 </span>
               ))}
@@ -195,7 +198,7 @@ export default function MembrePage() {
 
       {canEdit && (
         <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-          <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+          <DialogContent className="bg-white border-primary/15 sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-slate-800">Modifier le profil</DialogTitle>
             </DialogHeader>
@@ -249,7 +252,7 @@ export default function MembrePage() {
                 <Button
                   type="submit"
                   disabled={editPending}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  className="bg-primary hover:bg-primary/80 text-white"
                 >
                   {editPending ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -262,33 +265,33 @@ export default function MembrePage() {
       {/* Info + Cotisations cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Informations</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <Mail size={14} className="text-[#6366F1] shrink-0" />
+              <Mail size={14} className="text-primary shrink-0" />
               <span className="text-slate-800">{member.email}</span>
             </div>
             {member.phone && (
               <div className="flex items-center gap-3 text-sm">
-                <Phone size={14} className="text-[#6366F1] shrink-0" />
+                <Phone size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{member.phone}</span>
               </div>
             )}
             {member.address && (
               <div className="flex items-center gap-3 text-sm">
-                <MapPin size={14} className="text-[#6366F1] shrink-0" />
+                <MapPin size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{member.address}</span>
               </div>
             )}
             {member.birth_date && (
               <div className="flex items-center gap-3 text-sm">
-                <Calendar size={14} className="text-[#6366F1] shrink-0" />
+                <Calendar size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{fmtDate(member.birth_date)}</span>
               </div>
             )}
             <div className="flex items-center gap-3 text-sm">
-              <Clock size={14} className="text-[#6366F1] shrink-0" />
+              <Clock size={14} className="text-primary shrink-0" />
               <span className="text-slate-500">
                 Membre depuis le <span className="text-slate-800">{fmtDate(member.joined_at)}</span>
               </span>
@@ -296,12 +299,12 @@ export default function MembrePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Cotisations</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Total versé</span>
-              <span className="text-sm font-semibold text-[#6366F1]">{fmtEur(totalPaid)}</span>
+              <span className="text-sm font-semibold text-primary">{fmtEur(totalPaid)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Paiements enregistrés</span>
@@ -343,7 +346,7 @@ export default function MembrePage() {
       </div>
 
       {/* Payment history */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
           <h2 className="text-sm font-semibold text-slate-800">Historique des paiements</h2>
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
@@ -394,7 +397,7 @@ export default function MembrePage() {
               </tr>
             )}
             {yearItems.map(p => {
-              const ps = PAYMENT_STATUS[p.status] ?? { label: p.status, className: 'bg-gray-100 text-gray-500 border-gray-200' }
+              const ps = PAYMENT_STATUS[p.status] ?? { label: p.status, status: 'inactive' as const, icon: <Circle size={11} /> }
               const period = p.period_month
                 ? `${MONTHS_FULL[p.period_month - 1]} ${p.period_year}`
                 : String(p.period_year)
@@ -408,7 +411,7 @@ export default function MembrePage() {
                   <td className="px-5 py-3 text-slate-500 hidden md:table-cell">{fmtDate(p.payment_date)}</td>
                   <td className="px-5 py-3 text-right font-medium text-slate-800">{fmtEur(p.amount)}</td>
                   <td className="px-5 py-3">
-                    <Badge className={`text-[10px] border ${ps.className}`}>{ps.label}</Badge>
+                    <StatusBadge status={ps.status} label={ps.label} icon={ps.icon} />
                   </td>
                 </tr>
               )

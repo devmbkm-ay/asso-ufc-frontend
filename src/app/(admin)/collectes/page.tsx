@@ -7,13 +7,13 @@ import { collectes, upload, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Plus, Heart, Users, Calendar, ImagePlus, X, Clock } from 'lucide-react'
+import { Plus, Heart, Users, Calendar, ImagePlus, X, Clock, CheckCircle2, Circle, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CATEGORY_OPTIONS, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
 
@@ -34,11 +34,11 @@ function daysLeft(endDate: string) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
-const STATUS_BADGE: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'À venir', className: 'text-[10px] border bg-indigo-50 text-indigo-600 border-indigo-200' },
-  active: { label: 'En cours', className: 'text-[10px] border bg-emerald-50 text-emerald-700 border-emerald-200' },
-  expired: { label: 'Expirée', className: 'text-[10px] border bg-slate-100 text-slate-500 border-slate-200' },
-  closed: { label: 'Clôturée', className: 'text-[10px] border bg-cyan-50 text-cyan-700 border-cyan-200' },
+const STATUS_BADGE: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
+  upcoming: { label: 'À venir', status: 'info', icon: <Clock size={11} /> },
+  active: { label: 'En cours', status: 'active', icon: <CheckCircle2 size={11} /> },
+  expired: { label: 'Expirée', status: 'inactive', icon: <Circle size={11} /> },
+  closed: { label: 'Clôturée', status: 'inactive', icon: <Lock size={11} /> },
 }
 
 const EMPTY_FORM = {
@@ -51,7 +51,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 export default function CollectesPage() {
   const { user } = useAuth()
@@ -160,13 +160,13 @@ export default function CollectesPage() {
           <Dialog open={open} onOpenChange={next => { if (!next) closeModal(); else setOpen(true) }}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
+              className="bg-primary hover:bg-primary/80 text-white gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouvelle collecte
             </Button>
 
-            <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+            <DialogContent className="bg-white border-primary/15 sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-slate-800">Nouvelle collecte</DialogTitle>
               </DialogHeader>
@@ -188,7 +188,7 @@ export default function CollectesPage() {
                   <select
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                   >
                     {CATEGORY_OPTIONS.map(c => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -234,7 +234,7 @@ export default function CollectesPage() {
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-200 text-xs text-slate-500 hover:border-[#6366F1] hover:text-[#6366F1] transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-200 text-xs text-slate-500 hover:border-primary hover:text-primary transition-colors"
                     >
                       <ImagePlus size={14} />
                       Choisir une photo
@@ -251,7 +251,7 @@ export default function CollectesPage() {
                     onChange={field('description')}
                     rows={3}
                     placeholder="Un mot d'accompagnement pour la famille…"
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
@@ -289,7 +289,7 @@ export default function CollectesPage() {
                   <div className={cn(
                     'w-4 h-4 rounded border flex items-center justify-center transition-colors',
                     scheduleLater
-                      ? 'bg-[#6366F1] border-[#6366F1] text-white'
+                      ? 'bg-primary border-primary text-white'
                       : 'border-slate-300 bg-white',
                   )}>
                     {scheduleLater && <span className="text-[8px] font-bold">✓</span>}
@@ -336,7 +336,7 @@ export default function CollectesPage() {
                   <Button
                     type="submit"
                     disabled={isPending || uploading}
-                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                    className="bg-primary hover:bg-primary/80 text-white"
                   >
                     {uploading ? 'Upload…' : isPending ? 'Création…' : 'Lancer la collecte'}
                   </Button>
@@ -391,10 +391,10 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
   return (
     <Link
       href={`/collectes/${c.id}`}
-      className="block bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 hover:border-[rgba(99,102,241,0.35)] hover:shadow-[0_0_0_1px_rgba(99,102,241,0.15)] transition-all"
+      className="block bg-white rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/35 hover:shadow-[0_0_0_1px_rgba(0,26,77,0.15)] transition-all"
     >
       <div className="flex gap-4">
-        <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-primary/10 flex items-center justify-center">
           {c.photo_url
             ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
             : <Heart size={22} className="text-primary" />
@@ -407,9 +407,11 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
               <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
               <p className="text-xs text-slate-400 mt-0.5">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
             </div>
-            <Badge className={STATUS_BADGE[c.status]?.className ?? STATUS_BADGE.expired.className}>
-              {STATUS_BADGE[c.status]?.label ?? 'Expirée'}
-            </Badge>
+            <StatusBadge
+              status={STATUS_BADGE[c.status]?.status ?? STATUS_BADGE.expired.status}
+              icon={STATUS_BADGE[c.status]?.icon ?? STATUS_BADGE.expired.icon}
+              label={STATUS_BADGE[c.status]?.label ?? 'Expirée'}
+            />
           </div>
 
           <div className="flex flex-wrap gap-5 mt-3 text-sm">
@@ -418,11 +420,11 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
               <p className="text-[10px] text-slate-400 mt-0.5">collectés</p>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Users size={12} className="text-[#6366F1]" />
+              <Users size={12} className="text-primary" />
               {c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Calendar size={12} className="text-[#6366F1]" />
+              <Calendar size={12} className="text-primary" />
               {c.is_active
                 ? `${remaining} jour${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`
                 : `Terminée le ${fmtDate(c.end_date)}`

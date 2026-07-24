@@ -86,8 +86,8 @@ export default function MonEspacePage() {
             label: 'Collectes actives',
             value: String(activeCollectes.length),
             icon: Heart,
-            color: 'text-[#6366F1]',
-            bg: 'bg-indigo-50',
+            color: 'text-primary',
+            bg: 'bg-primary/10',
           },
           {
             label: 'Événements à venir',
@@ -104,7 +104,7 @@ export default function MonEspacePage() {
             bg: 'bg-cyan-50',
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
+          <div key={label} className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
             <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', bg)}>
               <Icon size={15} className={color} />
             </div>
@@ -115,10 +115,10 @@ export default function MonEspacePage() {
       </div>
 
       {/* Cotisation status */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-800">Cotisation {CURRENT_YEAR}</h2>
-          <Link href="/mon-espace/ma-cotisation" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
+          <Link href="/mon-espace/ma-cotisation" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
             Détail <ChevronRight size={13} />
           </Link>
         </div>
@@ -163,10 +163,10 @@ export default function MonEspacePage() {
 
       {/* Active collectes */}
       {activeCollectes.length > 0 && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-800">Collectes en cours</h2>
-            <Link href="/mon-espace/collectes" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
+            <Link href="/mon-espace/collectes" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
               Voir tout <ChevronRight size={13} />
             </Link>
           </div>
@@ -177,8 +177,8 @@ export default function MonEspacePage() {
                   href={`/mon-espace/collectes/${c.id}`}
                   className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-                    <Heart size={14} className="text-[#6366F1]" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Heart size={14} className="text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
@@ -197,10 +197,10 @@ export default function MonEspacePage() {
 
       {/* Next event */}
       {nextEvent && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-slate-800">Prochain événement</h2>
-            <Link href="/mon-espace/evenements" className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5]">
+            <Link href="/mon-espace/evenements" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
               Voir tout <ChevronRight size={13} />
             </Link>
           </div>
@@ -209,7 +209,7 @@ export default function MonEspacePage() {
               <Calendar size={16} className="text-blue-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 group-hover:text-[#6366F1] transition-colors">
+              <p className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors">
                 {nextEvent.title}
               </p>
               <p className="text-xs text-slate-400 mt-0.5">{fmtDate(nextEvent.event_date)}</p>

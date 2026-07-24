@@ -99,7 +99,7 @@ export default function CollecteDetailPage() {
       </Link>
 
       {/* Header card */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         {collecte.photo_url && (
           <img
             src={collecte.photo_url}
@@ -114,7 +114,7 @@ export default function CollecteDetailPage() {
               <p className="text-sm text-slate-400 mt-0.5">
                 {collecte.beneficiary_name}
                 {collecte.category && (
-                  <span className="ml-2 text-xs bg-indigo-50 text-[#6366F1] px-2 py-0.5 rounded-full">
+                  <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                     {categoryLabel(collecte.category)}
                   </span>
                 )}
@@ -165,7 +165,7 @@ export default function CollecteDetailPage() {
             <div className="space-y-1.5">
               <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#6366F1] transition-all"
+                  className="h-full rounded-full bg-primary transition-all"
                   style={{ width: `${Math.min((collecte.total_collected / collecte.goal_amount) * 100, 100)}%` }}
                 />
               </div>
@@ -182,7 +182,7 @@ export default function CollecteDetailPage() {
 
       {/* Contribute section */}
       {canContribute && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           {success && (
             <Toast
               variant="success"
@@ -199,7 +199,7 @@ export default function CollecteDetailPage() {
               </div>
               <Button
                 onClick={() => setShowForm(true)}
-                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-2"
+                className="bg-primary hover:bg-primary/80 text-white gap-2"
               >
                 <Heart size={14} />
                 Je contribue
@@ -222,7 +222,7 @@ export default function CollecteDetailPage() {
                     placeholder={String(minAmount)}
                     value={amount}
                     onChange={e => { setAmount(e.target.value); setFormError(null) }}
-                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]/20"
+                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">€</span>
                 </div>
@@ -237,7 +237,7 @@ export default function CollecteDetailPage() {
                 <div className={cn(
                   'w-4 h-4 rounded border flex items-center justify-center transition-colors',
                   isAnonymous
-                    ? 'bg-[#6366F1] border-[#6366F1] text-white'
+                    ? 'bg-primary border-primary text-white'
                     : 'border-slate-300 bg-white',
                 )}>
                   {isAnonymous && <span className="text-[8px] font-bold">✓</span>}
@@ -268,7 +268,7 @@ export default function CollecteDetailPage() {
                 <Button
                   onClick={() => contribute()}
                   disabled={!amount || parseFloat(amount) < minAmount || isPending}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  className="bg-primary hover:bg-primary/80 text-white"
                 >
                   {isPending ? 'Envoi…' : `Contribuer ${amount ? fmtAmount(parseFloat(amount)) : ''}`}
                 </Button>
@@ -285,7 +285,7 @@ export default function CollecteDetailPage() {
       )}
 
       {/* Contributions wall */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
           <Users size={14} className="text-slate-400" />
           <h2 className="text-sm font-semibold text-slate-800">Contributeurs</h2>
@@ -319,7 +319,7 @@ export default function CollecteDetailPage() {
               return (
                 <li key={c.id} className={cn(
                   'flex items-center gap-4 px-5 py-3.5',
-                  isMe && 'bg-indigo-50/50',
+                  isMe && 'bg-primary/5',
                 )}>
                   {/* Position */}
                   <span className="text-[11px] text-slate-400 w-5 text-right shrink-0">{i + 1}</span>
@@ -338,7 +338,7 @@ export default function CollecteDetailPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">
                       {c.member_name}
-                      {isMe && <span className="ml-1.5 text-[11px] text-[#6366F1] font-normal">(vous)</span>}
+                      {isMe && <span className="ml-1.5 text-[11px] text-primary font-normal">(vous)</span>}
                     </p>
                     <p className="text-[10px] text-slate-400">{fmtTime(c.contributed_at)}</p>
                   </div>

@@ -19,7 +19,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF]">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -43,7 +43,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-7 h-7 rounded-full bg-linear-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-xs font-bold text-white">M</span>
           </div>
           <span className="text-sm font-semibold text-white">Fondation Météo Assistance</span>

@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { notifications, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toast } from '@/components/ui/toast'
@@ -24,7 +24,7 @@ const MONTHS_FULL = [
 
 const TYPE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string }> = {
   welcome: { label: 'Bienvenue', icon: UserPlus, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  cotisation_reminder: { label: 'Rappel cotisation', icon: CreditCard, color: 'text-[#6366F1]', bg: 'bg-indigo-50' },
+  cotisation_reminder: { label: 'Rappel cotisation', icon: CreditCard, color: 'text-primary', bg: 'bg-primary/10' },
   event_invitation: { label: 'Invitation événement', icon: Calendar, color: 'text-cyan-600', bg: 'bg-cyan-50' },
 }
 
@@ -77,10 +77,10 @@ export default function NotificationsPage() {
 
       {/* Action — Rappels cotisation */}
       {canAction && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-              <Send size={15} className="text-[#6366F1]" />
+            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Send size={15} className="text-primary" />
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-800">Rappels de cotisation</p>
@@ -132,7 +132,7 @@ export default function NotificationsPage() {
               size="sm"
               onClick={() => { setResult(null); setResultError(null); sendReminder() }}
               disabled={isPending}
-              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
+              className="bg-primary hover:bg-primary/80 text-white gap-1.5"
             >
               <Send size={13} />
               {isPending ? 'Envoi…' : 'Envoyer'}
@@ -160,7 +160,7 @@ export default function NotificationsPage() {
       )}
 
       {/* History */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-800">Historique des envois</h2>
         </div>
@@ -196,12 +196,12 @@ export default function NotificationsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-medium text-slate-800 truncate">{n.subject}</p>
-                      <Badge className={`text-[10px] border shrink-0 ${n.sent
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-red-50 text-red-600 border-red-200'
-                        }`}>
-                        {n.sent ? 'Envoyé' : 'Échoué'}
-                      </Badge>
+                      <StatusBadge
+                        className="shrink-0"
+                        status={n.sent ? 'active' : 'cancelled'}
+                        icon={n.sent ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
+                        label={n.sent ? 'Envoyé' : 'Échoué'}
+                      />
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">{fmtDate(n.created_at)}</p>
                   </div>
