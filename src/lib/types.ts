@@ -7,7 +7,7 @@ export interface Member {
   address?: string
   birth_date?: string
   joined_at: string
-  status: 'active' | 'inactive' | 'suspended' | 'honorary'
+  status: 'active' | 'inactive' | 'suspended' | 'honorary' | 'pending'
   roles: string[]
   created_at: string
   updated_at: string
@@ -178,4 +178,12 @@ export interface SkippedInvite {
 export interface BulkInviteResult {
   created: MemberInvite[]
   skipped: SkippedInvite[]
+}
+
+export interface JoinCode {
+  code: string
+  link: string
+  is_active: boolean
+  expires_at: string
+  created_at: string
 }

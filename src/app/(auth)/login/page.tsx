@@ -110,7 +110,7 @@ function LoginForm() {
 
           <p className="text-center text-sm text-muted-foreground">
             Pas encore de compte ?{' '}
-            <Link href="/register" className="text-primary hover:underline font-medium">
+            <Link href="/rejoindre" className="text-primary hover:underline font-medium">
               Créer un compte
             </Link>
           </p>

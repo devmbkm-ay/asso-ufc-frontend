@@ -20,6 +20,29 @@ export class ApiError extends Error {
   }
 }
 
+// FastAPI/Pydantic validation errors come back as `detail: [{loc, msg, type}, ...]`
+// instead of a string — stringify them into something readable rather than
+// letting them render as "[object Object]".
+function extractErrorMessage(body: unknown, fallback: string): string {
+  const detail = (body as { detail?: unknown } | null)?.detail
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail
+      .map((e) => {
+        if (e && typeof e === 'object' && 'msg' in e) {
+          const loc = Array.isArray((e as { loc?: unknown[] }).loc)
+            ? (e as { loc: unknown[] }).loc.filter((p) => p !== 'body').join('.')
+            : null
+          const msg = String((e as { msg: unknown }).msg)
+          return loc ? `${loc}: ${msg}` : msg
+        }
+        return String(e)
+      })
+      .join(' — ')
+  }
+  return fallback
+}
+
 // Mutex so concurrent 401s only trigger one refresh
 let refreshInFlight: Promise<string | null> | null = null
 
@@ -91,7 +114,7 @@ export async function apiRequest<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
-    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+    throw new ApiError(res.status, extractErrorMessage(body, `HTTP ${res.status}`))
   }
 
   if (res.status === 204) return undefined as T
@@ -115,7 +138,7 @@ export async function apiUpload(path: string, file: File): Promise<{ url: string
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
-    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+    throw new ApiError(res.status, extractErrorMessage(body, `HTTP ${res.status}`))
   }
   return res.json()
 }
@@ -131,7 +154,7 @@ export async function apiDownload(path: string, filename: string): Promise<void>
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: 'Erreur réseau' }))
-    throw new ApiError(res.status, body.detail ?? `HTTP ${res.status}`)
+    throw new ApiError(res.status, extractErrorMessage(body, `HTTP ${res.status}`))
   }
   const blob = await res.blob()
   const url = URL.createObjectURL(blob)
@@ -163,6 +186,13 @@ export const auth = {
     }),
   register: (data: { token: string; first_name: string; last_name: string; phone?: string; password: string }) =>
     apiRequest<import('./types').Member>('/api/v1/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  registerViaCode: (data: {
+    code: string; first_name: string; last_name: string; email: string; phone?: string; password: string
+  }) =>
+    apiRequest<import('./types').Member>('/api/v1/auth/register-via-code', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -217,6 +247,11 @@ export const members = {
   revokeRole: (id: string, role_name: string) =>
     apiRequest<import('./types').Member>(`/api/v1/members/${id}/roles/${role_name}`, {
       method: 'DELETE',
+    }),
+  updateStatus: (id: string, status: string) =>
+    apiRequest<import('./types').Member>(`/api/v1/members/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
     }),
 }
 
@@ -385,6 +420,18 @@ export const invites = {
     apiRequest<void>(`/api/v1/invites/${token}`, { method: 'DELETE' }),
   check: (token: string) =>
     apiRequest<{ email: string; valid: boolean }>(`/api/v1/invites/${token}`),
+}
+
+// ── Code d'adhésion ─────────────────────────────────────────────────────────
+
+export const joinCode = {
+  get: () => apiRequest<import('./types').JoinCode | null>('/api/v1/join-code'),
+  rotate: () =>
+    apiRequest<import('./types').JoinCode>('/api/v1/join-code', { method: 'POST' }),
+  deactivate: () =>
+    apiRequest<void>('/api/v1/join-code', { method: 'DELETE' }),
+  check: (code: string) =>
+    apiRequest<{ valid: boolean }>(`/api/v1/join-code/${code}`),
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { members, invites, ApiError } from '@/lib/api'
+import { members, invites, joinCode, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
 import { Input } from '@/components/ui/input'
@@ -13,7 +13,7 @@ import { SkeletonTableRow } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock, CheckCircle2, XCircle, Circle, Info } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock, CheckCircle2, XCircle, Circle, Info, Link2, RotateCw, Power, UserCheck, UserX } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
 const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
@@ -31,6 +31,7 @@ const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['st
   inactive: { label: 'Inactif', status: 'inactive', icon: <Circle size={11} /> },
   suspended: { label: 'Suspendu', status: 'cancelled', icon: <XCircle size={11} /> },
   honorary: { label: 'Honoraire', status: 'info', icon: <Info size={11} /> },
+  pending: { label: 'En attente', status: 'pending', icon: <Clock size={11} /> },
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -70,6 +71,7 @@ export default function MembresPage() {
   const isSuperAdmin = user?.roles?.includes('super_admin') ?? false
   const isPresident = user?.roles?.includes('president') ?? false
   const canInvite = isSuperAdmin || isPresident
+  const canSeePending = isSuperAdmin || (user?.roles?.includes('secretary') ?? false)
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -81,13 +83,12 @@ export default function MembresPage() {
 
   // Invite modal state
   const [inviteOpen, setInviteOpen] = useState(false)
-  const [inviteMode, setInviteMode] = useState<'single' | 'bulk'>('single')
+  const [inviteMode, setInviteMode] = useState<'single' | 'code'>('single')
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [bulkEmails, setBulkEmails] = useState('')
-  const [bulkResult, setBulkResult] = useState<import('@/lib/types').BulkInviteResult | null>(null)
+  const [codeCopied, setCodeCopied] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -111,6 +112,19 @@ export default function MembresPage() {
     queryFn: invites.list,
     enabled: canInvite,
     select: data => data.filter(i => i.is_valid),
+  })
+
+  const { data: activeJoinCode, isLoading: joinCodeLoading } = useQuery({
+    queryKey: ['join-code'],
+    queryFn: joinCode.get,
+    enabled: canInvite && inviteOpen && inviteMode === 'code',
+  })
+
+  const { data: pendingMembers } = useQuery({
+    queryKey: ['members', 'pending'],
+    queryFn: () => members.list({ status: 'pending', size: 100 }),
+    enabled: canSeePending,
+    select: data => data.items,
   })
 
   const { mutate: createMember, isPending } = useMutation({
@@ -142,15 +156,33 @@ export default function MembresPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invites'] }),
   })
 
-  const { mutate: sendBulkInvites, isPending: bulkPending } = useMutation({
-    mutationFn: (emails: string[]) => invites.bulkCreate(emails),
+  const { mutate: rotateJoinCode, isPending: rotatePending } = useMutation({
+    mutationFn: joinCode.rotate,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['invites'] })
-      setBulkResult(data)
+      queryClient.setQueryData(['join-code'], data)
       setInviteError(null)
     },
     onError: (err: unknown) => {
       setInviteError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
+  const { mutate: deactivateJoinCode, isPending: deactivatePending } = useMutation({
+    mutationFn: joinCode.deactivate,
+    onSuccess: () => queryClient.setQueryData(['join-code'], null),
+  })
+
+  const { mutate: approveMember } = useMutation({
+    mutationFn: (id: string) => members.updateStatus(id, 'active'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+    },
+  })
+
+  const { mutate: rejectMember } = useMutation({
+    mutationFn: (id: string) => members.updateStatus(id, 'inactive'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
     },
   })
 
@@ -167,8 +199,7 @@ export default function MembresPage() {
     setInviteError(null)
     setInviteLink(null)
     setCopied(false)
-    setBulkEmails('')
-    setBulkResult(null)
+    setCodeCopied(false)
   }
 
   function handleInviteSubmit(e: React.FormEvent) {
@@ -177,24 +208,18 @@ export default function MembresPage() {
     sendInvite(inviteEmail)
   }
 
-  function parseBulkEmails(raw: string): string[] {
-    const parts = raw.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
-    return Array.from(new Set(parts))
-  }
-
-  function handleBulkSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setInviteError(null)
-    const emails = parseBulkEmails(bulkEmails)
-    if (emails.length === 0) return
-    sendBulkInvites(emails)
-  }
-
   function copyLink() {
     if (!inviteLink) return
     navigator.clipboard.writeText(inviteLink)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  function copyJoinLink() {
+    if (!activeJoinCode) return
+    navigator.clipboard.writeText(activeJoinCode.link)
+    setCodeCopied(true)
+    setTimeout(() => setCodeCopied(false), 2000)
   }
 
   function fmtExpiry(iso: string) {
@@ -260,11 +285,11 @@ export default function MembresPage() {
               <DialogContent className="bg-card border-primary/15 sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle>
-                    {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
+                    {inviteLink ? 'Invitation envoyée' : inviteMode === 'code' ? "Lien d'adhésion" : 'Inviter un membre'}
                   </DialogTitle>
                 </DialogHeader>
 
-                {!inviteLink && !bulkResult && (
+                {!inviteLink && (
                   <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 mt-1">
                     <button
                       type="button"
@@ -278,18 +303,18 @@ export default function MembresPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setInviteMode('bulk'); setInviteError(null) }}
+                      onClick={() => { setInviteMode('code'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'bulk' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground',
+                        inviteMode === 'code' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground',
                       )}
                     >
-                      Plusieurs (liste)
+                      Lien d&apos;adhésion
                     </button>
                   </div>
                 )}
 
-                {!inviteLink && !bulkResult && inviteMode === 'single' && (
+                {!inviteLink && inviteMode === 'single' && (
                   <form onSubmit={handleInviteSubmit} className="space-y-4 mt-3">
                     <div className="space-y-1.5">
                       <label className="text-xs text-muted-foreground">Adresse email du futur membre *</label>
@@ -303,7 +328,7 @@ export default function MembresPage() {
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Un email avec le lien d'inscription sera envoyé automatiquement. Le lien est valable 7 jours.
+                      Un email avec le lien d&apos;inscription sera envoyé automatiquement. Le lien est valable 7 jours.
                     </p>
                     {inviteError && (
                       <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -323,60 +348,89 @@ export default function MembresPage() {
                   </form>
                 )}
 
-                {!inviteLink && !bulkResult && inviteMode === 'bulk' && (
-                  <form onSubmit={handleBulkSubmit} className="space-y-4 mt-3">
-                    <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Emails des futurs membres *</label>
-                      <textarea
-                        value={bulkEmails}
-                        onChange={e => setBulkEmails(e.target.value)}
-                        required
-                        rows={6}
-                        placeholder={'un email par ligne\nex: prenom.nom@example.com'}
-                        className={cn(FIELD_CLASS, 'w-full rounded-md border px-3 py-2 text-sm focus:outline-none')}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Un email par ligne (ou séparés par une virgule). Chaque personne reçoit son propre lien d'inscription, valable 7 jours.
-                    </p>
-                    {inviteError && (
-                      <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                        {inviteError}
-                      </p>
+                {!inviteLink && inviteMode === 'code' && (
+                  <div className="space-y-4 mt-3">
+                    {joinCodeLoading && (
+                      <p className="text-xs text-muted-foreground">Chargement…</p>
                     )}
-                    <DialogFooter className="gap-2">
-                      <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-border text-muted-foreground bg-transparent">
-                        Annuler
-                      </Button>
-                      <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
-                        className="bg-primary hover:bg-primary/80 text-primary-foreground">
-                        {bulkPending ? 'Envoi…' : `Envoyer (${parseBulkEmails(bulkEmails).length})`}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                )}
 
-                {bulkResult && (
-                  <div className="space-y-4 mt-1">
-                    <p className="text-sm text-foreground">
-                      <strong>{bulkResult.created.length}</strong> invitation{bulkResult.created.length > 1 ? 's' : ''} envoyée{bulkResult.created.length > 1 ? 's' : ''}.
-                    </p>
-                    {bulkResult.skipped.length > 0 && (
-                      <div className="space-y-1.5">
-                        <p className="text-xs text-muted-foreground">{bulkResult.skipped.length} ignorée{bulkResult.skipped.length > 1 ? 's' : ''} :</p>
-                        <ul className="max-h-32 overflow-y-auto space-y-1">
-                          {bulkResult.skipped.map(s => (
-                            <li key={s.email} className="text-xs text-muted-foreground bg-muted border border-border rounded-lg px-3 py-1.5 flex justify-between gap-2">
-                              <span className="truncate">{s.email}</span>
-                              <span className="text-muted-foreground shrink-0">{s.reason}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    {!joinCodeLoading && !activeJoinCode && (
+                      <>
+                        <p className="text-xs text-muted-foreground">
+                          Générez un lien unique à partager (WhatsApp, réunion, flyer…). Toute personne
+                          qui l&apos;utilise crée son compte, en attente de votre validation. Valable 30 jours.
+                        </p>
+                        <Button
+                          type="button"
+                          onClick={() => rotateJoinCode()}
+                          disabled={rotatePending}
+                          className="w-full bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5"
+                        >
+                          <Link2 size={14} />
+                          {rotatePending ? 'Génération…' : "Générer le lien d'adhésion"}
+                        </Button>
+                      </>
                     )}
+
+                    {!joinCodeLoading && activeJoinCode && (
+                      <>
+                        <div className="space-y-1.5">
+                          <label className="text-xs text-muted-foreground">Code</label>
+                          <p className="text-lg font-mono font-semibold tracking-widest text-foreground bg-muted border border-border rounded-lg px-3 py-2 text-center">
+                            {activeJoinCode.code}
+                          </p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs text-muted-foreground">Lien à partager</label>
+                          <div className="flex gap-2">
+                            <input
+                              readOnly
+                              value={activeJoinCode.link}
+                              className="flex-1 text-xs px-3 py-2 rounded-lg border border-border bg-muted text-muted-foreground truncate"
+                            />
+                            <Button size="sm" variant="outline" onClick={copyJoinLink}
+                              className="border-border text-muted-foreground gap-1.5 shrink-0">
+                              {codeCopied ? <Check size={13} className="text-success" /> : <Copy size={13} />}
+                              {codeCopied ? 'Copié !' : 'Copier'}
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">
+                          Expire le {fmtExpiry(activeJoinCode.expires_at)}
+                        </p>
+                        {inviteError && (
+                          <p className="text-xs text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2">
+                            {inviteError}
+                          </p>
+                        )}
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => rotateJoinCode()}
+                            disabled={rotatePending}
+                            className="flex-1 border-border text-muted-foreground hover:text-foreground gap-1.5"
+                          >
+                            <RotateCw size={13} />
+                            Régénérer
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => deactivateJoinCode()}
+                            disabled={deactivatePending}
+                            className="flex-1 text-error border-error/30 hover:bg-error/10 gap-1.5"
+                          >
+                            <Power size={13} />
+                            Désactiver
+                          </Button>
+                        </div>
+                      </>
+                    )}
+
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-primary-foreground">
+                      <Button variant="outline" onClick={closeInviteModal}
+                        className="border-border text-muted-foreground bg-transparent">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -503,6 +557,50 @@ export default function MembresPage() {
           </div>
         )}
       </div>
+
+      {/* Membres en attente d'approbation (auto-inscription via lien d'adhésion) */}
+      {canSeePending && pendingMembers && pendingMembers.length > 0 && (
+        <div className="bg-warning/10 border border-warning/30 rounded-xl p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Clock size={14} className="text-warning" />
+            <span className="text-sm font-semibold text-warning">
+              {`${pendingMembers.length} inscription${pendingMembers.length > 1 ? 's' : ''} en attente d'approbation`}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            {pendingMembers.map(pm => (
+              <div key={pm.id} className="flex items-center justify-between gap-3 bg-card border border-warning/20 rounded-lg px-3 py-2">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{pm.first_name} {pm.last_name}</p>
+                  <p className="text-[10px] text-muted-foreground">{pm.email}</p>
+                </div>
+                {isSuperAdmin && (
+                  <div className="flex gap-1.5 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => approveMember(pm.id)}
+                      className="text-success border-success/30 hover:bg-success/10 gap-1"
+                    >
+                      <UserCheck size={12} />
+                      Approuver
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => rejectMember(pm.id)}
+                      className="text-error border-error/30 hover:bg-error/10 gap-1"
+                    >
+                      <UserX size={12} />
+                      Refuser
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Invitations en attente */}
       {canInvite && pendingInvites && pendingInvites.length > 0 && (
