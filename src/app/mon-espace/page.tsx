@@ -66,7 +66,7 @@ export default function MonEspacePage() {
 
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">
+        <h1 className="text-2xl font-semibold text-foreground">
           Bonjour, {user?.first_name} 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">Voici un résumé de votre activité dans l'association.</p>
@@ -104,20 +104,20 @@ export default function MonEspacePage() {
             bg: 'bg-cyan-50',
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
+          <div key={label} className="bg-card rounded-xl border border-primary/15 shadow-sm p-4">
             <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', bg)}>
               <Icon size={15} className={color} />
             </div>
-            <p className="text-xl font-bold text-slate-800">{value}</p>
+            <p className="text-xl font-bold text-foreground">{value}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Cotisation status */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-slate-800">Cotisation {CURRENT_YEAR}</h2>
+          <h2 className="text-sm font-semibold text-foreground">Cotisation {CURRENT_YEAR}</h2>
           <Link href="/mon-espace/ma-cotisation" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
             Détail <ChevronRight size={13} />
           </Link>
@@ -141,7 +141,7 @@ export default function MonEspacePage() {
                     ? 'bg-emerald-500 text-white'
                     : past
                       ? 'bg-red-100 text-red-400'
-                      : 'bg-slate-100 text-muted-foreground',
+                      : 'bg-muted text-muted-foreground',
                 )}>
                   {paid ? '✓' : past ? '✗' : '·'}
                 </div>
@@ -163,25 +163,25 @@ export default function MonEspacePage() {
 
       {/* Active collectes */}
       {activeCollectes.length > 0 && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="text-sm font-semibold text-slate-800">Collectes en cours</h2>
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <h2 className="text-sm font-semibold text-foreground">Collectes en cours</h2>
             <Link href="/mon-espace/collectes" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
               Voir tout <ChevronRight size={13} />
             </Link>
           </div>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {activeCollectes.slice(0, 3).map(c => (
               <li key={c.id}>
                 <Link
                   href={`/mon-espace/collectes/${c.id}`}
-                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-muted transition-colors"
                 >
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Heart size={14} className="text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{c.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {fmtAmount(c.total_collected)} collectés · {c.contributors_count} contributeurs
                       {c.category && ` · ${categoryLabel(c.category)}`}
@@ -197,9 +197,9 @@ export default function MonEspacePage() {
 
       {/* Next event */}
       {nextEvent && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-800">Prochain événement</h2>
+            <h2 className="text-sm font-semibold text-foreground">Prochain événement</h2>
             <Link href="/mon-espace/evenements" className="flex items-center gap-1 text-xs text-primary hover:text-primary">
               Voir tout <ChevronRight size={13} />
             </Link>
@@ -209,7 +209,7 @@ export default function MonEspacePage() {
               <Calendar size={16} className="text-blue-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors">
+              <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                 {nextEvent.title}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">{fmtDate(nextEvent.event_date)}</p>
@@ -223,7 +223,7 @@ export default function MonEspacePage() {
                   <CheckCircle2 size={10} /> Inscrit
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground bg-slate-100 rounded-full px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground bg-muted rounded-full px-2 py-0.5">
                   <Circle size={10} /> Non inscrit
                 </span>
               )}

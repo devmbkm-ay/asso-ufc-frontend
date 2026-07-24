@@ -97,7 +97,7 @@ export default function MaCotisationPage() {
     <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
 
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Ma cotisation</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Ma cotisation</h1>
         <p className="text-sm text-muted-foreground mt-1">Historique de vos paiements</p>
       </div>
 
@@ -113,8 +113,8 @@ export default function MaCotisationPage() {
           { label: `Total ${year}`, value: fmtAmount(totalPaidThisYear) },
           { label: 'Total cumulé', value: fmtAmount(totalAllTime) },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
-            <p className="text-lg font-bold text-slate-800">{value}</p>
+          <div key={label} className="bg-card rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+            <p className="text-lg font-bold text-foreground">{value}</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
           </div>
         ))}
@@ -136,17 +136,17 @@ export default function MaCotisationPage() {
             {pendingYear.map(p => (
               <div
                 key={p.id}
-                className="flex items-center justify-between gap-3 bg-white border border-amber-200 rounded-lg px-4 py-3"
+                className="flex items-center justify-between gap-3 bg-card border border-amber-200 rounded-lg px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
+                  <p className="text-sm font-medium text-foreground">{p.plan_label}</p>
                   <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <Button
                   size="sm"
                   onClick={() => { setConfirmingId(p.id); confirmPayment(p.id) }}
                   disabled={confirmingId === p.id}
-                  className="bg-primary hover:bg-primary/80 text-white gap-1.5 shrink-0"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5 shrink-0"
                 >
                   <CheckCircle2 size={13} />
                   {confirmingId === p.id ? 'En cours…' : "J'ai réglé"}
@@ -173,10 +173,10 @@ export default function MaCotisationPage() {
             {declaredYear.map(p => (
               <div
                 key={p.id}
-                className="flex items-center justify-between gap-3 bg-white border border-blue-200 rounded-lg px-4 py-3"
+                className="flex items-center justify-between gap-3 bg-card border border-blue-200 rounded-lg px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
+                  <p className="text-sm font-medium text-foreground">{p.plan_label}</p>
                   <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
@@ -190,19 +190,19 @@ export default function MaCotisationPage() {
 
       {/* Couverture mensuelle (seulement pour plans mensuels) */}
       {isMonthlyPlan && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800">Couverture {year}</h2>
-            <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2 py-1">
-              <button onClick={() => setYear(y => y - 1)} aria-label="Année précédente" className="text-muted-foreground hover:text-slate-800 transition-colors">
+            <h2 className="text-sm font-semibold text-foreground">Couverture {year}</h2>
+            <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2 py-1">
+              <button onClick={() => setYear(y => y - 1)} aria-label="Année précédente" className="text-muted-foreground hover:text-foreground transition-colors">
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-slate-800 w-10 text-center select-none">{year}</span>
+              <span className="text-xs font-medium text-foreground w-10 text-center select-none">{year}</span>
               <button
                 onClick={() => setYear(y => y + 1)}
                 disabled={year >= CURRENT_YEAR}
                 aria-label="Année suivante"
-                className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30"
+                className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
               >
                 <ChevronRight size={14} />
               </button>
@@ -219,7 +219,7 @@ export default function MaCotisationPage() {
                   <div className={cn(
                     'w-full aspect-square rounded flex items-center justify-center text-[9px] font-semibold transition-colors',
                     paid ? 'bg-emerald-500 text-white'
-                      : future ? 'bg-slate-100 text-slate-300'
+                      : future ? 'bg-muted text-slate-300'
                         : 'bg-red-100 text-red-300',
                   )}>
                     {paid ? '✓' : future ? '' : '✗'}
@@ -233,9 +233,9 @@ export default function MaCotisationPage() {
       )}
 
       {/* Historique (confirmés + annulés) */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-800">Paiements {year}</h2>
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h2 className="text-sm font-semibold text-foreground">Paiements {year}</h2>
         </div>
 
         {isLoading && (
@@ -270,7 +270,7 @@ export default function MaCotisationPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-border">
                   {['Période', 'Plan', 'Méthode', 'Date', 'Montant', 'Statut'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                       {h}
@@ -278,20 +278,20 @@ export default function MaCotisationPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {displayedYear.map(p => {
                   const meta = STATUS_META[p.status] ?? STATUS_META.pending
                   return (
-                    <tr key={p.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 text-slate-800 font-medium whitespace-nowrap">
+                    <tr key={p.id} className="hover:bg-muted">
+                      <td className="px-4 py-3 text-foreground font-medium whitespace-nowrap">
                         {periodLabel(p)}
                       </td>
-                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{p.plan_label}</td>
-                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{p.plan_label}</td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
                         {METHOD_LABELS[p.method] ?? p.method}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{fmtDate(p.payment_date)}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
+                      <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
                       <td className="px-4 py-3">
                         <span className={cn(
                           'text-[10px] font-medium px-2 py-0.5 rounded-full border',

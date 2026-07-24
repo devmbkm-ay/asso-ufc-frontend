@@ -51,7 +51,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
+const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 export default function CollectesPage() {
   const { user } = useAuth()
@@ -150,7 +150,7 @@ export default function CollectesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Collectes de solidarité</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Collectes de solidarité</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {data ? `${data.length} collecte${data.length > 1 ? 's' : ''}` : '—'}
           </p>
@@ -160,20 +160,20 @@ export default function CollectesPage() {
           <Dialog open={open} onOpenChange={next => { if (!next) closeModal(); else setOpen(true) }}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-primary hover:bg-primary/80 text-white gap-1.5 shrink-0"
+              className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouvelle collecte
             </Button>
 
-            <DialogContent className="bg-white border-primary/15 sm:max-w-md">
+            <DialogContent className="bg-card border-primary/15 sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Nouvelle collecte</DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                 <div className="space-y-1.5">
-                  <label htmlFor="collecte-title" className="text-xs text-slate-500">Titre de la collecte *</label>
+                  <label htmlFor="collecte-title" className="text-xs text-muted-foreground">Titre de la collecte *</label>
                   <Input
                     id="collecte-title"
                     value={form.title}
@@ -185,12 +185,12 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="collecte-category" className="text-xs text-slate-500">Catégorie</label>
+                  <label htmlFor="collecte-category" className="text-xs text-muted-foreground">Catégorie</label>
                   <select
                     id="collecte-category"
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                   >
                     {CATEGORY_OPTIONS.map(c => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -199,7 +199,7 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="collecte-beneficiary" className="text-xs text-slate-500">{categoryFieldLabel(form.category)} *</label>
+                  <label htmlFor="collecte-beneficiary" className="text-xs text-muted-foreground">{categoryFieldLabel(form.category)} *</label>
                   <Input
                     id="collecte-beneficiary"
                     value={form.beneficiary_name}
@@ -212,7 +212,7 @@ export default function CollectesPage() {
 
                 {/* Photo upload */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">
+                  <label className="text-xs text-muted-foreground">
                     Photo <span className="text-muted-foreground">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
                   </label>
                   <input
@@ -223,7 +223,7 @@ export default function CollectesPage() {
                     onChange={handleFileChange}
                   />
                   {photoPreview ? (
-                    <div className="relative w-20 h-20 rounded-full overflow-hidden bg-slate-100 group">
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden bg-muted group">
                       <img src={photoPreview} alt="Aperçu" className="w-full h-full object-cover" />
                       <button
                         type="button"
@@ -237,7 +237,7 @@ export default function CollectesPage() {
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-200 text-xs text-slate-500 hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                     >
                       <ImagePlus size={14} />
                       Choisir une photo
@@ -246,7 +246,7 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="collecte-description" className="text-xs text-slate-500">
+                  <label htmlFor="collecte-description" className="text-xs text-muted-foreground">
                     Message <span className="text-muted-foreground">(optionnel)</span>
                   </label>
                   <textarea
@@ -255,13 +255,13 @@ export default function CollectesPage() {
                     onChange={field('description')}
                     rows={3}
                     placeholder="Un mot d'accompagnement pour la famille…"
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                    className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label htmlFor="collecte-min-amount" className="text-xs text-slate-500">Montant minimum (€)</label>
+                    <label htmlFor="collecte-min-amount" className="text-xs text-muted-foreground">Montant minimum (€)</label>
                     <Input
                       id="collecte-min-amount"
                       type="number"
@@ -272,7 +272,7 @@ export default function CollectesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="collecte-goal-amount" className="text-xs text-slate-500">
+                    <label htmlFor="collecte-goal-amount" className="text-xs text-muted-foreground">
                       Objectif (€) <span className="text-muted-foreground">(optionnel)</span>
                     </label>
                     <Input
@@ -290,13 +290,13 @@ export default function CollectesPage() {
                 <button
                   type="button"
                   onClick={() => setScheduleLater(s => !s)}
-                  className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <div className={cn(
                     'w-4 h-4 rounded border flex items-center justify-center transition-colors',
                     scheduleLater
-                      ? 'bg-primary border-primary text-white'
-                      : 'border-slate-300 bg-white',
+                      ? 'bg-primary border-primary text-primary-foreground'
+                      : 'border-slate-300 bg-card',
                   )}>
                     {scheduleLater && <span className="text-[8px] font-bold">✓</span>}
                   </div>
@@ -306,7 +306,7 @@ export default function CollectesPage() {
 
                 {scheduleLater && (
                   <div className="space-y-1.5">
-                    <label htmlFor="collecte-start-date" className="text-xs text-slate-500">Date de début</label>
+                    <label htmlFor="collecte-start-date" className="text-xs text-muted-foreground">Date de début</label>
                     <Input
                       id="collecte-start-date"
                       type="date"
@@ -336,14 +336,14 @@ export default function CollectesPage() {
                     type="button"
                     variant="outline"
                     onClick={closeModal}
-                    className="border-slate-200 text-muted-foreground bg-transparent"
+                    className="border-border text-muted-foreground bg-transparent"
                   >
                     Annuler
                   </Button>
                   <Button
                     type="submit"
                     disabled={isPending || uploading}
-                    className="bg-primary hover:bg-primary/80 text-white"
+                    className="bg-primary hover:bg-primary/80 text-primary-foreground"
                   >
                     {uploading ? 'Upload…' : isPending ? 'Création…' : 'Lancer la collecte'}
                   </Button>
@@ -398,7 +398,7 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
   return (
     <Link
       href={`/collectes/${c.id}`}
-      className="block bg-white rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/35 hover:shadow-[0_0_0_1px_rgba(0,26,77,0.15)] transition-all"
+      className="block bg-card rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/35 hover:shadow-[0_0_0_1px_rgba(0,26,77,0.15)] transition-all"
     >
       <div className="flex gap-4">
         <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden bg-primary/10 flex items-center justify-center">
@@ -411,7 +411,7 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
-              <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
             </div>
             <StatusBadge

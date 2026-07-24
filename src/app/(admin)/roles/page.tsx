@@ -23,7 +23,7 @@ const ROLE_META: Record<string, {
   president: { label: 'Président', icon: Award, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' },
   treasurer: { label: 'Trésorier', icon: Wallet, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
   secretary: { label: 'Secrétaire', icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  member: { label: 'Membre', icon: User, color: 'text-gray-500', bg: 'bg-gray-100', border: 'border-gray-200' },
+  member: { label: 'Membre', icon: User, color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border' },
 }
 
 const ALL_ROLES = ['super_admin', 'president', 'treasurer', 'secretary', 'member']
@@ -70,7 +70,7 @@ export default function RolesPage() {
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Rôles & accès</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Rôles & accès</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Attribuez et révoquez les rôles des membres de l'association.
         </p>
@@ -82,20 +82,20 @@ export default function RolesPage() {
           const m = ROLE_META[role]
           const Icon = m.icon
           return (
-            <div key={role} className="bg-white rounded-xl border border-primary/15 shadow-sm p-3 flex items-center gap-2.5">
+            <div key={role} className="bg-card rounded-xl border border-primary/15 shadow-sm p-3 flex items-center gap-2.5">
               <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0', m.bg)}>
                 <Icon size={13} className={m.color} />
               </div>
-              <span className="text-xs font-medium text-slate-800">{m.label}</span>
+              <span className="text-xs font-medium text-foreground">{m.label}</span>
             </div>
           )
         })}
       </div>
 
       {/* Members list */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-800">Membres & rôles</h2>
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h2 className="text-sm font-semibold text-foreground">Membres & rôles</h2>
         </div>
 
         {isLoading && (
@@ -116,13 +116,13 @@ export default function RolesPage() {
         )}
 
         {!isLoading && (membersWithRoles.length > 0 || membersOnly.length > 0) && (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {[...membersWithRoles, ...membersOnly].map(m => {
               const isAdding = addingFor === m.id
               const availableRoles = ALL_ROLES.filter(r => !m.roles.includes(r))
 
               return (
-                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-slate-50">
+                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-muted">
                   {/* Avatar */}
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
                     <span className="text-[11px] font-bold">
@@ -132,7 +132,7 @@ export default function RolesPage() {
 
                   {/* Name */}
                   <div className="w-40 shrink-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {m.first_name} {m.last_name}
                     </p>
                   </div>
@@ -178,7 +178,7 @@ export default function RolesPage() {
                             value={selectedRole}
                             onChange={e => { setSelectedRole(e.target.value); setError(null) }}
                             aria-label="Choisir un rôle à attribuer"
-                            className="text-xs rounded-md border border-slate-200 bg-white text-slate-800 px-2 py-1 focus:outline-none focus:border-primary"
+                            className="text-xs rounded-md border border-border bg-card text-foreground px-2 py-1 focus:outline-none focus:border-primary"
                           >
                             <option value="">Choisir…</option>
                             {availableRoles.map(r => (
@@ -189,13 +189,13 @@ export default function RolesPage() {
                             size="sm"
                             disabled={!selectedRole || isAssigning}
                             onClick={() => assign({ id: m.id, role: selectedRole })}
-                            className="h-6 px-2 text-[11px] bg-primary hover:bg-primary/80 text-white"
+                            className="h-6 px-2 text-[11px] bg-primary hover:bg-primary/80 text-primary-foreground"
                           >
                             OK
                           </Button>
                           <button
                             onClick={() => { setAddingFor(null); setSelectedRole(''); setError(null) }}
-                            className="text-muted-foreground hover:text-slate-800"
+                            className="text-muted-foreground hover:text-foreground"
                           >
                             <X size={13} />
                           </button>
@@ -231,7 +231,7 @@ export default function RolesPage() {
       )}
 
       {/* Bottom note */}
-      <p className="flex items-center gap-2 text-xs text-muted-foreground border-t border-slate-100 pt-4">
+      <p className="flex items-center gap-2 text-xs text-muted-foreground border-t border-border pt-4">
         <Shield size={12} />
         Un membre doit toujours conserver au moins un rôle. Le rôle super_admin ne peut pas être révoqué par lui-même.
       </p>

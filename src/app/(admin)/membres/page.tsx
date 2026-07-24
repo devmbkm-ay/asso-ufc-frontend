@@ -62,7 +62,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
+const FIELD_CLASS = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 export default function MembresPage() {
   const { user } = useAuth()
@@ -238,7 +238,7 @@ export default function MembresPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Membres</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {data ? `${data.total} adhérent${data.total > 1 ? 's' : ''}` : '—'}
           </p>
@@ -257,7 +257,7 @@ export default function MembresPage() {
                 Inviter
               </Button>
 
-              <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
+              <DialogContent className="bg-card border-primary/15 sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle>
                     {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
@@ -265,13 +265,13 @@ export default function MembresPage() {
                 </DialogHeader>
 
                 {!inviteLink && !bulkResult && (
-                  <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 mt-1">
+                  <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 mt-1">
                     <button
                       type="button"
                       onClick={() => { setInviteMode('single'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'single' ? 'bg-primary/15 text-primary' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'single' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground',
                       )}
                     >
                       Un membre
@@ -281,7 +281,7 @@ export default function MembresPage() {
                       onClick={() => { setInviteMode('bulk'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'bulk' ? 'bg-primary/15 text-primary' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'bulk' ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground',
                       )}
                     >
                       Plusieurs (liste)
@@ -292,7 +292,7 @@ export default function MembresPage() {
                 {!inviteLink && !bulkResult && inviteMode === 'single' && (
                   <form onSubmit={handleInviteSubmit} className="space-y-4 mt-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs text-slate-500">Adresse email du futur membre *</label>
+                      <label className="text-xs text-muted-foreground">Adresse email du futur membre *</label>
                       <Input
                         type="email"
                         value={inviteEmail}
@@ -312,11 +312,11 @@ export default function MembresPage() {
                     )}
                     <DialogFooter className="gap-2">
                       <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-slate-200 text-muted-foreground bg-transparent">
+                        className="border-border text-muted-foreground bg-transparent">
                         Annuler
                       </Button>
                       <Button type="submit" disabled={invitePending}
-                        className="bg-primary hover:bg-primary/80 text-white">
+                        className="bg-primary hover:bg-primary/80 text-primary-foreground">
                         {invitePending ? 'Envoi…' : "Envoyer l'invitation"}
                       </Button>
                     </DialogFooter>
@@ -326,7 +326,7 @@ export default function MembresPage() {
                 {!inviteLink && !bulkResult && inviteMode === 'bulk' && (
                   <form onSubmit={handleBulkSubmit} className="space-y-4 mt-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs text-slate-500">Emails des futurs membres *</label>
+                      <label className="text-xs text-muted-foreground">Emails des futurs membres *</label>
                       <textarea
                         value={bulkEmails}
                         onChange={e => setBulkEmails(e.target.value)}
@@ -346,11 +346,11 @@ export default function MembresPage() {
                     )}
                     <DialogFooter className="gap-2">
                       <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-slate-200 text-muted-foreground bg-transparent">
+                        className="border-border text-muted-foreground bg-transparent">
                         Annuler
                       </Button>
                       <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
-                        className="bg-primary hover:bg-primary/80 text-white">
+                        className="bg-primary hover:bg-primary/80 text-primary-foreground">
                         {bulkPending ? 'Envoi…' : `Envoyer (${parseBulkEmails(bulkEmails).length})`}
                       </Button>
                     </DialogFooter>
@@ -359,15 +359,15 @@ export default function MembresPage() {
 
                 {bulkResult && (
                   <div className="space-y-4 mt-1">
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-foreground">
                       <strong>{bulkResult.created.length}</strong> invitation{bulkResult.created.length > 1 ? 's' : ''} envoyée{bulkResult.created.length > 1 ? 's' : ''}.
                     </p>
                     {bulkResult.skipped.length > 0 && (
                       <div className="space-y-1.5">
-                        <p className="text-xs text-slate-500">{bulkResult.skipped.length} ignorée{bulkResult.skipped.length > 1 ? 's' : ''} :</p>
+                        <p className="text-xs text-muted-foreground">{bulkResult.skipped.length} ignorée{bulkResult.skipped.length > 1 ? 's' : ''} :</p>
                         <ul className="max-h-32 overflow-y-auto space-y-1">
                           {bulkResult.skipped.map(s => (
-                            <li key={s.email} className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 flex justify-between gap-2">
+                            <li key={s.email} className="text-xs text-muted-foreground bg-muted border border-border rounded-lg px-3 py-1.5 flex justify-between gap-2">
                               <span className="truncate">{s.email}</span>
                               <span className="text-muted-foreground shrink-0">{s.reason}</span>
                             </li>
@@ -376,7 +376,7 @@ export default function MembresPage() {
                       </div>
                     )}
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-primary-foreground">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -385,26 +385,26 @@ export default function MembresPage() {
 
                 {inviteLink && (
                   <div className="space-y-4 mt-1">
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-foreground">
                       Invitation envoyée à <strong>{inviteEmail}</strong>.
                     </p>
                     <div className="space-y-1.5">
-                      <p className="text-xs text-slate-500">Lien de secours (partage manuel)</p>
+                      <p className="text-xs text-muted-foreground">Lien de secours (partage manuel)</p>
                       <div className="flex gap-2">
                         <input
                           readOnly
                           value={inviteLink}
-                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-500 truncate"
+                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-border bg-muted text-muted-foreground truncate"
                         />
                         <Button size="sm" variant="outline" onClick={copyLink}
-                          className="border-slate-200 text-slate-500 gap-1.5 shrink-0">
+                          className="border-border text-muted-foreground gap-1.5 shrink-0">
                           {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                           {copied ? 'Copié !' : 'Copier'}
                         </Button>
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-primary-foreground">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -416,13 +416,13 @@ export default function MembresPage() {
             <Dialog open={open} onOpenChange={handleOpenChange}>
               <Button
                 onClick={() => setOpen(true)}
-                className="bg-primary hover:bg-primary/80 text-white text-sm font-medium gap-1.5 shrink-0"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground text-sm font-medium gap-1.5 shrink-0"
               >
                 <Plus size={14} />
                 Nouveau membre
               </Button>
 
-              <DialogContent className="bg-white border-primary/15 sm:max-w-md">
+              <DialogContent className="bg-card border-primary/15 sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Nouveau membre</DialogTitle>
                 </DialogHeader>
@@ -430,22 +430,22 @@ export default function MembresPage() {
                 <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs text-slate-500">Prénom *</label>
+                      <label className="text-xs text-muted-foreground">Prénom *</label>
                       <Input value={form.first_name} onChange={field('first_name')} required className={FIELD_CLASS} />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs text-slate-500">Nom *</label>
+                      <label className="text-xs text-muted-foreground">Nom *</label>
                       <Input value={form.last_name} onChange={field('last_name')} required className={FIELD_CLASS} />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Email *</label>
+                    <label className="text-xs text-muted-foreground">Email *</label>
                     <Input type="email" value={form.email} onChange={field('email')} required className={FIELD_CLASS} />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">
+                    <label className="text-xs text-muted-foreground">
                       Mot de passe *{' '}
                       <span className="text-muted-foreground">8 car. min, 1 chiffre requis</span>
                     </label>
@@ -460,17 +460,17 @@ export default function MembresPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Téléphone</label>
+                    <label className="text-xs text-muted-foreground">Téléphone</label>
                     <Input value={form.phone} onChange={field('phone')} className={FIELD_CLASS} placeholder="06 00 00 00 00" />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Adresse</label>
+                    <label className="text-xs text-muted-foreground">Adresse</label>
                     <Input value={form.address} onChange={field('address')} className={FIELD_CLASS} />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Date de naissance</label>
+                    <label className="text-xs text-muted-foreground">Date de naissance</label>
                     <Input type="date" value={form.birth_date} onChange={field('birth_date')} className={FIELD_CLASS} />
                   </div>
 
@@ -485,14 +485,14 @@ export default function MembresPage() {
                       type="button"
                       variant="outline"
                       onClick={closeModal}
-                      className="border-slate-200 text-slate-500 hover:text-slate-800 bg-transparent"
+                      className="border-border text-muted-foreground hover:text-foreground bg-transparent"
                     >
                       Annuler
                     </Button>
                     <Button
                       type="submit"
                       disabled={isPending}
-                      className="bg-primary hover:bg-primary/80 text-white"
+                      className="bg-primary hover:bg-primary/80 text-primary-foreground"
                     >
                       {isPending ? 'Création…' : 'Créer le membre'}
                     </Button>
@@ -515,9 +515,9 @@ export default function MembresPage() {
           </div>
           <div className="space-y-1.5">
             {pendingInvites.map(inv => (
-              <div key={inv.id} className="flex items-center justify-between gap-3 bg-white border border-amber-100 rounded-lg px-3 py-2">
+              <div key={inv.id} className="flex items-center justify-between gap-3 bg-card border border-amber-100 rounded-lg px-3 py-2">
                 <div>
-                  <p className="text-sm font-medium text-slate-800">{inv.email}</p>
+                  <p className="text-sm font-medium text-foreground">{inv.email}</p>
                   <p className="text-[10px] text-muted-foreground">
                     Invité par {inv.invited_by_name} · expire le {fmtExpiry(inv.expires_at)}
                   </p>
@@ -545,10 +545,10 @@ export default function MembresPage() {
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Rechercher un membre…"
-            className="pl-9 bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground"
+            className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
-        <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1">
+        <div className="flex gap-1 bg-muted border border-border rounded-lg p-1">
           {STATUS_TABS.map(t => (
             <button
               key={t.value}
@@ -557,7 +557,7 @@ export default function MembresPage() {
                 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 status === t.value
                   ? 'bg-primary/15 text-primary'
-                  : 'text-slate-500 hover:text-slate-800',
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               {t.label}
@@ -567,10 +567,10 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Membre</th>
               {isAdmin ? (
                 <>
@@ -584,7 +584,7 @@ export default function MembresPage() {
               <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {isLoading && (
               <tr>
                 <td colSpan={colCount} className="px-5 py-5">
@@ -616,19 +616,19 @@ export default function MembresPage() {
                 </div>
               )
               return (
-                <tr key={m.id} className="hover:bg-slate-50 transition-colors group">
+                <tr key={m.id} className="hover:bg-muted transition-colors group">
                   <td className="px-5 py-3.5">
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-slate-800 group-hover:text-primary transition-colors">
+                        <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                           {m.first_name} {m.last_name}
                         </span>
                       </Link>
                     ) : (
                       <div className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-slate-800">
+                        <span className="font-medium text-foreground">
                           {m.first_name} {m.last_name}
                         </span>
                       </div>
@@ -636,18 +636,18 @@ export default function MembresPage() {
                   </td>
                   {isAdmin ? (
                     <>
-                      <td className="px-5 py-3.5 text-slate-500 hidden md:table-cell">
+                      <td className="px-5 py-3.5 text-muted-foreground hidden md:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{m.email}</Link>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-500 hidden lg:table-cell">
+                      <td className="px-5 py-3.5 text-muted-foreground hidden lg:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{m.phone ?? '—'}</Link>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-500 hidden sm:table-cell">
+                      <td className="px-5 py-3.5 text-muted-foreground hidden sm:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
                       </td>
                     </>
                   ) : (
-                    <td className="px-5 py-3.5 text-slate-500 hidden sm:table-cell">
+                    <td className="px-5 py-3.5 text-muted-foreground hidden sm:table-cell">
                       {memberRole(m.roles)}
                     </td>
                   )}
@@ -680,7 +680,7 @@ export default function MembresPage() {
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
               aria-label="Page précédente"
-              className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+              className="bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <ChevronLeft size={14} />
             </Button>
@@ -690,7 +690,7 @@ export default function MembresPage() {
               disabled={page === data.pages}
               onClick={() => setPage(p => p + 1)}
               aria-label="Page suivante"
-              className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+              className="bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <ChevronRight size={14} />
             </Button>

@@ -13,7 +13,7 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   active: { label: 'En cours', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: Heart },
   upcoming: { label: 'À venir', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', icon: Clock },
   expired: { label: 'Expirée', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', icon: Clock },
-  closed: { label: 'Clôturée', color: 'text-gray-500', bg: 'bg-gray-100 border-gray-200', icon: Lock },
+  closed: { label: 'Clôturée', color: 'text-muted-foreground', bg: 'bg-muted border-border', icon: Lock },
 }
 
 function fmtAmount(n: number) {
@@ -40,7 +40,7 @@ export default function CollectesPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Collectes de solidarité</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Collectes de solidarité</h1>
         <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${data?.length ?? 0} collecte${(data?.length ?? 0) > 1 ? 's' : ''}`}
         </p>
@@ -76,7 +76,7 @@ export default function CollectesPage() {
               <Link
                 key={c.id}
                 href={`/mon-espace/collectes/${c.id}`}
-                className="block bg-white rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/40 hover:shadow-md transition-all group"
+                className="block bg-card rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/40 hover:shadow-md transition-all group"
               >
                 <div className="flex items-start gap-4">
                   {/* Photo or icon */}
@@ -84,7 +84,7 @@ export default function CollectesPage() {
                     <img
                       src={c.photo_url}
                       alt=""
-                      className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-100"
+                      className="w-12 h-12 rounded-xl object-cover shrink-0 border border-border"
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -95,7 +95,7 @@ export default function CollectesPage() {
                   <div className="flex-1 min-w-0">
                     {/* Title + status */}
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors line-clamp-1">
+                      <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {c.title}
                       </p>
                       <span className={cn(
@@ -115,12 +115,12 @@ export default function CollectesPage() {
 
                     {/* Progress */}
                     <div className="mt-3 space-y-1.5">
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span className="font-semibold text-slate-800">{fmtAmount(c.total_collected)}</span>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span className="font-semibold text-foreground">{fmtAmount(c.total_collected)}</span>
                         <span>{c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}</span>
                       </div>
                       {c.status === 'active' && (
-                        <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                           <div
                             className="h-full rounded-full bg-primary transition-all"
                             style={{ width: `${pct}%` }}

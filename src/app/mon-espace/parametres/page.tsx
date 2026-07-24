@@ -10,7 +10,7 @@ import { CheckCircle2, AlertCircle, User, Phone, MapPin, KeyRound } from 'lucide
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-const inputCls = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary h-9 text-sm'
+const inputCls = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-9 text-sm'
 
 export default function MemberParametresPage() {
   const { user } = useAuth()
@@ -52,34 +52,34 @@ export default function MemberParametresPage() {
   return (
     <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Paramètres</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Paramètres</h1>
         <p className="text-sm text-muted-foreground mt-1">Gérez votre profil et vos informations de contact.</p>
       </div>
 
-      <div className="bg-white border border-primary/15 rounded-xl p-5 flex items-center gap-4 shadow-sm">
+      <div className="bg-card border border-primary/15 rounded-xl p-5 flex items-center gap-4 shadow-sm">
         <div className="w-14 h-14 rounded-full bg-linear-to-br from-primary to-primary/80 flex items-center justify-center shrink-0">
-          <span className="text-xl font-bold text-white">
+          <span className="text-xl font-bold text-primary-foreground">
             {user?.first_name?.[0]}{user?.last_name?.[0]}
           </span>
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-800">{user?.first_name} {user?.last_name}</p>
+          <p className="text-sm font-semibold text-foreground">{user?.first_name} {user?.last_name}</p>
           <p className="text-xs text-muted-foreground">{user?.email}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white border border-primary/15 rounded-xl p-6 space-y-5 shadow-sm">
+      <form onSubmit={handleSubmit} className="bg-card border border-primary/15 rounded-xl p-6 space-y-5 shadow-sm">
         <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Informations personnelles</p>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label htmlFor="first_name" className="text-xs text-slate-500 flex items-center gap-1.5">
+            <label htmlFor="first_name" className="text-xs text-muted-foreground flex items-center gap-1.5">
               <User size={11} />Prénom
             </label>
             <Input id="first_name" value={form.first_name} onChange={set('first_name')} required className={inputCls} />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="last_name" className="text-xs text-slate-500 flex items-center gap-1.5">
+            <label htmlFor="last_name" className="text-xs text-muted-foreground flex items-center gap-1.5">
               <User size={11} />Nom
             </label>
             <Input id="last_name" value={form.last_name} onChange={set('last_name')} required className={inputCls} />
@@ -87,21 +87,21 @@ export default function MemberParametresPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="phone" className="text-xs text-slate-500 flex items-center gap-1.5">
+          <label htmlFor="phone" className="text-xs text-muted-foreground flex items-center gap-1.5">
             <Phone size={11} />Téléphone
           </label>
           <Input id="phone" value={form.phone} onChange={set('phone')} placeholder="+33 6 00 00 00 00" type="tel" className={inputCls} />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="address" className="text-xs text-slate-500 flex items-center gap-1.5">
+          <label htmlFor="address" className="text-xs text-muted-foreground flex items-center gap-1.5">
             <MapPin size={11} />Adresse
           </label>
           <Input id="address" value={form.address} onChange={set('address')} placeholder="12 rue des Lilas, 75010 Paris" className={inputCls} />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="email" className="text-xs text-slate-500">Email</label>
+          <label htmlFor="email" className="text-xs text-muted-foreground">Email</label>
           <Input id="email" value={user?.email ?? ''} disabled className={`${inputCls} opacity-50 cursor-not-allowed`} />
           <p className="text-[11px] text-muted-foreground">L&apos;email ne peut pas être modifié pour l&apos;instant.</p>
         </div>
@@ -123,17 +123,17 @@ export default function MemberParametresPage() {
           type="submit"
           disabled={status === 'loading'}
           size="sm"
-          className="bg-primary hover:bg-primary/80 text-white font-semibold"
+          className="bg-primary hover:bg-primary/80 text-primary-foreground font-semibold"
         >
           {status === 'loading' ? 'Sauvegarde…' : 'Enregistrer les modifications'}
         </Button>
       </form>
 
-      <div className="bg-white border border-primary/15 rounded-xl p-5 flex items-center justify-between gap-3 shadow-sm">
+      <div className="bg-card border border-primary/15 rounded-xl p-5 flex items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-2.5">
           <KeyRound size={15} className="text-primary" />
           <div>
-            <p className="text-sm font-medium text-slate-800">Mot de passe</p>
+            <p className="text-sm font-medium text-foreground">Mot de passe</p>
             <p className="text-xs text-muted-foreground">Recevez un lien par email pour le réinitialiser.</p>
           </div>
         </div>

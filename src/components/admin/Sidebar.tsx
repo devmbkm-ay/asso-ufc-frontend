@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
 import { Logo } from '@/components/Logo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   LayoutDashboard, Users, CreditCard, Calendar,
   Bell, Download, Shield, Settings, LogOut, Heart, History,
@@ -99,6 +100,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               {user?.first_name} {user?.last_name}
             </p>
           </div>
+          <ThemeToggle className="text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors" />
           <button
             onClick={logout}
             className="text-sidebar-foreground/40 hover:text-error transition-colors"

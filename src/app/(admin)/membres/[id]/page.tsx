@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
+const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -170,7 +170,7 @@ export default function MembrePage() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-semibold text-slate-800">
+            <h1 className="text-2xl font-semibold text-foreground">
               {member.first_name} {member.last_name}
             </h1>
             <StatusBadge status={st.status} label={st.label} icon={st.icon} />
@@ -198,7 +198,7 @@ export default function MembrePage() {
 
       {canEdit && (
         <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-          <DialogContent className="bg-white border-primary/15 sm:max-w-md">
+          <DialogContent className="bg-card border-primary/15 sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Modifier le profil</DialogTitle>
             </DialogHeader>
@@ -206,27 +206,27 @@ export default function MembrePage() {
             <form onSubmit={handleEditSubmit} className="space-y-4 mt-1">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Prénom</label>
+                  <label className="text-xs text-muted-foreground">Prénom</label>
                   <Input value={editForm.first_name} onChange={editField('first_name')} required className={FIELD} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Nom</label>
+                  <label className="text-xs text-muted-foreground">Nom</label>
                   <Input value={editForm.last_name} onChange={editField('last_name')} required className={FIELD} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Téléphone</label>
+                <label className="text-xs text-muted-foreground">Téléphone</label>
                 <Input value={editForm.phone} onChange={editField('phone')} placeholder="06 00 00 00 00" className={FIELD} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Adresse</label>
+                <label className="text-xs text-muted-foreground">Adresse</label>
                 <Input value={editForm.address} onChange={editField('address')} className={FIELD} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Date de naissance</label>
+                <label className="text-xs text-muted-foreground">Date de naissance</label>
                 <Input type="date" value={editForm.birth_date} onChange={editField('birth_date')} className={FIELD} />
               </div>
 
@@ -245,14 +245,14 @@ export default function MembrePage() {
                   type="button"
                   variant="outline"
                   onClick={() => setOpenEdit(false)}
-                  className="border-slate-200 text-muted-foreground bg-transparent"
+                  className="border-border text-muted-foreground bg-transparent"
                 >
                   Annuler
                 </Button>
                 <Button
                   type="submit"
                   disabled={editPending}
-                  className="bg-primary hover:bg-primary/80 text-white"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground"
                 >
                   {editPending ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -265,61 +265,61 @@ export default function MembrePage() {
       {/* Info + Cotisations cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Informations</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Mail size={14} className="text-primary shrink-0" />
-              <span className="text-slate-800">{member.email}</span>
+              <span className="text-foreground">{member.email}</span>
             </div>
             {member.phone && (
               <div className="flex items-center gap-3 text-sm">
                 <Phone size={14} className="text-primary shrink-0" />
-                <span className="text-slate-800">{member.phone}</span>
+                <span className="text-foreground">{member.phone}</span>
               </div>
             )}
             {member.address && (
               <div className="flex items-center gap-3 text-sm">
                 <MapPin size={14} className="text-primary shrink-0" />
-                <span className="text-slate-800">{member.address}</span>
+                <span className="text-foreground">{member.address}</span>
               </div>
             )}
             {member.birth_date && (
               <div className="flex items-center gap-3 text-sm">
                 <Calendar size={14} className="text-primary shrink-0" />
-                <span className="text-slate-800">{fmtDate(member.birth_date)}</span>
+                <span className="text-foreground">{fmtDate(member.birth_date)}</span>
               </div>
             )}
             <div className="flex items-center gap-3 text-sm">
               <Clock size={14} className="text-primary shrink-0" />
-              <span className="text-slate-500">
-                Membre depuis le <span className="text-slate-800">{fmtDate(member.joined_at)}</span>
+              <span className="text-muted-foreground">
+                Membre depuis le <span className="text-foreground">{fmtDate(member.joined_at)}</span>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Cotisations</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-500">Total versé</span>
+              <span className="text-sm text-muted-foreground">Total versé</span>
               <span className="text-sm font-semibold text-primary">{fmtEur(totalPaid)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-500">Paiements enregistrés</span>
-              <span className="text-sm text-slate-800">{allItems.length}</span>
+              <span className="text-sm text-muted-foreground">Paiements enregistrés</span>
+              <span className="text-sm text-foreground">{allItems.length}</span>
             </div>
             {pendingCount > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">En attente</span>
+                <span className="text-sm text-muted-foreground">En attente</span>
                 <span className="text-sm text-amber-700 font-medium">{pendingCount}</span>
               </div>
             )}
           </div>
 
           {/* Month progress for current year */}
-          <div className="pt-2 border-t border-slate-100">
+          <div className="pt-2 border-t border-border">
             <p className="text-[10px] text-muted-foreground mb-2">
               {CURRENT_YEAR} — {paidMonthsThisYear.size} mois confirmé{paidMonthsThisYear.size !== 1 ? 's' : ''}
             </p>
@@ -333,7 +333,7 @@ export default function MembrePage() {
                     title={`${MONTHS_FULL[i]} ${CURRENT_YEAR}`}
                     className={`flex-1 h-5 rounded-sm flex items-center justify-center text-[9px] font-semibold transition-colors ${paid
                         ? 'bg-emerald-500 text-white'
-                        : 'bg-slate-100 text-muted-foreground'
+                        : 'bg-muted text-muted-foreground'
                       }`}
                   >
                     {m}
@@ -346,23 +346,23 @@ export default function MembrePage() {
       </div>
 
       {/* Payment history */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
-          <h2 className="text-sm font-semibold text-slate-800">Historique des paiements</h2>
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4">
+          <h2 className="text-sm font-semibold text-foreground">Historique des paiements</h2>
+          <div className="flex items-center gap-2 bg-muted border border-border rounded-lg px-2.5 py-1.5">
             <button
               onClick={() => setTableYear(y => y - 1)}
               aria-label="Année précédente"
-              className="text-muted-foreground hover:text-slate-800 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-xs font-semibold text-slate-800 w-8 text-center select-none">{tableYear}</span>
+            <span className="text-xs font-semibold text-foreground w-8 text-center select-none">{tableYear}</span>
             <button
               onClick={() => setTableYear(y => y + 1)}
               disabled={tableYear >= CURRENT_YEAR}
               aria-label="Année suivante"
-              className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRight size={14} />
             </button>
@@ -371,7 +371,7 @@ export default function MembrePage() {
 
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Période</th>
               <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Plan</th>
               <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden md:table-cell">Méthode</th>
@@ -380,7 +380,7 @@ export default function MembrePage() {
               <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {isLoadingYear && (
               <tr>
                 <td colSpan={6} className="px-5 py-5">
@@ -404,14 +404,14 @@ export default function MembrePage() {
                 ? `${MONTHS_FULL[p.period_month - 1]} ${p.period_year}`
                 : String(p.period_year)
               return (
-                <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-5 py-3 font-medium text-slate-800">{period}</td>
-                  <td className="px-5 py-3 text-slate-500 hidden sm:table-cell">{p.plan_label}</td>
-                  <td className="px-5 py-3 text-slate-500 hidden md:table-cell">
+                <tr key={p.id} className="hover:bg-muted">
+                  <td className="px-5 py-3 font-medium text-foreground">{period}</td>
+                  <td className="px-5 py-3 text-muted-foreground hidden sm:table-cell">{p.plan_label}</td>
+                  <td className="px-5 py-3 text-muted-foreground hidden md:table-cell">
                     {METHOD_LABELS[p.method] ?? p.method}
                   </td>
-                  <td className="px-5 py-3 text-slate-500 hidden md:table-cell">{fmtDate(p.payment_date)}</td>
-                  <td className="px-5 py-3 text-right font-medium text-slate-800">{fmtEur(p.amount)}</td>
+                  <td className="px-5 py-3 text-muted-foreground hidden md:table-cell">{fmtDate(p.payment_date)}</td>
+                  <td className="px-5 py-3 text-right font-medium text-foreground">{fmtEur(p.amount)}</td>
                   <td className="px-5 py-3">
                     <StatusBadge status={ps.status} label={ps.label} icon={ps.icon} />
                   </td>

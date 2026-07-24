@@ -30,7 +30,7 @@ const CELL_STYLE: Record<string, string> = {
   declared: 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
   pending: 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
   cancelled: 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200',
-  none: 'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-primary',
+  none: 'bg-muted text-transparent border-border hover:bg-slate-200 hover:border-primary',
 }
 
 const CELL_SYMBOL: Record<string, string> = {
@@ -61,7 +61,7 @@ const EMPTY_FORM = {
   reference: '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
+const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 const FREQ_LABELS: Record<string, string> = {
   monthly: 'Mensuelle',
@@ -279,27 +279,27 @@ export default function CotisationsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Cotisations</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Cotisations</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {isLoading
               ? '—'
               : `${confirmedCount} confirmés · ${declaredCount > 0 ? `${declaredCount} à valider · ` : ''}${pendingCount} en attente · ${fmtEur(totalRevenue)} encaissés`}
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-lg px-3 py-2">
+        <div className="flex items-center gap-2 bg-card border border-border shadow-sm rounded-lg px-3 py-2">
           <button
             onClick={() => setYear(y => y - 1)}
             aria-label="Année précédente"
-            className="text-muted-foreground hover:text-slate-800 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="text-sm font-semibold text-slate-800 w-10 text-center select-none">{year}</span>
+          <span className="text-sm font-semibold text-foreground w-10 text-center select-none">{year}</span>
           <button
             onClick={() => setYear(y => y + 1)}
             disabled={year >= currentYear}
             aria-label="Année suivante"
-            className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronRight size={16} />
           </button>
@@ -308,7 +308,7 @@ export default function CotisationsPage() {
 
       {/* Plans de cotisation */}
       {canWrite && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-4">
           <div className="flex items-center justify-between gap-4 mb-3">
             <h2 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Plans de cotisation</h2>
             <button
@@ -333,8 +333,8 @@ export default function CotisationsPage() {
                 className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2"
               >
                 <div>
-                  <p className="text-xs font-semibold text-slate-800">{p.label}</p>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-xs font-semibold text-foreground">{p.label}</p>
+                  <p className="text-[11px] text-muted-foreground">
                     {fmtEur(Number(p.amount))} · {FREQ_LABELS[p.frequency] ?? p.frequency}
                     {p.valid_until && ` · jusqu'au ${fmtDate(p.valid_until)}`}
                   </p>
@@ -375,10 +375,10 @@ export default function CotisationsPage() {
             {declaredPayments.items.map(p => (
               <div
                 key={p.id}
-                className="flex items-center justify-between gap-3 bg-white border border-blue-100 rounded-lg px-4 py-2.5"
+                className="flex items-center justify-between gap-3 bg-card border border-blue-100 rounded-lg px-4 py-2.5"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">{p.member_name}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{p.member_name}</p>
                   <p className="text-xs text-muted-foreground">
                     {p.plan_label} · {periodLabel(p)} · {fmtEur(p.amount)}
                   </p>
@@ -397,7 +397,7 @@ export default function CotisationsPage() {
                     size="sm"
                     onClick={() => decideDeclared(p.id, 'validate')}
                     disabled={decidingId === p.id}
-                    className="bg-primary hover:bg-primary/80 text-white h-8 px-2.5"
+                    className="bg-primary hover:bg-primary/80 text-primary-foreground h-8 px-2.5"
                   >
                     <CheckCircle2 size={13} />
                   </Button>
@@ -409,11 +409,11 @@ export default function CotisationsPage() {
       )}
 
       {/* Grid */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-slate-100">
-              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sticky left-0 bg-white min-w-[180px] z-10">
+            <tr className="border-b border-border">
+              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sticky left-0 bg-card min-w-[180px] z-10">
                 Membre
               </th>
               {MONTHS.map(m => (
@@ -426,7 +426,7 @@ export default function CotisationsPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {isLoading && (
               <tr>
                 <td colSpan={14} className="px-4 py-4">
@@ -452,8 +452,8 @@ export default function CotisationsPage() {
               const rowTotal = row.months.reduce(
                 (s, m) => s + (m.status === 'confirmed' ? (m.amount ?? 0) : 0), 0)
               return (
-                <tr key={row.member_id} className="hover:bg-slate-50">
-                  <td className="px-4 py-2.5 sticky left-0 bg-white font-medium text-slate-800 whitespace-nowrap z-10">
+                <tr key={row.member_id} className="hover:bg-muted">
+                  <td className="px-4 py-2.5 sticky left-0 bg-card font-medium text-foreground whitespace-nowrap z-10">
                     {row.member_name}
                   </td>
                   {row.months.map(cell => (
@@ -511,14 +511,14 @@ export default function CotisationsPage() {
           Annulé
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-5 h-4 rounded border bg-slate-100 border-slate-200" />
+          <div className="w-5 h-4 rounded border bg-muted border-border" />
           Non payé
         </div>
       </div>
 
       {/* Cell dialog */}
       <Dialog open={!!selected} onOpenChange={open => { if (!open) close() }}>
-        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
+        <DialogContent className="bg-card border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base">{dialogTitle}</DialogTitle>
           </DialogHeader>
@@ -527,13 +527,13 @@ export default function CotisationsPage() {
           {selected?.cell.status === 'none' && (
             <form onSubmit={handleRecord} className="space-y-3 mt-1">
               <div className="space-y-1.5">
-                <label htmlFor="payment-plan" className="text-xs text-slate-500">Plan de cotisation</label>
+                <label htmlFor="payment-plan" className="text-xs text-muted-foreground">Plan de cotisation</label>
                 <select
                   id="payment-plan"
                   value={form.plan_id}
                   onChange={e => handlePlanChange(e.target.value)}
                   required
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="">Sélectionner un plan</option>
                   {plans?.map(p => (
@@ -546,7 +546,7 @@ export default function CotisationsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label htmlFor="payment-amount" className="text-xs text-slate-500">Montant (€)</label>
+                  <label htmlFor="payment-amount" className="text-xs text-muted-foreground">Montant (€)</label>
                   <Input
                     id="payment-amount"
                     type="number"
@@ -559,7 +559,7 @@ export default function CotisationsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="payment-date" className="text-xs text-slate-500">Date</label>
+                  <label htmlFor="payment-date" className="text-xs text-muted-foreground">Date</label>
                   <Input
                     id="payment-date"
                     type="date"
@@ -572,12 +572,12 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="payment-method" className="text-xs text-slate-500">Méthode</label>
+                <label htmlFor="payment-method" className="text-xs text-muted-foreground">Méthode</label>
                 <select
                   id="payment-method"
                   value={form.method}
                   onChange={e => setForm(f => ({ ...f, method: e.target.value }))}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                 >
                   {Object.entries(METHOD_LABELS).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
@@ -586,7 +586,7 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="payment-reference" className="text-xs text-slate-500">
+                <label htmlFor="payment-reference" className="text-xs text-muted-foreground">
                   Référence <span className="text-muted-foreground">(optionnel)</span>
                 </label>
                 <Input
@@ -609,14 +609,14 @@ export default function CotisationsPage() {
                   type="button"
                   variant="outline"
                   onClick={close}
-                  className="border-slate-200 text-muted-foreground bg-transparent"
+                  className="border-border text-muted-foreground bg-transparent"
                 >
                   Annuler
                 </Button>
                 <Button
                   type="submit"
                   disabled={isRecording || !form.plan_id}
-                  className="bg-primary hover:bg-primary/80 text-white"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground"
                 >
                   {isRecording ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -739,14 +739,14 @@ export default function CotisationsPage() {
 
       {/* Plan creation dialog */}
       <Dialog open={planOpen} onOpenChange={open => { if (!open) { setPlanOpen(false); setPlanError(null) } }}>
-        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
+        <DialogContent className="bg-card border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base">Nouveau plan de cotisation</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handlePlanSubmit} className="space-y-3 mt-1">
             <div className="space-y-1.5">
-              <label htmlFor="plan-label" className="text-xs text-slate-500">Libellé</label>
+              <label htmlFor="plan-label" className="text-xs text-muted-foreground">Libellé</label>
               <Input
                 id="plan-label"
                 value={planForm.label}
@@ -759,7 +759,7 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label htmlFor="plan-amount" className="text-xs text-slate-500">Montant (€)</label>
+                <label htmlFor="plan-amount" className="text-xs text-muted-foreground">Montant (€)</label>
                 <Input
                   id="plan-amount"
                   type="number"
@@ -772,12 +772,12 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="plan-frequency" className="text-xs text-slate-500">Fréquence</label>
+                <label htmlFor="plan-frequency" className="text-xs text-muted-foreground">Fréquence</label>
                 <select
                   id="plan-frequency"
                   value={planForm.frequency}
                   onChange={e => setPlanForm(f => ({ ...f, frequency: e.target.value as typeof f.frequency }))}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="annual">Annuelle</option>
                   <option value="monthly">Mensuelle</option>
@@ -788,7 +788,7 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label htmlFor="plan-valid-from" className="text-xs text-slate-500">Valide à partir du</label>
+                <label htmlFor="plan-valid-from" className="text-xs text-muted-foreground">Valide à partir du</label>
                 <Input
                   id="plan-valid-from"
                   type="date"
@@ -799,7 +799,7 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="plan-valid-until" className="text-xs text-slate-500">Expire le <span className="text-muted-foreground">(optionnel)</span></label>
+                <label htmlFor="plan-valid-until" className="text-xs text-muted-foreground">Expire le <span className="text-muted-foreground">(optionnel)</span></label>
                 <Input
                   id="plan-valid-until"
                   type="date"
@@ -821,14 +821,14 @@ export default function CotisationsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => { setPlanOpen(false); setPlanError(null) }}
-                className="border-slate-200 text-muted-foreground bg-transparent"
+                className="border-border text-muted-foreground bg-transparent"
               >
                 Annuler
               </Button>
               <Button
                 type="submit"
                 disabled={isCreatingPlan}
-                className="bg-primary hover:bg-primary/80 text-white"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground"
               >
                 {isCreatingPlan ? 'Création…' : 'Créer le plan'}
               </Button>

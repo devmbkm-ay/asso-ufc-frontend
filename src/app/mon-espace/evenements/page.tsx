@@ -40,11 +40,11 @@ function RegistrantsList({ eventId }: { eventId: string }) {
   }
 
   return (
-    <ul className="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">
+    <ul className="divide-y divide-border border border-border rounded-lg overflow-hidden">
       {data.map(r => (
         <li key={r.id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
-          <span className="text-slate-700 truncate">{r.member_name}</span>
-          <span className="text-slate-500 font-medium shrink-0">{fmtAmount(r.amount_paid)}</span>
+          <span className="text-foreground truncate">{r.member_name}</span>
+          <span className="text-muted-foreground font-medium shrink-0">{fmtAmount(r.amount_paid)}</span>
         </li>
       ))}
     </ul>
@@ -134,9 +134,9 @@ export default function EvenementsPage() {
       <div
         key={e.id}
         className={cn(
-          'bg-white rounded-xl border shadow-sm p-5 space-y-4',
+          'bg-card rounded-xl border shadow-sm p-5 space-y-4',
           isPast
-            ? 'border-slate-200 opacity-75'
+            ? 'border-border opacity-75'
             : 'border-primary/15',
         )}
       >
@@ -147,7 +147,7 @@ export default function EvenementsPage() {
               <Calendar size={16} className="text-blue-500" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">{e.title}</p>
+              <p className="text-sm font-semibold text-foreground">{e.title}</p>
               <p className="text-xs text-muted-foreground mt-0.5 capitalize">{fmtDate(e.event_date)}</p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function EvenementsPage() {
         </div>
 
         {/* Meta */}
-        <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           {e.location && (
             <span className="flex items-center gap-1.5">
               <MapPin size={12} /> {e.location}
@@ -177,7 +177,7 @@ export default function EvenementsPage() {
         </div>
 
         {e.description && (
-          <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">{e.description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{e.description}</p>
         )}
 
         {/* Error */}
@@ -230,7 +230,7 @@ export default function EvenementsPage() {
                     step="0.01"
                     value={amountDrafts[e.id] ?? '0'}
                     onChange={ev => setAmountDrafts(d => ({ ...d, [e.id]: ev.target.value }))}
-                    className="bg-white border-slate-200 text-slate-800 h-9 pr-6 text-sm"
+                    className="bg-card border-border text-foreground h-9 pr-6 text-sm"
                     autoFocus
                   />
                   <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">€</span>
@@ -239,13 +239,13 @@ export default function EvenementsPage() {
                   size="sm"
                   onClick={() => confirmRegister(e.id)}
                   disabled={registeringId === e.id || loadingRegs}
-                  className="bg-primary hover:bg-primary/80 text-white gap-1.5"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5"
                 >
                   {registeringId === e.id ? 'Inscription…' : 'Confirmer'}
                 </Button>
                 <button
                   onClick={() => setAmountDraftId(null)}
-                  className="text-xs text-muted-foreground hover:text-slate-600"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                 >
                   Annuler
                 </button>
@@ -255,7 +255,7 @@ export default function EvenementsPage() {
                 size="sm"
                 onClick={() => startRegister(e)}
                 disabled={loadingRegs}
-                className="bg-primary hover:bg-primary/80 text-white gap-1.5"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5"
               >
                 <CheckCircle2 size={13} />
                 S&apos;inscrire
@@ -272,7 +272,7 @@ export default function EvenementsPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Événements</h1>
         <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${eventsList?.length ?? 0} événement${(eventsList?.length ?? 0) > 1 ? 's' : ''}`}
         </p>
@@ -303,7 +303,7 @@ export default function EvenementsPage() {
         <div className="space-y-3">
           <button
             onClick={() => setShowPast(s => !s)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground tracking-wider uppercase hover:text-slate-600"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground tracking-wider uppercase hover:text-foreground"
           >
             {showPast ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             Passés ({past.length})

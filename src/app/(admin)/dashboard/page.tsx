@@ -12,7 +12,7 @@ import { avatarColor, cn } from '@/lib/utils'
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive: { label: 'Inactif', className: 'bg-gray-100 text-gray-500 border-gray-200' },
+  inactive: { label: 'Inactif', className: 'bg-muted text-muted-foreground border-border' },
   suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
   honorary: { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
 }
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">
+        <h1 className="text-2xl font-semibold text-foreground">
           {greeting}, {user?.first_name} 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
@@ -75,11 +75,11 @@ export default function DashboardPage() {
 
       {/* Événement en avant */}
       {!publishedEvents ? (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
           <Skeleton className="h-6 w-40" />
         </div>
       ) : featuredEvent ? (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <div className="w-14 h-14 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
               <span className="text-xl font-bold text-primary leading-none">{new Date(featuredEvent.event_date).getDate()}</span>
@@ -92,7 +92,7 @@ export default function DashboardPage() {
               )}>
                 {isToday ? "Aujourd'hui" : 'Prochain événement'}
               </Badge>
-              <h2 className="text-sm font-semibold text-slate-800 truncate">{featuredEvent.title}</h2>
+              <h2 className="text-sm font-semibold text-foreground truncate">{featuredEvent.title}</h2>
               <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-1">
                 {featuredEvent.location && (
                   <span className="flex items-center gap-1">
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           </a>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
           <EmptyState
             title="Aucun événement publié pour le moment"
             description="Les événements à venir apparaîtront ici dès leur publication."
@@ -158,11 +158,11 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Derniers membres */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+        <div className="lg:col-span-2 bg-card rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Users size={15} className="text-primary" />
-              <h2 className="text-sm font-semibold text-slate-800">Derniers membres</h2>
+              <h2 className="text-sm font-semibold text-foreground">Derniers membres</h2>
             </div>
             <a href="/membres" className="text-xs text-primary hover:underline">Voir tous</a>
           </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {m.first_name} {m.last_name}
                     </p>
                     <p className="text-xs text-muted-foreground">Inscrit le {fmtDate(m.joined_at)}</p>
@@ -208,10 +208,10 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
+          <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-4">
               <CalendarDays size={15} className="text-primary" />
-              <h2 className="text-sm font-semibold text-slate-800">Événements à venir</h2>
+              <h2 className="text-sm font-semibold text-foreground">Événements à venir</h2>
             </div>
             <ul className="space-y-3">
               {otherUpcoming.map(ev => {
@@ -223,7 +223,7 @@ export default function DashboardPage() {
                       <p className="text-[10px] text-muted-foreground uppercase">{MONTH_FR[d.getMonth()]}</p>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm text-slate-800 truncate">{ev.title}</p>
+                      <p className="text-sm text-foreground truncate">{ev.title}</p>
                       <p className="text-xs text-muted-foreground">{ev.registrations_count} inscrits</p>
                     </div>
                   </li>

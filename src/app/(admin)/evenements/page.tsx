@@ -42,7 +42,7 @@ const COLLECTE_STATUS_BADGE: Record<string, string> = {
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
+const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -193,7 +193,7 @@ export default function EvenementsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Événements</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {visibleEvents ? `${visibleEvents.length} événement${visibleEvents.length > 1 ? 's' : ''}` : '—'}
           </p>
@@ -201,7 +201,7 @@ export default function EvenementsPage() {
         {canWrite && (
           <Button
             onClick={() => { setCreateOpen(true); setCreateError(null) }}
-            className="bg-primary hover:bg-primary/80 text-white gap-1.5 shrink-0"
+            className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5 shrink-0"
           >
             <Plus size={14} />
             Nouvel événement
@@ -225,7 +225,7 @@ export default function EvenementsPage() {
                 <Link
                   key={c.id}
                   href={`/collectes/${c.id}`}
-                  className="shrink-0 w-56 bg-white rounded-xl border border-primary/15 shadow-sm p-4 hover:border-primary/35 transition-colors"
+                  className="shrink-0 w-56 bg-card rounded-xl border border-primary/15 shadow-sm p-4 hover:border-primary/35 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden bg-primary/10 flex items-center justify-center">
@@ -235,7 +235,7 @@ export default function EvenementsPage() {
                       }
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-slate-800 truncate">{c.title}</p>
+                      <p className="text-xs font-semibold text-foreground truncate">{c.title}</p>
                       <p className="text-[10px] text-muted-foreground truncate">{c.beneficiary_name}</p>
                     </div>
                   </div>
@@ -262,7 +262,7 @@ export default function EvenementsPage() {
       )}
 
       {/* Filtres */}
-      <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 w-fit">
         {STATUS_TABS.map(t => (
           <button
             key={t.value}
@@ -271,7 +271,7 @@ export default function EvenementsPage() {
               'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
               statusFilter === t.value
                 ? 'bg-primary/15 text-primary'
-                : 'text-slate-500 hover:text-slate-800',
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {t.label}
@@ -301,7 +301,7 @@ export default function EvenementsPage() {
           return (
             <div
               key={ev.id}
-              className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5 hover:border-primary/30 transition-colors"
+              className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5 hover:border-primary/30 transition-colors"
             >
               <div className="text-center w-12 shrink-0 pt-0.5">
                 <p className="text-2xl font-bold text-primary leading-none">{d.getDate()}</p>
@@ -311,7 +311,7 @@ export default function EvenementsPage() {
 
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <h3 className="text-sm font-semibold text-slate-800">{ev.title}</h3>
+                  <h3 className="text-sm font-semibold text-foreground">{ev.title}</h3>
                   <div className="flex items-center gap-1.5 shrink-0">
                     <StatusBadge status={st.status} label={st.label} icon={st.icon} />
                     {canWrite && ev.status !== 'cancelled' && (
@@ -335,7 +335,7 @@ export default function EvenementsPage() {
                   </div>
                 </div>
                 {ev.description && (
-                  <p className="text-xs text-slate-500 line-clamp-2">{ev.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{ev.description}</p>
                 )}
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                   {ev.location && (
@@ -365,40 +365,40 @@ export default function EvenementsPage() {
 
       {/* ── Modale création ─────────────────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={open => { if (!open) { setCreateOpen(false); setCreateForm(EMPTY_CREATE); setCreateError(null) } }}>
-        <DialogContent className="bg-white border-primary/15 sm:max-w-md">
+        <DialogContent className="bg-card border-primary/15 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Nouvel événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Titre *</label>
+              <label className="text-xs text-muted-foreground">Titre *</label>
               <Input value={createForm.title} onChange={cf('title')} required placeholder="Tournoi de judo — juin 2026" className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Date *</label>
+              <label className="text-xs text-muted-foreground">Date *</label>
               <Input type="date" value={createForm.event_date} onChange={cf('event_date')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Lieu <span className="text-muted-foreground">(optionnel)</span></label>
+              <label className="text-xs text-muted-foreground">Lieu <span className="text-muted-foreground">(optionnel)</span></label>
               <Input value={createForm.location} onChange={cf('location')} placeholder="Salle des fêtes, Bordeaux" className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Description <span className="text-muted-foreground">(optionnel)</span></label>
+              <label className="text-xs text-muted-foreground">Description <span className="text-muted-foreground">(optionnel)</span></label>
               <textarea
                 value={createForm.description}
                 onChange={cf('description')}
                 rows={3}
                 placeholder="Décrivez l'événement…"
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Capacité max</label>
+                <label className="text-xs text-muted-foreground">Capacité max</label>
                 <Input type="number" min={1} value={createForm.capacity} onChange={cf('capacity')} placeholder="—" className={FIELD} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Prix billet (€)</label>
+                <label className="text-xs text-muted-foreground">Prix billet (€)</label>
                 <Input type="number" min={0} step="0.01" value={createForm.ticket_price} onChange={cf('ticket_price')} className={FIELD} />
               </div>
             </div>
@@ -407,8 +407,8 @@ export default function EvenementsPage() {
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{createError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={creating} className="bg-primary hover:bg-primary/80 text-white">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-border text-muted-foreground bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={creating} className="bg-primary hover:bg-primary/80 text-primary-foreground">
                 {creating ? 'Création…' : 'Créer'}
               </Button>
             </DialogFooter>
@@ -418,49 +418,49 @@ export default function EvenementsPage() {
 
       {/* ── Modale édition ──────────────────────────────────────────────────── */}
       <Dialog open={!!editTarget} onOpenChange={open => { if (!open) setEditTarget(null) }}>
-        <DialogContent className="bg-white border-primary/15 sm:max-w-md">
+        <DialogContent className="bg-card border-primary/15 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Modifier l'événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Titre *</label>
+              <label className="text-xs text-muted-foreground">Titre *</label>
               <Input value={editForm.title} onChange={ef('title')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Date *</label>
+              <label className="text-xs text-muted-foreground">Date *</label>
               <Input type="date" value={editForm.event_date} onChange={ef('event_date')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Lieu</label>
+              <label className="text-xs text-muted-foreground">Lieu</label>
               <Input value={editForm.location} onChange={ef('location')} className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Description</label>
+              <label className="text-xs text-muted-foreground">Description</label>
               <textarea
                 value={editForm.description}
                 onChange={ef('description')}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Capacité max</label>
+                <label className="text-xs text-muted-foreground">Capacité max</label>
                 <Input type="number" min={1} value={editForm.capacity} onChange={ef('capacity')} placeholder="—" className={FIELD} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Prix billet (€)</label>
+                <label className="text-xs text-muted-foreground">Prix billet (€)</label>
                 <Input type="number" min={0} step="0.01" value={editForm.ticket_price} onChange={ef('ticket_price')} className={FIELD} />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="event-status" className="text-xs text-slate-500">Statut</label>
+              <label htmlFor="event-status" className="text-xs text-muted-foreground">Statut</label>
               <select
                 id="event-status"
                 value={editForm.status}
                 onChange={ef('status')}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
               >
                 <option value="draft">Brouillon</option>
                 <option value="published">Publié</option>
@@ -471,8 +471,8 @@ export default function EvenementsPage() {
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{editError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={updating} className="bg-primary hover:bg-primary/80 text-white">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-border text-muted-foreground bg-transparent">Annuler</Button>
+              <Button type="submit" disabled={updating} className="bg-primary hover:bg-primary/80 text-primary-foreground">
                 {updating ? 'Sauvegarde…' : 'Enregistrer'}
               </Button>
             </DialogFooter>
@@ -482,18 +482,18 @@ export default function EvenementsPage() {
 
       {/* ── Confirmation annulation ─────────────────────────────────────────── */}
       <Dialog open={!!cancelTarget} onOpenChange={open => { if (!open) setCancelTarget(null) }}>
-        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
+        <DialogContent className="bg-card border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
               Annuler l'événement
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-slate-500 mt-1">
-            L'événement <span className="font-semibold text-slate-800">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
+          <p className="text-sm text-muted-foreground mt-1">
+            L'événement <span className="font-semibold text-foreground">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
           </p>
           <DialogFooter className="gap-2 mt-4">
-            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-slate-200 text-muted-foreground bg-transparent">Retour</Button>
+            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-border text-muted-foreground bg-transparent">Retour</Button>
             <Button
               disabled={cancelling}
               onClick={() => cancelTarget && cancelEvent(cancelTarget.id)}

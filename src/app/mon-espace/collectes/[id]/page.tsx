@@ -99,7 +99,7 @@ export default function CollecteDetailPage() {
       />
 
       {/* Header card */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         {collecte.photo_url && (
           <img
             src={collecte.photo_url}
@@ -110,7 +110,7 @@ export default function CollecteDetailPage() {
         <div className="p-5 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h1 className="text-xl font-semibold text-slate-800">{collecte.title}</h1>
+              <h1 className="text-xl font-semibold text-foreground">{collecte.title}</h1>
               <p className="text-sm text-muted-foreground mt-0.5">
                 {collecte.beneficiary_name}
                 {collecte.category && (
@@ -125,7 +125,7 @@ export default function CollecteDetailPage() {
               collecte.status === 'active' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
               collecte.status === 'upcoming' && 'bg-blue-50 text-blue-600 border-blue-200',
               collecte.status === 'expired' && 'bg-amber-50 text-amber-700 border-amber-200',
-              collecte.status === 'closed' && 'bg-gray-100 text-gray-500 border-gray-200',
+              collecte.status === 'closed' && 'bg-muted text-muted-foreground border-border',
             )}>
               {collecte.status === 'active' ? 'En cours'
                 : collecte.status === 'upcoming' ? 'À venir'
@@ -135,18 +135,18 @@ export default function CollecteDetailPage() {
           </div>
 
           {collecte.description && (
-            <p className="text-sm text-slate-500 leading-relaxed">{collecte.description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{collecte.description}</p>
           )}
 
           {/* Stats */}
           <div className="flex items-center gap-6 pt-1">
             <div>
-              <p className="text-xl font-bold text-slate-800">{fmtAmount(collecte.total_collected)}</p>
+              <p className="text-xl font-bold text-foreground">{fmtAmount(collecte.total_collected)}</p>
               <p className="text-xs text-muted-foreground">collectés</p>
             </div>
             <div className="w-px h-8 bg-slate-200" />
             <div>
-              <p className="text-xl font-bold text-slate-800">{collecte.contributors_count}</p>
+              <p className="text-xl font-bold text-foreground">{collecte.contributors_count}</p>
               <p className="text-xs text-muted-foreground">contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
             </div>
             {myTotal > 0 && (
@@ -163,7 +163,7 @@ export default function CollecteDetailPage() {
           {/* Progress bar */}
           {!!collecte.goal_amount && (
             <div className="space-y-1.5">
-              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full bg-primary transition-all"
                   style={{ width: `${Math.min((collecte.total_collected / collecte.goal_amount) * 100, 100)}%` }}
@@ -182,7 +182,7 @@ export default function CollecteDetailPage() {
 
       {/* Contribute section */}
       {canContribute && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           {success && (
             <Toast
               variant="success"
@@ -194,12 +194,12 @@ export default function CollecteDetailPage() {
           {!showForm ? (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Contribuer à cette collecte</p>
+                <p className="text-sm font-semibold text-foreground">Contribuer à cette collecte</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Minimum {fmtAmount(minAmount)}</p>
               </div>
               <Button
                 onClick={() => setShowForm(true)}
-                className="bg-primary hover:bg-primary/80 text-white gap-2"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground gap-2"
               >
                 <Heart size={14} />
                 Je contribue
@@ -207,11 +207,11 @@ export default function CollecteDetailPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm font-semibold text-slate-800">Votre contribution</p>
+              <p className="text-sm font-semibold text-foreground">Votre contribution</p>
 
               {/* Amount input */}
               <div>
-                <label className="text-xs text-slate-500 mb-1.5 block">
+                <label className="text-xs text-muted-foreground mb-1.5 block">
                   Montant (min. {fmtAmount(minAmount)})
                 </label>
                 <div className="relative">
@@ -222,7 +222,7 @@ export default function CollecteDetailPage() {
                     placeholder={String(minAmount)}
                     value={amount}
                     onChange={e => { setAmount(e.target.value); setFormError(null) }}
-                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                    className="w-full pr-8 pl-3 py-2 text-sm rounded-xl border border-border text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">€</span>
                 </div>
@@ -232,13 +232,13 @@ export default function CollecteDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsAnonymous(a => !a)}
-                className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <div className={cn(
                   'w-4 h-4 rounded border flex items-center justify-center transition-colors',
                   isAnonymous
-                    ? 'bg-primary border-primary text-white'
-                    : 'border-slate-300 bg-white',
+                    ? 'bg-primary border-primary text-primary-foreground'
+                    : 'border-slate-300 bg-card',
                 )}>
                   {isAnonymous && <span className="text-[8px] font-bold">✓</span>}
                 </div>
@@ -249,7 +249,7 @@ export default function CollecteDetailPage() {
               </button>
 
               {isAnonymous && (
-                <p className="text-[11px] text-muted-foreground bg-slate-50 rounded-lg px-3 py-2">
+                <p className="text-[11px] text-muted-foreground bg-muted rounded-lg px-3 py-2">
                   Votre nom n'apparaîtra pas dans la liste des contributions.
                 </p>
               )}
@@ -268,7 +268,7 @@ export default function CollecteDetailPage() {
                 <Button
                   onClick={() => contribute()}
                   disabled={!amount || parseFloat(amount) < minAmount || isPending}
-                  className="bg-primary hover:bg-primary/80 text-white"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground"
                 >
                   {isPending ? 'Envoi…' : `Contribuer ${amount ? fmtAmount(parseFloat(amount)) : ''}`}
                 </Button>
@@ -285,10 +285,10 @@ export default function CollecteDetailPage() {
       )}
 
       {/* Contributions wall */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
           <Users size={14} className="text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-slate-800">Contributeurs</h2>
+          <h2 className="text-sm font-semibold text-foreground">Contributeurs</h2>
           <span className="ml-auto text-xs text-muted-foreground">
             {loadingContribs ? '—' : `${contributions?.length ?? 0}`}
           </span>
@@ -313,7 +313,7 @@ export default function CollecteDetailPage() {
         )}
 
         {contributions && contributions.length > 0 && (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {contributions.map((c, i) => {
               const isMe = c.member_id === user?.id && !c.is_anonymous
               return (
@@ -328,7 +328,7 @@ export default function CollecteDetailPage() {
                   <div className={cn(
                     'w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold',
                     c.is_anonymous
-                      ? 'bg-slate-100 text-muted-foreground'
+                      ? 'bg-muted text-muted-foreground'
                       : avatarColor(c.member_name),
                   )}>
                     {c.is_anonymous ? '?' : c.member_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -336,7 +336,7 @@ export default function CollecteDetailPage() {
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {c.member_name}
                       {isMe && <span className="ml-1.5 text-[11px] text-primary font-normal">(vous)</span>}
                     </p>
@@ -344,7 +344,7 @@ export default function CollecteDetailPage() {
                   </div>
 
                   {/* Amount */}
-                  <span className="text-sm font-semibold text-slate-800 shrink-0">
+                  <span className="text-sm font-semibold text-foreground shrink-0">
                     {fmtAmount(c.amount)}
                   </span>
                 </li>

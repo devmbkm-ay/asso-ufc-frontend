@@ -28,7 +28,7 @@ const EVENT_STATUS_LABEL: Record<string, { label: string; status: StatusBadgePro
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const SELECT_CLS = 'rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary'
+const SELECT_CLS = 'rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -93,7 +93,7 @@ export default function HistoriquePage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Historique</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Historique</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           Archives des collectes et événements passés
         </p>
@@ -102,23 +102,23 @@ export default function HistoriquePage() {
       {/* Stats globales */}
       {(archived.length > 0 || finished.length > 0) && (
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+          <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-primary">{fmtEur(totalCollecte)}</p>
             <p className="text-xs text-muted-foreground mt-1">Total collecté (toutes collectes)</p>
           </div>
-          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
-            <p className="text-xl font-bold text-slate-800">{archived.length}</p>
+          <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+            <p className="text-xl font-bold text-foreground">{archived.length}</p>
             <p className="text-xs text-muted-foreground mt-1">Collecte{archived.length > 1 ? 's' : ''} archivée{archived.length > 1 ? 's' : ''}</p>
           </div>
-          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
-            <p className="text-xl font-bold text-slate-800">{finished.length}</p>
+          <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+            <p className="text-xl font-bold text-foreground">{finished.length}</p>
             <p className="text-xs text-muted-foreground mt-1">Événement{finished.length > 1 ? 's' : ''} terminé{finished.length > 1 ? 's' : ''}</p>
           </div>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 w-fit">
         {([
           { value: 'collectes', label: 'Collectes archivées' },
           { value: 'evenements', label: 'Événements terminés' },
@@ -130,7 +130,7 @@ export default function HistoriquePage() {
               'px-4 py-1.5 rounded-md text-xs font-medium transition-colors',
               tab === t.value
                 ? 'bg-primary/15 text-primary'
-                : 'text-slate-500 hover:text-slate-800',
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {t.label}
@@ -154,7 +154,7 @@ export default function HistoriquePage() {
               {(collecteYear || collecteCategory) && (
                 <button
                   onClick={() => { setCollecteYear(''); setCollecteCategory('') }}
-                  className="text-xs text-muted-foreground hover:text-slate-800 transition-colors px-2"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2"
                 >
                   Réinitialiser
                 </button>
@@ -189,7 +189,7 @@ export default function HistoriquePage() {
             {filteredCollectes.map(c => (
               <div
                 key={c.id}
-                className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-4"
+                className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 flex gap-4"
               >
                 {/* Photo */}
                 <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-primary/10 flex items-center justify-center">
@@ -202,7 +202,7 @@ export default function HistoriquePage() {
                 {/* Content */}
                 <div className="flex-1 min-w-0 space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold text-slate-800">{c.title}</p>
+                    <p className="text-sm font-semibold text-foreground">{c.title}</p>
                     {c.category && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                         {categoryLabel(c.category)}
@@ -235,7 +235,7 @@ export default function HistoriquePage() {
 
           {/* Summary for filtered results */}
           {filteredCollectes.length > 1 && (
-            <div className="text-right text-sm text-slate-500 border-t border-slate-100 pt-3">
+            <div className="text-right text-sm text-muted-foreground border-t border-border pt-3">
               Total affiché :{' '}
               <span className="font-semibold text-primary">
                 {fmtEur(filteredCollectes.reduce((s, c) => s + Number(c.total_collected), 0))}
@@ -264,7 +264,7 @@ export default function HistoriquePage() {
               {(eventYear || eventStatus) && (
                 <button
                   onClick={() => { setEventYear(''); setEventStatus('') }}
-                  className="text-xs text-muted-foreground hover:text-slate-800 transition-colors px-2"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2"
                 >
                   Réinitialiser
                 </button>
@@ -302,7 +302,7 @@ export default function HistoriquePage() {
               return (
                 <div
                   key={ev.id}
-                  className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5"
+                  className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5"
                 >
                   {/* Date block */}
                   <div className="text-center w-12 shrink-0 pt-0.5">
@@ -314,13 +314,13 @@ export default function HistoriquePage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-800">{ev.title}</p>
+                      <p className="text-sm font-semibold text-foreground">{ev.title}</p>
                       {st && (
                         <StatusBadge status={st.status} label={st.label} icon={st.icon} />
                       )}
                     </div>
                     {ev.description && (
-                      <p className="text-xs text-slate-500 line-clamp-1">{ev.description}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">{ev.description}</p>
                     )}
                     <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                       {ev.location && (

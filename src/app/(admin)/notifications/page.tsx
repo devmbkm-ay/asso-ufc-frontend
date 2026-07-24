@@ -77,13 +77,13 @@ export default function NotificationsPage() {
 
       {/* Action — Rappels cotisation */}
       {canAction && (
-        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
+        <div className="bg-card rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <Send size={15} className="text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">Rappels de cotisation</p>
+              <p className="text-sm font-semibold text-foreground">Rappels de cotisation</p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Envoie un email à tous les membres actifs qui n'ont pas encore cotisé pour le mois sélectionné.
               </p>
@@ -91,42 +91,42 @@ export default function NotificationsPage() {
           </div>
 
           <div className="flex items-center gap-3 pl-12">
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+            <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderMonth(m => m === 1 ? 12 : m - 1)}
                 aria-label="Mois précédent"
-                className="text-muted-foreground hover:text-slate-700 transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-slate-700 w-16 text-center select-none">
+              <span className="text-xs font-medium text-foreground w-16 text-center select-none">
                 {MONTHS_FULL[reminderMonth - 1]}
               </span>
               <button
                 onClick={() => setReminderMonth(m => m === 12 ? 1 : m + 1)}
                 aria-label="Mois suivant"
-                className="text-muted-foreground hover:text-slate-700 transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+            <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderYear(y => y - 1)}
                 aria-label="Année précédente"
-                className="text-muted-foreground hover:text-slate-700 transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
-              <span className="text-xs font-medium text-slate-700 w-10 text-center select-none">
+              <span className="text-xs font-medium text-foreground w-10 text-center select-none">
                 {reminderYear}
               </span>
               <button
                 onClick={() => setReminderYear(y => y + 1)}
                 disabled={reminderYear >= CURRENT_YEAR}
                 aria-label="Année suivante"
-                className="text-muted-foreground hover:text-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={14} />
               </button>
@@ -136,7 +136,7 @@ export default function NotificationsPage() {
               size="sm"
               onClick={() => { setResult(null); setResultError(null); sendReminder() }}
               disabled={isPending}
-              className="bg-primary hover:bg-primary/80 text-white gap-1.5"
+              className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5"
             >
               <Send size={13} />
               {isPending ? 'Envoi…' : 'Envoyer'}
@@ -164,9 +164,9 @@ export default function NotificationsPage() {
       )}
 
       {/* History */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-800">Historique des envois</h2>
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h2 className="text-sm font-semibold text-foreground">Historique des envois</h2>
         </div>
 
         {isLoading && (
@@ -188,18 +188,18 @@ export default function NotificationsPage() {
         )}
 
         {data && data.length > 0 && (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {data.map(n => {
               const meta = TYPE_META[n.type] ?? TYPE_META.welcome
               const Icon = meta.icon
               return (
-                <li key={n.id} className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 transition-colors">
+                <li key={n.id} className="flex items-start gap-4 px-5 py-4 hover:bg-muted transition-colors">
                   <div className={`w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                     <Icon size={14} className={meta.color} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-medium text-slate-800 truncate">{n.subject}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{n.subject}</p>
                       <StatusBadge
                         className="shrink-0"
                         status={n.sent ? 'active' : 'cancelled'}

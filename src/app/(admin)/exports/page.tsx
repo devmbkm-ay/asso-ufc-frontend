@@ -28,13 +28,13 @@ function ExportCard({
   children?: React.ReactNode
 }) {
   return (
-    <div className="bg-white border border-primary/15 rounded-xl p-6 space-y-4 shadow-sm">
+    <div className="bg-card border border-primary/15 rounded-xl p-6 space-y-4 shadow-sm">
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
           <Icon size={18} className="text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-800">{title}</p>
+          <p className="text-sm font-semibold text-foreground">{title}</p>
           <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
@@ -58,7 +58,7 @@ function ExportCard({
         onClick={onExport}
         disabled={status === 'loading'}
         size="sm"
-        className="bg-primary hover:bg-primary/80 text-white font-semibold gap-2"
+        className="bg-primary hover:bg-primary/80 text-primary-foreground font-semibold gap-2"
       >
         <Download size={14} />
         {status === 'loading' ? 'Export en cours…' : 'Télécharger CSV'}
@@ -183,7 +183,7 @@ export default function ExportsPage() {
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Exports</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Exports</h1>
         <p className="text-sm text-muted-foreground mt-1">Téléchargez vos données en format CSV, prêtes pour Excel ou Google Sheets.</p>
       </div>
 
@@ -197,12 +197,12 @@ export default function ExportsPage() {
           errorMsg={cotisError}
         >
           <div className="flex items-center gap-2">
-            <label htmlFor="cotis-export-year" className="text-xs text-slate-500 shrink-0">Année</label>
+            <label htmlFor="cotis-export-year" className="text-xs text-muted-foreground shrink-0">Année</label>
             <select
               id="cotis-export-year"
               value={cotisYear}
               onChange={e => setCotisYear(Number(e.target.value))}
-              className="text-xs bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-2 py-1 focus:outline-none focus:border-primary"
+              className="text-xs bg-muted border border-border text-foreground rounded-md px-2 py-1 focus:outline-none focus:border-primary"
             >
               {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
@@ -237,7 +237,7 @@ export default function ExportsPage() {
         />
       </div>
 
-      <p className="text-xs text-muted-foreground border-t border-slate-100 pt-4">
+      <p className="text-xs text-muted-foreground border-t border-border pt-4">
         Les fichiers sont encodés en UTF-8 avec BOM pour une compatibilité optimale avec Excel.
       </p>
     </div>

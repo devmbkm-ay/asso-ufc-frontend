@@ -13,7 +13,7 @@ const ROLE_META: Record<string, { label: string; icon: React.ElementType; color:
   super_admin: { label: 'Admin', icon: Crown, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20' },
   treasurer: { label: 'Trésorier', icon: Wallet, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
   secretary: { label: 'Secrétaire', icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-  member: { label: 'Membre', icon: User, color: 'text-gray-500', bg: 'bg-gray-100', border: 'border-gray-200' },
+  member: { label: 'Membre', icon: User, color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border' },
 }
 
 function fmtDate(iso: string) {
@@ -45,7 +45,7 @@ export default function MembresPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Membres</h1>
         <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${total} membre${total > 1 ? 's' : ''} actifs`}
         </p>
@@ -59,12 +59,12 @@ export default function MembresPage() {
           placeholder="Rechercher un membre…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-card focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
         />
       </div>
 
       {/* List */}
-      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
 
         {isLoading && (
           <div className="space-y-3 px-5 py-5">
@@ -84,7 +84,7 @@ export default function MembresPage() {
         )}
 
         {!isLoading && filtered.length > 0 && (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {filtered.map(m => {
               const isSelf = m.id === user?.id
               const visibleRoles = m.roles.filter(r => r !== 'member')
@@ -106,7 +106,7 @@ export default function MembresPage() {
 
                   {/* Name + meta */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {m.first_name} {m.last_name}
                       {isSelf && <span className="ml-1.5 text-[11px] text-primary font-normal">(vous)</span>}
                     </p>
