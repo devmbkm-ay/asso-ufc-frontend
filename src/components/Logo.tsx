@@ -66,7 +66,7 @@ export function Logo({ variant = 'full', size = 'md', href = '/', className }: L
     )
 
     if (href) {
-        return <Link href={href}>{content}</Link>
+        return <Link href={href} aria-label="Fondation Météo Assistance — accueil">{content}</Link>
     }
 
     return content

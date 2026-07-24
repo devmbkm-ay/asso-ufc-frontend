@@ -57,7 +57,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 overflow-y-auto py-4 space-y-5 px-3">
         {NAV.map(({ section, items }) => (
           <div key={section}>
-            <p className="text-[10px] font-semibold tracking-widest text-sidebar-foreground/35 px-2 mb-1">
+            <p className="text-[10px] font-semibold tracking-widest text-sidebar-foreground/50 px-2 mb-1">
               {section}
             </p>
             <ul className="space-y-0.5">

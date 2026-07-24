@@ -84,7 +84,7 @@ export default function NotificationsPage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-800">Rappels de cotisation</p>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Envoie un email à tous les membres actifs qui n'ont pas encore cotisé pour le mois sélectionné.
               </p>
             </div>
@@ -94,7 +94,8 @@ export default function NotificationsPage() {
             <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderMonth(m => m === 1 ? 12 : m - 1)}
-                className="text-slate-400 hover:text-slate-700 transition-colors"
+                aria-label="Mois précédent"
+                className="text-muted-foreground hover:text-slate-700 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -103,7 +104,8 @@ export default function NotificationsPage() {
               </span>
               <button
                 onClick={() => setReminderMonth(m => m === 12 ? 1 : m + 1)}
-                className="text-slate-400 hover:text-slate-700 transition-colors"
+                aria-label="Mois suivant"
+                className="text-muted-foreground hover:text-slate-700 transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
@@ -112,7 +114,8 @@ export default function NotificationsPage() {
             <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderYear(y => y - 1)}
-                className="text-slate-400 hover:text-slate-700 transition-colors"
+                aria-label="Année précédente"
+                className="text-muted-foreground hover:text-slate-700 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -122,7 +125,8 @@ export default function NotificationsPage() {
               <button
                 onClick={() => setReminderYear(y => y + 1)}
                 disabled={reminderYear >= CURRENT_YEAR}
-                className="text-slate-400 hover:text-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Année suivante"
+                className="text-muted-foreground hover:text-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={14} />
               </button>
@@ -203,7 +207,7 @@ export default function NotificationsPage() {
                         label={n.sent ? 'Envoyé' : 'Échoué'}
                       />
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">{fmtDate(n.created_at)}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{fmtDate(n.created_at)}</p>
                   </div>
                   {n.sent
                     ? <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-1" />

@@ -46,14 +46,14 @@ export default function MembresPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${total} membre${total > 1 ? 's' : ''} actifs`}
         </p>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           placeholder="Rechercher un membre…"
@@ -110,7 +110,7 @@ export default function MembresPage() {
                       {m.first_name} {m.last_name}
                       {isSelf && <span className="ml-1.5 text-[11px] text-primary font-normal">(vous)</span>}
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">Membre depuis {fmtDate(m.joined_at)}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Membre depuis {fmtDate(m.joined_at)}</p>
                   </div>
 
                   {/* Role chips */}

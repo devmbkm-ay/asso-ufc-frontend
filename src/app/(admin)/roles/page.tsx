@@ -71,7 +71,7 @@ export default function RolesPage() {
     <div className="p-8 max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Rôles & accès</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Attribuez et révoquez les rôles des membres de l'association.
         </p>
       </div>
@@ -177,6 +177,7 @@ export default function RolesPage() {
                           <select
                             value={selectedRole}
                             onChange={e => { setSelectedRole(e.target.value); setError(null) }}
+                            aria-label="Choisir un rôle à attribuer"
                             className="text-xs rounded-md border border-slate-200 bg-white text-slate-800 px-2 py-1 focus:outline-none focus:border-primary"
                           >
                             <option value="">Choisir…</option>
@@ -194,7 +195,7 @@ export default function RolesPage() {
                           </Button>
                           <button
                             onClick={() => { setAddingFor(null); setSelectedRole(''); setError(null) }}
-                            className="text-slate-400 hover:text-slate-800"
+                            className="text-muted-foreground hover:text-slate-800"
                           >
                             <X size={13} />
                           </button>
@@ -202,7 +203,7 @@ export default function RolesPage() {
                       ) : (
                         <button
                           onClick={() => { setAddingFor(m.id); setSelectedRole('') }}
-                          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-primary transition-colors"
+                          className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors"
                           title="Attribuer un rôle"
                         >
                           <Plus size={12} />
@@ -230,7 +231,7 @@ export default function RolesPage() {
       )}
 
       {/* Bottom note */}
-      <p className="flex items-center gap-2 text-xs text-slate-400 border-t border-slate-100 pt-4">
+      <p className="flex items-center gap-2 text-xs text-muted-foreground border-t border-slate-100 pt-4">
         <Shield size={12} />
         Un membre doit toujours conserver au moins un rôle. Le rôle super_admin ne peut pas être révoqué par lui-même.
       </p>

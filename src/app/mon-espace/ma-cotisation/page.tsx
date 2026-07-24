@@ -98,7 +98,7 @@ export default function MaCotisationPage() {
 
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Ma cotisation</h1>
-        <p className="text-sm text-slate-400 mt-1">Historique de vos paiements</p>
+        <p className="text-sm text-muted-foreground mt-1">Historique de vos paiements</p>
       </div>
 
       {/* Stats */}
@@ -115,7 +115,7 @@ export default function MaCotisationPage() {
         ].map(({ label, value }) => (
           <div key={label} className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-lg font-bold text-slate-800">{value}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -124,7 +124,7 @@ export default function MaCotisationPage() {
       {pendingYear.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Clock size={15} className="text-amber-600" />
+            <Clock size={15} className="text-amber-700" />
             <h2 className="text-sm font-semibold text-amber-800">
               {pendingYear.length} cotisation{pendingYear.length > 1 ? 's' : ''} en attente
             </h2>
@@ -140,7 +140,7 @@ export default function MaCotisationPage() {
               >
                 <div>
                   <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
-                  <p className="text-xs text-slate-400">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <Button
                   size="sm"
@@ -177,7 +177,7 @@ export default function MaCotisationPage() {
               >
                 <div>
                   <p className="text-sm font-medium text-slate-800">{p.plan_label}</p>
-                  <p className="text-xs text-slate-400">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
                 </div>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
                   En vérification
@@ -194,14 +194,15 @@ export default function MaCotisationPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-800">Couverture {year}</h2>
             <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2 py-1">
-              <button onClick={() => setYear(y => y - 1)} className="text-slate-400 hover:text-slate-800 transition-colors">
+              <button onClick={() => setYear(y => y - 1)} aria-label="Année précédente" className="text-muted-foreground hover:text-slate-800 transition-colors">
                 <ChevronLeft size={14} />
               </button>
               <span className="text-xs font-medium text-slate-800 w-10 text-center select-none">{year}</span>
               <button
                 onClick={() => setYear(y => y + 1)}
                 disabled={year >= CURRENT_YEAR}
-                className="text-slate-400 hover:text-slate-800 transition-colors disabled:opacity-30"
+                aria-label="Année suivante"
+                className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30"
               >
                 <ChevronRight size={14} />
               </button>
@@ -223,7 +224,7 @@ export default function MaCotisationPage() {
                   )}>
                     {paid ? '✓' : future ? '' : '✗'}
                   </div>
-                  <span className="text-[8px] text-slate-400 hidden sm:block">{m}</span>
+                  <span className="text-[8px] text-muted-foreground hidden sm:block">{m}</span>
                 </div>
               )
             })}
@@ -271,7 +272,7 @@ export default function MaCotisationPage() {
               <thead>
                 <tr className="border-b border-slate-100">
                   {['Période', 'Plan', 'Méthode', 'Date', 'Montant', 'Statut'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                       {h}
                     </th>
                   ))}
@@ -289,7 +290,7 @@ export default function MaCotisationPage() {
                       <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                         {METHOD_LABELS[p.method] ?? p.method}
                       </td>
-                      <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{fmtDate(p.payment_date)}</td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{fmtDate(p.payment_date)}</td>
                       <td className="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap">{fmtAmount(Number(p.amount))}</td>
                       <td className="px-4 py-3">
                         <span className={cn(

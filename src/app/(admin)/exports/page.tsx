@@ -35,7 +35,7 @@ function ExportCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-800">{title}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export default function ExportsPage() {
     <div className="p-8 max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Exports</h1>
-        <p className="text-sm text-slate-400 mt-1">Téléchargez vos données en format CSV, prêtes pour Excel ou Google Sheets.</p>
+        <p className="text-sm text-muted-foreground mt-1">Téléchargez vos données en format CSV, prêtes pour Excel ou Google Sheets.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -197,8 +197,9 @@ export default function ExportsPage() {
           errorMsg={cotisError}
         >
           <div className="flex items-center gap-2">
-            <label className="text-xs text-slate-500 shrink-0">Année</label>
+            <label htmlFor="cotis-export-year" className="text-xs text-slate-500 shrink-0">Année</label>
             <select
+              id="cotis-export-year"
               value={cotisYear}
               onChange={e => setCotisYear(Number(e.target.value))}
               className="text-xs bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-2 py-1 focus:outline-none focus:border-primary"
@@ -236,7 +237,7 @@ export default function ExportsPage() {
         />
       </div>
 
-      <p className="text-xs text-slate-400 border-t border-slate-100 pt-4">
+      <p className="text-xs text-muted-foreground border-t border-slate-100 pt-4">
         Les fichiers sont encodés en UTF-8 avec BOM pour une compatibilité optimale avec Excel.
       </p>
     </div>

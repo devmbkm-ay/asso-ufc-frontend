@@ -61,7 +61,7 @@ const EMPTY_FORM = {
   reference: '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 const FREQ_LABELS: Record<string, string> = {
   monthly: 'Mensuelle',
@@ -280,7 +280,7 @@ export default function CotisationsPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Cotisations</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {isLoading
               ? '—'
               : `${confirmedCount} confirmés · ${declaredCount > 0 ? `${declaredCount} à valider · ` : ''}${pendingCount} en attente · ${fmtEur(totalRevenue)} encaissés`}
@@ -289,7 +289,8 @@ export default function CotisationsPage() {
         <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-lg px-3 py-2">
           <button
             onClick={() => setYear(y => y - 1)}
-            className="text-slate-400 hover:text-slate-800 transition-colors"
+            aria-label="Année précédente"
+            className="text-muted-foreground hover:text-slate-800 transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
@@ -297,7 +298,8 @@ export default function CotisationsPage() {
           <button
             onClick={() => setYear(y => y + 1)}
             disabled={year >= currentYear}
-            className="text-slate-400 hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Année suivante"
+            className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronRight size={16} />
           </button>
@@ -308,7 +310,7 @@ export default function CotisationsPage() {
       {canWrite && (
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
           <div className="flex items-center justify-between gap-4 mb-3">
-            <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Plans de cotisation</h2>
+            <h2 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Plans de cotisation</h2>
             <button
               onClick={() => { setPlanOpen(true); setPlanError(null); setPlanForm(EMPTY_PLAN) }}
               className="flex items-center gap-1 text-xs text-primary hover:text-primary transition-colors font-medium"
@@ -319,7 +321,7 @@ export default function CotisationsPage() {
           </div>
 
           {!plans?.length && (
-            <p className="text-xs text-slate-400 italic">
+            <p className="text-xs text-muted-foreground italic">
               Aucun plan actif — créez un plan pour pouvoir enregistrer des paiements.
             </p>
           )}
@@ -343,14 +345,14 @@ export default function CotisationsPage() {
                       onClick={() => { setInitingPlanId(p.id); initPayments(p.id) }}
                       disabled={initingPlanId === p.id}
                       title="Initialiser les cotisations en attente pour tous les membres"
-                      className="text-slate-400 hover:text-primary transition-colors disabled:opacity-50"
+                      className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
                     >
                       <Zap size={13} />
                     </button>
                     <button
                       onClick={() => deactivatePlan(p.id)}
                       title="Désactiver ce plan"
-                      className="text-slate-400 hover:text-red-400 transition-colors"
+                      className="text-muted-foreground hover:text-red-400 transition-colors"
                     >
                       <ToggleLeft size={14} />
                     </button>
@@ -377,7 +379,7 @@ export default function CotisationsPage() {
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-800 truncate">{p.member_name}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted-foreground">
                     {p.plan_label} · {periodLabel(p)} · {fmtEur(p.amount)}
                   </p>
                 </div>
@@ -411,15 +413,15 @@ export default function CotisationsPage() {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase sticky left-0 bg-white min-w-[180px] z-10">
+              <th className="text-left px-4 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sticky left-0 bg-white min-w-[180px] z-10">
                 Membre
               </th>
               {MONTHS.map(m => (
-                <th key={m} className="px-1.5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase text-center min-w-[48px]">
+                <th key={m} className="px-1.5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase text-center min-w-[48px]">
                   {m}
                 </th>
               ))}
-              <th className="px-4 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase text-right whitespace-nowrap">
+              <th className="px-4 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase text-right whitespace-nowrap">
                 Total
               </th>
             </tr>
@@ -479,7 +481,7 @@ export default function CotisationsPage() {
                     </td>
                   ))}
                   <td className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">
-                    <span className={rowTotal > 0 ? 'text-primary' : 'text-slate-400'}>
+                    <span className={rowTotal > 0 ? 'text-primary' : 'text-muted-foreground'}>
                       {rowTotal > 0 ? fmtEur(rowTotal) : '—'}
                     </span>
                   </td>
@@ -491,7 +493,7 @@ export default function CotisationsPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-5 text-xs text-slate-400">
+      <div className="flex flex-wrap items-center gap-5 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-4 rounded border bg-emerald-100 border-emerald-300 flex items-center justify-center text-emerald-700 text-[10px]">✓</div>
           Confirmé
@@ -518,15 +520,16 @@ export default function CotisationsPage() {
       <Dialog open={!!selected} onOpenChange={open => { if (!open) close() }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 text-base">{dialogTitle}</DialogTitle>
+            <DialogTitle className="text-base">{dialogTitle}</DialogTitle>
           </DialogHeader>
 
           {/* ── Record (none) ── */}
           {selected?.cell.status === 'none' && (
             <form onSubmit={handleRecord} className="space-y-3 mt-1">
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Plan de cotisation</label>
+                <label htmlFor="payment-plan" className="text-xs text-slate-500">Plan de cotisation</label>
                 <select
+                  id="payment-plan"
                   value={form.plan_id}
                   onChange={e => handlePlanChange(e.target.value)}
                   required
@@ -543,8 +546,9 @@ export default function CotisationsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Montant (€)</label>
+                  <label htmlFor="payment-amount" className="text-xs text-slate-500">Montant (€)</label>
                   <Input
+                    id="payment-amount"
                     type="number"
                     min={1}
                     step="0.01"
@@ -555,8 +559,9 @@ export default function CotisationsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Date</label>
+                  <label htmlFor="payment-date" className="text-xs text-slate-500">Date</label>
                   <Input
+                    id="payment-date"
                     type="date"
                     value={form.payment_date}
                     onChange={e => setForm(f => ({ ...f, payment_date: e.target.value }))}
@@ -567,8 +572,9 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Méthode</label>
+                <label htmlFor="payment-method" className="text-xs text-slate-500">Méthode</label>
                 <select
+                  id="payment-method"
                   value={form.method}
                   onChange={e => setForm(f => ({ ...f, method: e.target.value }))}
                   className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
@@ -580,10 +586,11 @@ export default function CotisationsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">
-                  Référence <span className="text-slate-400">(optionnel)</span>
+                <label htmlFor="payment-reference" className="text-xs text-slate-500">
+                  Référence <span className="text-muted-foreground">(optionnel)</span>
                 </label>
                 <Input
+                  id="payment-reference"
                   value={form.reference}
                   onChange={e => setForm(f => ({ ...f, reference: e.target.value }))}
                   placeholder="N° de chèque, virement…"
@@ -602,7 +609,7 @@ export default function CotisationsPage() {
                   type="button"
                   variant="outline"
                   onClick={close}
-                  className="border-slate-200 text-slate-500 bg-transparent"
+                  className="border-slate-200 text-muted-foreground bg-transparent"
                 >
                   Annuler
                 </Button>
@@ -621,11 +628,11 @@ export default function CotisationsPage() {
           {selected?.cell.status === 'pending' && (
             <div className="space-y-4 mt-1">
               <div className="flex items-center gap-3 px-3 py-3 bg-amber-50 rounded-lg border border-amber-200">
-                <Clock size={16} className="text-amber-600 shrink-0" />
+                <Clock size={16} className="text-amber-700 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-amber-800">En attente de confirmation</p>
                   {selected.cell.amount != null && (
-                    <p className="text-xs text-amber-600 mt-0.5">{fmtEur(selected.cell.amount)}</p>
+                    <p className="text-xs text-amber-700 mt-0.5">{fmtEur(selected.cell.amount)}</p>
                   )}
                 </div>
               </div>
@@ -734,13 +741,14 @@ export default function CotisationsPage() {
       <Dialog open={planOpen} onOpenChange={open => { if (!open) { setPlanOpen(false); setPlanError(null) } }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 text-base">Nouveau plan de cotisation</DialogTitle>
+            <DialogTitle className="text-base">Nouveau plan de cotisation</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handlePlanSubmit} className="space-y-3 mt-1">
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Libellé</label>
+              <label htmlFor="plan-label" className="text-xs text-slate-500">Libellé</label>
               <Input
+                id="plan-label"
                 value={planForm.label}
                 onChange={e => setPlanForm(f => ({ ...f, label: e.target.value }))}
                 required
@@ -751,8 +759,9 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Montant (€)</label>
+                <label htmlFor="plan-amount" className="text-xs text-slate-500">Montant (€)</label>
                 <Input
+                  id="plan-amount"
                   type="number"
                   min={1}
                   step="0.01"
@@ -763,8 +772,9 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Fréquence</label>
+                <label htmlFor="plan-frequency" className="text-xs text-slate-500">Fréquence</label>
                 <select
+                  id="plan-frequency"
                   value={planForm.frequency}
                   onChange={e => setPlanForm(f => ({ ...f, frequency: e.target.value as typeof f.frequency }))}
                   className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
@@ -778,8 +788,9 @@ export default function CotisationsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Valide à partir du</label>
+                <label htmlFor="plan-valid-from" className="text-xs text-slate-500">Valide à partir du</label>
                 <Input
+                  id="plan-valid-from"
                   type="date"
                   value={planForm.valid_from}
                   onChange={e => setPlanForm(f => ({ ...f, valid_from: e.target.value }))}
@@ -788,8 +799,9 @@ export default function CotisationsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-slate-500">Expire le <span className="text-slate-400">(optionnel)</span></label>
+                <label htmlFor="plan-valid-until" className="text-xs text-slate-500">Expire le <span className="text-muted-foreground">(optionnel)</span></label>
                 <Input
+                  id="plan-valid-until"
                   type="date"
                   value={planForm.valid_until}
                   onChange={e => setPlanForm(f => ({ ...f, valid_until: e.target.value }))}
@@ -809,7 +821,7 @@ export default function CotisationsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => { setPlanOpen(false); setPlanError(null) }}
-                className="border-slate-200 text-slate-500 bg-transparent"
+                className="border-slate-200 text-muted-foreground bg-transparent"
               >
                 Annuler
               </Button>

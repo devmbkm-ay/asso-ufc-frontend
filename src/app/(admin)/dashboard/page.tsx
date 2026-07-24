@@ -68,7 +68,7 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-semibold text-slate-800">
           {greeting}, {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-slate-400 mt-0.5">
+        <p className="text-sm text-muted-foreground mt-0.5">
           {today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
                 {isToday ? "Aujourd'hui" : 'Prochain événement'}
               </Badge>
               <h2 className="text-sm font-semibold text-slate-800 truncate">{featuredEvent.title}</h2>
-              <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-1">
+              <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-1">
                 {featuredEvent.location && (
                   <span className="flex items-center gap-1">
                     <MapPin size={11} className="text-primary" />
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                     <p className="text-sm font-medium text-slate-800 truncate">
                       {m.first_name} {m.last_name}
                     </p>
-                    <p className="text-xs text-slate-400">Inscrit le {fmtDate(m.joined_at)}</p>
+                    <p className="text-xs text-muted-foreground">Inscrit le {fmtDate(m.joined_at)}</p>
                   </div>
                   <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
                 </li>
@@ -199,10 +199,10 @@ export default function DashboardPage() {
           {kpis && kpis.unpaid_this_month > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1">
               <div className="flex items-center gap-2">
-                <AlertTriangle size={14} className="text-amber-600" />
+                <AlertTriangle size={14} className="text-amber-700" />
                 <p className="text-xs font-semibold text-amber-700">Alertes</p>
               </div>
-              <p className="text-xs text-amber-600">
+              <p className="text-xs text-amber-700">
                 {kpis.unpaid_this_month} membre{kpis.unpaid_this_month > 1 ? 's' : ''} sans cotisation ce mois
               </p>
             </div>
@@ -220,17 +220,17 @@ export default function DashboardPage() {
                   <li key={ev.id} className="flex gap-3">
                     <div className="text-center w-10 shrink-0">
                       <p className="text-lg font-bold text-primary leading-none">{d.getDate()}</p>
-                      <p className="text-[10px] text-slate-400 uppercase">{MONTH_FR[d.getMonth()]}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase">{MONTH_FR[d.getMonth()]}</p>
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm text-slate-800 truncate">{ev.title}</p>
-                      <p className="text-xs text-slate-400">{ev.registrations_count} inscrits</p>
+                      <p className="text-xs text-muted-foreground">{ev.registrations_count} inscrits</p>
                     </div>
                   </li>
                 )
               })}
               {publishedEvents && otherUpcoming.length === 0 && (
-                <li className="text-xs text-slate-400">
+                <li className="text-xs text-muted-foreground">
                   {featuredEvent ? 'Aucun autre événement à venir' : 'Aucun événement à venir'}
                 </li>
               )}

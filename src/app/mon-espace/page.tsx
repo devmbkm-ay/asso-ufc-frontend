@@ -69,7 +69,7 @@ export default function MonEspacePage() {
         <h1 className="text-2xl font-semibold text-slate-800">
           Bonjour, {user?.first_name} 👋
         </h1>
-        <p className="text-sm text-slate-400 mt-0.5">Voici un résumé de votre activité dans l'association.</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Voici un résumé de votre activité dans l'association.</p>
       </div>
 
       {/* Quick stats */}
@@ -79,7 +79,7 @@ export default function MonEspacePage() {
             label: 'Cotisations 2026',
             value: `${confirmedCount}/12`,
             icon: CreditCard,
-            color: isUpToDate ? 'text-emerald-600' : 'text-amber-600',
+            color: isUpToDate ? 'text-emerald-600' : 'text-amber-700',
             bg: isUpToDate ? 'bg-emerald-50' : 'bg-amber-50',
           },
           {
@@ -109,7 +109,7 @@ export default function MonEspacePage() {
               <Icon size={15} className={color} />
             </div>
             <p className="text-xl font-bold text-slate-800">{value}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{label}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -141,18 +141,18 @@ export default function MonEspacePage() {
                     ? 'bg-emerald-500 text-white'
                     : past
                       ? 'bg-red-100 text-red-400'
-                      : 'bg-slate-100 text-slate-400',
+                      : 'bg-slate-100 text-muted-foreground',
                 )}>
                   {paid ? '✓' : past ? '✗' : '·'}
                 </div>
-                <span className="text-[9px] text-slate-400 text-center leading-none hidden sm:block">{m}</span>
+                <span className="text-[9px] text-muted-foreground text-center leading-none hidden sm:block">{m}</span>
               </div>
             )
           })}
         </div>
         <p className={cn(
           'text-xs mt-3 font-medium',
-          isUpToDate ? 'text-emerald-600' : 'text-amber-600',
+          isUpToDate ? 'text-emerald-600' : 'text-amber-700',
         )}>
           {isUpToDate
             ? `✓ Vous êtes à jour pour ${MONTHS_SHORT[CURRENT_MONTH - 1]} ${CURRENT_YEAR}`
@@ -182,12 +182,12 @@ export default function MonEspacePage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{c.title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {fmtAmount(c.total_collected)} collectés · {c.contributors_count} contributeurs
                       {c.category && ` · ${categoryLabel(c.category)}`}
                     </p>
                   </div>
-                  <ChevronRight size={14} className="text-slate-400 shrink-0" />
+                  <ChevronRight size={14} className="text-muted-foreground shrink-0" />
                 </Link>
               </li>
             ))}
@@ -212,9 +212,9 @@ export default function MonEspacePage() {
               <p className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors">
                 {nextEvent.title}
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">{fmtDate(nextEvent.event_date)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{fmtDate(nextEvent.event_date)}</p>
               {nextEvent.location && (
-                <p className="text-xs text-slate-400 mt-0.5">{nextEvent.location}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{nextEvent.location}</p>
               )}
             </div>
             <div className="shrink-0">
@@ -223,7 +223,7 @@ export default function MonEspacePage() {
                   <CheckCircle2 size={10} /> Inscrit
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400 bg-slate-100 rounded-full px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground bg-slate-100 rounded-full px-2 py-0.5">
                   <Circle size={10} /> Non inscrit
                 </span>
               )}

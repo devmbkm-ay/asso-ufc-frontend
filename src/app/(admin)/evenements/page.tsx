@@ -42,7 +42,7 @@ const COLLECTE_STATUS_BADGE: Record<string, string> = {
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -194,7 +194,7 @@ export default function EvenementsPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {visibleEvents ? `${visibleEvents.length} événement${visibleEvents.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -214,7 +214,7 @@ export default function EvenementsPage() {
         <section className="space-y-3">
           <div className="flex items-center gap-2">
             <Heart size={13} className="text-primary" />
-            <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">
+            <h2 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
               Annonces en cours
             </h2>
           </div>
@@ -236,7 +236,7 @@ export default function EvenementsPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-slate-800 truncate">{c.title}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{c.beneficiary_name}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{c.beneficiary_name}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
@@ -245,7 +245,7 @@ export default function EvenementsPage() {
                       {fmtEur(c.total_collected)}
                     </div>
                     {c.status === 'active' ? (
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-muted-foreground">
                         {remaining}j restant{remaining > 1 ? 's' : ''}
                       </span>
                     ) : (
@@ -305,8 +305,8 @@ export default function EvenementsPage() {
             >
               <div className="text-center w-12 shrink-0 pt-0.5">
                 <p className="text-2xl font-bold text-primary leading-none">{d.getDate()}</p>
-                <p className="text-[10px] text-slate-400 uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{d.getFullYear()}</p>
+                <p className="text-[10px] text-muted-foreground uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{d.getFullYear()}</p>
               </div>
 
               <div className="flex-1 min-w-0 space-y-2">
@@ -317,7 +317,7 @@ export default function EvenementsPage() {
                     {canWrite && ev.status !== 'cancelled' && (
                       <button
                         onClick={() => openEdit(ev)}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                         title="Modifier"
                       >
                         <Pencil size={12} />
@@ -326,7 +326,7 @@ export default function EvenementsPage() {
                     {canAdmin && ev.status !== 'cancelled' && (
                       <button
                         onClick={() => setCancelTarget(ev)}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors"
                         title="Annuler l'événement"
                       >
                         <X size={12} />
@@ -337,14 +337,14 @@ export default function EvenementsPage() {
                 {ev.description && (
                   <p className="text-xs text-slate-500 line-clamp-2">{ev.description}</p>
                 )}
-                <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+                <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                   {ev.location && (
                     <div className="flex items-center gap-1.5">
                       <MapPin size={11} className="text-primary" />
                       {ev.location}
                     </div>
                   )}
-                  <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-600')}>
+                  <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-700')}>
                     <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-primary'} />
                     {ev.registrations_count} inscrit{ev.registrations_count > 1 ? 's' : ''}
                     {ev.capacity && ` / ${ev.capacity}`}
@@ -367,7 +367,7 @@ export default function EvenementsPage() {
       <Dialog open={createOpen} onOpenChange={open => { if (!open) { setCreateOpen(false); setCreateForm(EMPTY_CREATE); setCreateError(null) } }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-800">Nouvel événement</DialogTitle>
+            <DialogTitle>Nouvel événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-1">
             <div className="space-y-1.5">
@@ -379,17 +379,17 @@ export default function EvenementsPage() {
               <Input type="date" value={createForm.event_date} onChange={cf('event_date')} required className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Lieu <span className="text-slate-400">(optionnel)</span></label>
+              <label className="text-xs text-slate-500">Lieu <span className="text-muted-foreground">(optionnel)</span></label>
               <Input value={createForm.location} onChange={cf('location')} placeholder="Salle des fêtes, Bordeaux" className={FIELD} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Description <span className="text-slate-400">(optionnel)</span></label>
+              <label className="text-xs text-slate-500">Description <span className="text-muted-foreground">(optionnel)</span></label>
               <textarea
                 value={createForm.description}
                 onChange={cf('description')}
                 rows={3}
                 placeholder="Décrivez l'événement…"
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -402,12 +402,12 @@ export default function EvenementsPage() {
                 <Input type="number" min={0} step="0.01" value={createForm.ticket_price} onChange={cf('ticket_price')} className={FIELD} />
               </div>
             </div>
-            <p className="text-xs text-slate-400">L'événement sera créé en brouillon. Publiez-le depuis la liste pour ouvrir les inscriptions.</p>
+            <p className="text-xs text-muted-foreground">L'événement sera créé en brouillon. Publiez-le depuis la liste pour ouvrir les inscriptions.</p>
             {createError && (
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{createError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
               <Button type="submit" disabled={creating} className="bg-primary hover:bg-primary/80 text-white">
                 {creating ? 'Création…' : 'Créer'}
               </Button>
@@ -420,7 +420,7 @@ export default function EvenementsPage() {
       <Dialog open={!!editTarget} onOpenChange={open => { if (!open) setEditTarget(null) }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-800">Modifier l'événement</DialogTitle>
+            <DialogTitle>Modifier l'événement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 mt-1">
             <div className="space-y-1.5">
@@ -441,7 +441,7 @@ export default function EvenementsPage() {
                 value={editForm.description}
                 onChange={ef('description')}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -455,8 +455,9 @@ export default function EvenementsPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-slate-500">Statut</label>
+              <label htmlFor="event-status" className="text-xs text-slate-500">Statut</label>
               <select
+                id="event-status"
                 value={editForm.status}
                 onChange={ef('status')}
                 className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
@@ -470,7 +471,7 @@ export default function EvenementsPage() {
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{editError}</p>
             )}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
               <Button type="submit" disabled={updating} className="bg-primary hover:bg-primary/80 text-white">
                 {updating ? 'Sauvegarde…' : 'Enregistrer'}
               </Button>
@@ -483,7 +484,7 @@ export default function EvenementsPage() {
       <Dialog open={!!cancelTarget} onOpenChange={open => { if (!open) setCancelTarget(null) }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
               Annuler l'événement
             </DialogTitle>
@@ -492,7 +493,7 @@ export default function EvenementsPage() {
             L'événement <span className="font-semibold text-slate-800">"{cancelTarget?.title}"</span> sera marqué comme annulé. Cette action est irréversible.
           </p>
           <DialogFooter className="gap-2 mt-4">
-            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-slate-200 text-slate-500 bg-transparent">Retour</Button>
+            <Button variant="outline" onClick={() => setCancelTarget(null)} className="border-slate-200 text-muted-foreground bg-transparent">Retour</Button>
             <Button
               disabled={cancelling}
               onClick={() => cancelTarget && cancelEvent(cancelTarget.id)}

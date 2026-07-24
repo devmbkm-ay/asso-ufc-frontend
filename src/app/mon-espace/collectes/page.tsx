@@ -12,7 +12,7 @@ import { categoryLabel } from '@/lib/collecte-categories'
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   active: { label: 'En cours', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: Heart },
   upcoming: { label: 'À venir', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', icon: Clock },
-  expired: { label: 'Expirée', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200', icon: Clock },
+  expired: { label: 'Expirée', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', icon: Clock },
   closed: { label: 'Clôturée', color: 'text-gray-500', bg: 'bg-gray-100 border-gray-200', icon: Lock },
 }
 
@@ -41,7 +41,7 @@ export default function CollectesPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Collectes de solidarité</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${data?.length ?? 0} collecte${(data?.length ?? 0) > 1 ? 's' : ''}`}
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function CollectesPage() {
                     </div>
 
                     {/* Beneficiary + category */}
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {c.beneficiary_name}
                       {c.category && ` · ${categoryLabel(c.category)}`}
                     </p>
@@ -130,7 +130,7 @@ export default function CollectesPage() {
                     </div>
 
                     {/* Dates */}
-                    <p className="text-[10px] text-slate-400 mt-2">
+                    <p className="text-[10px] text-muted-foreground mt-2">
                       {c.status === 'active'
                         ? `Jusqu'au ${fmtDate(c.end_date)}`
                         : c.status === 'upcoming'
@@ -140,7 +140,7 @@ export default function CollectesPage() {
                     </p>
                   </div>
 
-                  <ChevronRight size={16} className="text-slate-400 shrink-0 mt-1" />
+                  <ChevronRight size={16} className="text-muted-foreground shrink-0 mt-1" />
                 </div>
               </Link>
             )

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -177,7 +177,7 @@ export default function MembrePage() {
             {canEdit && (
               <button
                 onClick={openEditModal}
-                className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                 title="Modifier le profil"
               >
                 <Pencil size={13} />
@@ -200,7 +200,7 @@ export default function MembrePage() {
         <Dialog open={openEdit} onOpenChange={setOpenEdit}>
           <DialogContent className="bg-white border-primary/15 sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-slate-800">Modifier le profil</DialogTitle>
+              <DialogTitle>Modifier le profil</DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleEditSubmit} className="space-y-4 mt-1">
@@ -230,7 +230,7 @@ export default function MembrePage() {
                 <Input type="date" value={editForm.birth_date} onChange={editField('birth_date')} className={FIELD} />
               </div>
 
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 L&apos;email ({member.email}) ne peut pas être modifié pour l&apos;instant.
               </p>
 
@@ -245,7 +245,7 @@ export default function MembrePage() {
                   type="button"
                   variant="outline"
                   onClick={() => setOpenEdit(false)}
-                  className="border-slate-200 text-slate-500 bg-transparent"
+                  className="border-slate-200 text-muted-foreground bg-transparent"
                 >
                   Annuler
                 </Button>
@@ -266,7 +266,7 @@ export default function MembrePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
-          <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Informations</h2>
+          <h2 className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Informations</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Mail size={14} className="text-primary shrink-0" />
@@ -300,7 +300,7 @@ export default function MembrePage() {
         </div>
 
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
-          <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Cotisations</h2>
+          <h2 className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Cotisations</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Total versé</span>
@@ -313,14 +313,14 @@ export default function MembrePage() {
             {pendingCount > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-500">En attente</span>
-                <span className="text-sm text-amber-600 font-medium">{pendingCount}</span>
+                <span className="text-sm text-amber-700 font-medium">{pendingCount}</span>
               </div>
             )}
           </div>
 
           {/* Month progress for current year */}
           <div className="pt-2 border-t border-slate-100">
-            <p className="text-[10px] text-slate-400 mb-2">
+            <p className="text-[10px] text-muted-foreground mb-2">
               {CURRENT_YEAR} — {paidMonthsThisYear.size} mois confirmé{paidMonthsThisYear.size !== 1 ? 's' : ''}
             </p>
             <div className="flex gap-1">
@@ -333,7 +333,7 @@ export default function MembrePage() {
                     title={`${MONTHS_FULL[i]} ${CURRENT_YEAR}`}
                     className={`flex-1 h-5 rounded-sm flex items-center justify-center text-[9px] font-semibold transition-colors ${paid
                         ? 'bg-emerald-500 text-white'
-                        : 'bg-slate-100 text-slate-400'
+                        : 'bg-slate-100 text-muted-foreground'
                       }`}
                   >
                     {m}
@@ -352,7 +352,8 @@ export default function MembrePage() {
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
             <button
               onClick={() => setTableYear(y => y - 1)}
-              className="text-slate-400 hover:text-slate-800 transition-colors"
+              aria-label="Année précédente"
+              className="text-muted-foreground hover:text-slate-800 transition-colors"
             >
               <ChevronLeft size={14} />
             </button>
@@ -360,7 +361,8 @@ export default function MembrePage() {
             <button
               onClick={() => setTableYear(y => y + 1)}
               disabled={tableYear >= CURRENT_YEAR}
-              className="text-slate-400 hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Année suivante"
+              className="text-muted-foreground hover:text-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRight size={14} />
             </button>
@@ -370,12 +372,12 @@ export default function MembrePage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Période</th>
-              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden sm:table-cell">Plan</th>
-              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden md:table-cell">Méthode</th>
-              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden md:table-cell">Date</th>
-              <th className="text-right px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Montant</th>
-              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Statut</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Période</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Plan</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden md:table-cell">Méthode</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden md:table-cell">Date</th>
+              <th className="text-right px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Montant</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Statut</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

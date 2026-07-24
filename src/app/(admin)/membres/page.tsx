@@ -62,7 +62,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 export default function MembresPage() {
   const { user } = useAuth()
@@ -239,7 +239,7 @@ export default function MembresPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Membres</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {data ? `${data.total} adhérent${data.total > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -259,7 +259,7 @@ export default function MembresPage() {
 
               <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle className="text-slate-800">
+                  <DialogTitle>
                     {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
                   </DialogTitle>
                 </DialogHeader>
@@ -302,7 +302,7 @@ export default function MembresPage() {
                         className={FIELD_CLASS}
                       />
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted-foreground">
                       Un email avec le lien d'inscription sera envoyé automatiquement. Le lien est valable 7 jours.
                     </p>
                     {inviteError && (
@@ -312,7 +312,7 @@ export default function MembresPage() {
                     )}
                     <DialogFooter className="gap-2">
                       <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-slate-200 text-slate-500 bg-transparent">
+                        className="border-slate-200 text-muted-foreground bg-transparent">
                         Annuler
                       </Button>
                       <Button type="submit" disabled={invitePending}
@@ -336,7 +336,7 @@ export default function MembresPage() {
                         className={cn(FIELD_CLASS, 'w-full rounded-md border px-3 py-2 text-sm focus:outline-none')}
                       />
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted-foreground">
                       Un email par ligne (ou séparés par une virgule). Chaque personne reçoit son propre lien d'inscription, valable 7 jours.
                     </p>
                     {inviteError && (
@@ -346,7 +346,7 @@ export default function MembresPage() {
                     )}
                     <DialogFooter className="gap-2">
                       <Button type="button" variant="outline" onClick={closeInviteModal}
-                        className="border-slate-200 text-slate-500 bg-transparent">
+                        className="border-slate-200 text-muted-foreground bg-transparent">
                         Annuler
                       </Button>
                       <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
@@ -369,7 +369,7 @@ export default function MembresPage() {
                           {bulkResult.skipped.map(s => (
                             <li key={s.email} className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 flex justify-between gap-2">
                               <span className="truncate">{s.email}</span>
-                              <span className="text-slate-400 shrink-0">{s.reason}</span>
+                              <span className="text-muted-foreground shrink-0">{s.reason}</span>
                             </li>
                           ))}
                         </ul>
@@ -424,7 +424,7 @@ export default function MembresPage() {
 
               <DialogContent className="bg-white border-primary/15 sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
+                  <DialogTitle>Nouveau membre</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 mt-1">
@@ -447,7 +447,7 @@ export default function MembresPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs text-slate-500">
                       Mot de passe *{' '}
-                      <span className="text-slate-400">8 car. min, 1 chiffre requis</span>
+                      <span className="text-muted-foreground">8 car. min, 1 chiffre requis</span>
                     </label>
                     <Input
                       type="password"
@@ -508,7 +508,7 @@ export default function MembresPage() {
       {canInvite && pendingInvites && pendingInvites.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
           <div className="flex items-center gap-2">
-            <Clock size={14} className="text-amber-600" />
+            <Clock size={14} className="text-amber-700" />
             <span className="text-sm font-semibold text-amber-800">
               {pendingInvites.length} invitation{pendingInvites.length > 1 ? 's' : ''} en attente
             </span>
@@ -518,7 +518,7 @@ export default function MembresPage() {
               <div key={inv.id} className="flex items-center justify-between gap-3 bg-white border border-amber-100 rounded-lg px-3 py-2">
                 <div>
                   <p className="text-sm font-medium text-slate-800">{inv.email}</p>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-muted-foreground">
                     Invité par {inv.invited_by_name} · expire le {fmtExpiry(inv.expires_at)}
                   </p>
                 </div>
@@ -540,12 +540,12 @@ export default function MembresPage() {
       {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Rechercher un membre…"
-            className="pl-9 bg-white border-slate-200 text-slate-800 placeholder:text-slate-400"
+            className="pl-9 bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground"
           />
         </div>
         <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1">
@@ -571,17 +571,17 @@ export default function MembresPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Membre</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Membre</th>
               {isAdmin ? (
                 <>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden md:table-cell">Email</th>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden lg:table-cell">Téléphone</th>
-                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden sm:table-cell">Inscrit le</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden md:table-cell">Email</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden lg:table-cell">Téléphone</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Inscrit le</th>
                 </>
               ) : (
-                <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase hidden sm:table-cell">Fonction</th>
+                <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Fonction</th>
               )}
-              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Statut</th>
+              <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Statut</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -670,7 +670,7 @@ export default function MembresPage() {
       {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <p className="text-slate-400">
+          <p className="text-muted-foreground">
             Page {data.page} sur {data.pages}
           </p>
           <div className="flex gap-2">
@@ -679,6 +679,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
+              aria-label="Page précédente"
               className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             >
               <ChevronLeft size={14} />
@@ -688,6 +689,7 @@ export default function MembresPage() {
               size="sm"
               disabled={page === data.pages}
               onClick={() => setPage(p => p + 1)}
+              aria-label="Page suivante"
               className="bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             >
               <ChevronRight size={14} />

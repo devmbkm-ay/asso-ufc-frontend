@@ -51,7 +51,7 @@ const EMPTY_FORM = {
   category: '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 export default function CollectesPage() {
   const { user } = useAuth()
@@ -151,7 +151,7 @@ export default function CollectesPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Collectes de solidarité</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {data ? `${data.length} collecte${data.length > 1 ? 's' : ''}` : '—'}
           </p>
         </div>
@@ -168,13 +168,14 @@ export default function CollectesPage() {
 
             <DialogContent className="bg-white border-primary/15 sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-slate-800">Nouvelle collecte</DialogTitle>
+                <DialogTitle>Nouvelle collecte</DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Titre de la collecte *</label>
+                  <label htmlFor="collecte-title" className="text-xs text-slate-500">Titre de la collecte *</label>
                   <Input
+                    id="collecte-title"
                     value={form.title}
                     onChange={field('title')}
                     required
@@ -184,8 +185,9 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">Catégorie</label>
+                  <label htmlFor="collecte-category" className="text-xs text-slate-500">Catégorie</label>
                   <select
+                    id="collecte-category"
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                     className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
@@ -197,8 +199,9 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">{categoryFieldLabel(form.category)} *</label>
+                  <label htmlFor="collecte-beneficiary" className="text-xs text-slate-500">{categoryFieldLabel(form.category)} *</label>
                   <Input
+                    id="collecte-beneficiary"
                     value={form.beneficiary_name}
                     onChange={field('beneficiary_name')}
                     required
@@ -210,7 +213,7 @@ export default function CollectesPage() {
                 {/* Photo upload */}
                 <div className="space-y-1.5">
                   <label className="text-xs text-slate-500">
-                    Photo <span className="text-slate-400">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
+                    Photo <span className="text-muted-foreground">(optionnel · JPEG, PNG, WEBP · max 5 Mo)</span>
                   </label>
                   <input
                     ref={fileRef}
@@ -243,22 +246,24 @@ export default function CollectesPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-500">
-                    Message <span className="text-slate-400">(optionnel)</span>
+                  <label htmlFor="collecte-description" className="text-xs text-slate-500">
+                    Message <span className="text-muted-foreground">(optionnel)</span>
                   </label>
                   <textarea
+                    id="collecte-description"
                     value={form.description}
                     onChange={field('description')}
                     rows={3}
                     placeholder="Un mot d'accompagnement pour la famille…"
-                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Montant minimum (€)</label>
+                    <label htmlFor="collecte-min-amount" className="text-xs text-slate-500">Montant minimum (€)</label>
                     <Input
+                      id="collecte-min-amount"
                       type="number"
                       min={1}
                       value={form.min_amount}
@@ -267,10 +272,11 @@ export default function CollectesPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">
-                      Objectif (€) <span className="text-slate-400">(optionnel)</span>
+                    <label htmlFor="collecte-goal-amount" className="text-xs text-slate-500">
+                      Objectif (€) <span className="text-muted-foreground">(optionnel)</span>
                     </label>
                     <Input
+                      id="collecte-goal-amount"
                       type="number"
                       min={1}
                       value={form.goal_amount}
@@ -294,14 +300,15 @@ export default function CollectesPage() {
                   )}>
                     {scheduleLater && <span className="text-[8px] font-bold">✓</span>}
                   </div>
-                  <Clock size={13} className="text-slate-400" />
+                  <Clock size={13} className="text-muted-foreground" />
                   Programmer le début plus tard
                 </button>
 
                 {scheduleLater && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-500">Date de début</label>
+                    <label htmlFor="collecte-start-date" className="text-xs text-slate-500">Date de début</label>
                     <Input
+                      id="collecte-start-date"
                       type="date"
                       value={form.start_date}
                       onChange={field('start_date')}
@@ -312,7 +319,7 @@ export default function CollectesPage() {
                   </div>
                 )}
 
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {scheduleLater
                     ? 'La collecte durera 14 jours à partir de la date de début.'
                     : 'La collecte démarre immédiatement et durera 14 jours.'}
@@ -329,7 +336,7 @@ export default function CollectesPage() {
                     type="button"
                     variant="outline"
                     onClick={closeModal}
-                    className="border-slate-200 text-slate-500 bg-transparent"
+                    className="border-slate-200 text-muted-foreground bg-transparent"
                   >
                     Annuler
                   </Button>
@@ -357,7 +364,7 @@ export default function CollectesPage() {
       {/* Collectes actives */}
       {active.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">En cours</h2>
+          <h2 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">En cours</h2>
           <div className="space-y-3">
             {active.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
@@ -367,7 +374,7 @@ export default function CollectesPage() {
       {/* Collectes passées */}
       {past.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Terminées</h2>
+          <h2 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Terminées</h2>
           <div className="space-y-3">
             {past.map(c => <CollecteCard key={c.id} collecte={c} />)}
           </div>
@@ -405,7 +412,7 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
-              <p className="text-xs text-slate-400 mt-0.5">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
             </div>
             <StatusBadge
               status={STATUS_BADGE[c.status]?.status ?? STATUS_BADGE.expired.status}
@@ -417,13 +424,13 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
           <div className="flex flex-wrap gap-5 mt-3 text-sm">
             <div>
               <p className="text-lg font-bold text-primary leading-none">{fmtEur(c.total_collected)}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">collectés</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">collectés</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Users size={12} className="text-primary" />
               {c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Calendar size={12} className="text-primary" />
               {c.is_active
                 ? `${remaining} jour${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`

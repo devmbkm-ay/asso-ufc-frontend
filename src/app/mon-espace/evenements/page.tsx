@@ -148,7 +148,7 @@ export default function EvenementsPage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-800">{e.title}</p>
-              <p className="text-xs text-slate-400 mt-0.5 capitalize">{fmtDate(e.event_date)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 capitalize">{fmtDate(e.event_date)}</p>
             </div>
           </div>
 
@@ -215,12 +215,12 @@ export default function EvenementsPage() {
             {reg ? (
               <button
                 onClick={() => unregister({ eventId: e.id, regId: reg.id })}
-                className="text-xs text-slate-400 hover:text-red-500 transition-colors underline underline-offset-2"
+                className="text-xs text-muted-foreground hover:text-red-500 transition-colors underline underline-offset-2"
               >
                 Se désinscrire
               </button>
             ) : isFull ? (
-              <span className="text-xs text-slate-400">Complet</span>
+              <span className="text-xs text-muted-foreground">Complet</span>
             ) : amountDraftId === e.id ? (
               <div className="flex items-center gap-2">
                 <div className="relative w-28">
@@ -233,7 +233,7 @@ export default function EvenementsPage() {
                     className="bg-white border-slate-200 text-slate-800 h-9 pr-6 text-sm"
                     autoFocus
                   />
-                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">€</span>
+                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">€</span>
                 </div>
                 <Button
                   size="sm"
@@ -245,7 +245,7 @@ export default function EvenementsPage() {
                 </Button>
                 <button
                   onClick={() => setAmountDraftId(null)}
-                  className="text-xs text-slate-400 hover:text-slate-600"
+                  className="text-xs text-muted-foreground hover:text-slate-600"
                 >
                   Annuler
                 </button>
@@ -273,7 +273,7 @@ export default function EvenementsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Événements</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           {isLoading ? '—' : `${eventsList?.length ?? 0} événement${(eventsList?.length ?? 0) > 1 ? 's' : ''}`}
         </p>
       </div>
@@ -303,7 +303,7 @@ export default function EvenementsPage() {
         <div className="space-y-3">
           <button
             onClick={() => setShowPast(s => !s)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 tracking-wider uppercase hover:text-slate-600"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground tracking-wider uppercase hover:text-slate-600"
           >
             {showPast ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             Passés ({past.length})

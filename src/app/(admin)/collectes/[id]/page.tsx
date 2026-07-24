@@ -48,7 +48,7 @@ const STATUS_BADGE: Record<string, { label: string; status: StatusBadgeProps['st
   closed: { label: 'Clôturée', status: 'inactive', icon: <Lock size={11} /> },
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-muted-foreground focus:border-primary'
 
 export default function CollecteDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -269,7 +269,7 @@ export default function CollecteDetailPage() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <h1 className="text-xl font-semibold text-slate-800">{collecte.title}</h1>
-                <p className="text-sm text-slate-400 mt-0.5">{categoryPrefix(collecte.category)} {collecte.beneficiary_name}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">{categoryPrefix(collecte.category)} {collecte.beneficiary_name}</p>
                 {collecte.category && (
                   <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                     {categoryLabel(collecte.category)}
@@ -285,7 +285,7 @@ export default function CollecteDetailPage() {
                 {canEdit && !collecte.is_archived && (
                   <button
                     onClick={openEditModal}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                     title="Modifier"
                   >
                     <Pencil size={14} />
@@ -308,7 +308,7 @@ export default function CollecteDetailPage() {
             <Button
               variant="outline"
               onClick={() => setCloseOpen(true)}
-              className="gap-1.5 text-xs border-slate-200 text-slate-500 bg-transparent hover:border-orange-300 hover:text-orange-600"
+              className="gap-1.5 text-xs border-slate-200 text-muted-foreground bg-transparent hover:border-orange-300 hover:text-orange-600"
             >
               <Lock size={13} />
               Clôturer la collecte
@@ -318,7 +318,7 @@ export default function CollecteDetailPage() {
             <Button
               variant="outline"
               onClick={() => setArchiveOpen(true)}
-              className="gap-1.5 text-xs border-slate-200 text-slate-500 bg-transparent hover:border-purple-300 hover:text-purple-600"
+              className="gap-1.5 text-xs border-slate-200 text-muted-foreground bg-transparent hover:border-purple-300 hover:text-purple-600"
             >
               <Archive size={13} />
               Archiver
@@ -347,14 +347,14 @@ export default function CollecteDetailPage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
           <p className="text-2xl font-bold text-primary">{fmtEur(collecte.total_collected)}</p>
-          <p className="text-xs text-slate-400 mt-1">Total collecté</p>
+          <p className="text-xs text-muted-foreground mt-1">Total collecté</p>
         </div>
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
             <Users size={14} className="text-primary" />
             <p className="text-2xl font-bold text-slate-800">{collecte.contributors_count}</p>
           </div>
-          <p className="text-xs text-slate-400 mt-1">Contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
+          <p className="text-xs text-muted-foreground mt-1">Contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
         </div>
         <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
@@ -363,7 +363,7 @@ export default function CollecteDetailPage() {
               {collecte.is_active ? remaining : '—'}
             </p>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {collecte.is_active
               ? `jour${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`
               : `Fin le ${fmtDate(collecte.end_date)}`
@@ -385,13 +385,13 @@ export default function CollecteDetailPage() {
 
           <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle className="text-slate-800">Ma contribution</DialogTitle>
+              <DialogTitle>Ma contribution</DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleContrib} className="space-y-4 mt-1">
               <div className="space-y-1.5">
                 <label className="text-xs text-slate-500">
-                  Montant <span className="text-slate-400">(minimum {fmtEur(collecte.min_amount)})</span>
+                  Montant <span className="text-muted-foreground">(minimum {fmtEur(collecte.min_amount)})</span>
                 </label>
                 <div className="relative">
                   <Input
@@ -404,7 +404,7 @@ export default function CollecteDetailPage() {
                     placeholder={String(collecte.min_amount)}
                     className="bg-white border-slate-200 text-slate-800 pr-8"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">€</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">€</span>
                 </div>
               </div>
 
@@ -419,7 +419,7 @@ export default function CollecteDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={closeContribModal}
-                  className="border-slate-200 text-slate-500 bg-transparent"
+                  className="border-slate-200 text-muted-foreground bg-transparent"
                 >
                   Annuler
                 </Button>
@@ -440,7 +440,7 @@ export default function CollecteDetailPage() {
       <Dialog open={openEdit} onOpenChange={next => { if (!next) closeEditModal(); else setOpenEdit(true) }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-800">Modifier la collecte</DialogTitle>
+            <DialogTitle>Modifier la collecte</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleEditSubmit} className="space-y-4 mt-1">
@@ -463,7 +463,7 @@ export default function CollecteDetailPage() {
             {/* Photo */}
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500">
-                Photo <span className="text-slate-400">(JPEG, PNG, WEBP · max 5 Mo)</span>
+                Photo <span className="text-muted-foreground">(JPEG, PNG, WEBP · max 5 Mo)</span>
               </label>
               <input
                 ref={fileRef}
@@ -487,7 +487,7 @@ export default function CollecteDetailPage() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-300 text-xs text-slate-400 hover:border-primary hover:text-primary transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-300 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                 >
                   <ImagePlus size={14} />
                   Choisir une photo
@@ -501,7 +501,7 @@ export default function CollecteDetailPage() {
                 value={editForm.description}
                 onChange={editField('description')}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
 
@@ -518,7 +518,7 @@ export default function CollecteDetailPage() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs text-slate-500">
-                  Objectif (€) <span className="text-slate-400">(optionnel)</span>
+                  Objectif (€) <span className="text-muted-foreground">(optionnel)</span>
                 </label>
                 <Input
                   type="number"
@@ -542,7 +542,7 @@ export default function CollecteDetailPage() {
                 type="button"
                 variant="outline"
                 onClick={closeEditModal}
-                className="border-slate-200 text-slate-500 bg-transparent"
+                className="border-slate-200 text-muted-foreground bg-transparent"
               >
                 Annuler
               </Button>
@@ -562,7 +562,7 @@ export default function CollecteDetailPage() {
       <Dialog open={closeOpen} onOpenChange={open => { if (!open) setCloseOpen(false) }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
               Clôturer la collecte
             </DialogTitle>
@@ -571,7 +571,7 @@ export default function CollecteDetailPage() {
             La collecte sera clôturée immédiatement. Plus aucune contribution ne sera acceptée.
           </p>
           <DialogFooter className="gap-2 mt-4">
-            <Button variant="outline" onClick={() => setCloseOpen(false)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+            <Button variant="outline" onClick={() => setCloseOpen(false)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
             <Button disabled={closePending} onClick={() => closeCollecte()} className="bg-orange-500 hover:bg-orange-600 text-white">
               {closePending ? 'Clôture…' : 'Confirmer la clôture'}
             </Button>
@@ -583,7 +583,7 @@ export default function CollecteDetailPage() {
       <Dialog open={archiveOpen} onOpenChange={open => { if (!open) setArchiveOpen(false) }}>
         <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2">
               <Archive size={16} className="text-purple-500" />
               Archiver la collecte
             </DialogTitle>
@@ -592,7 +592,7 @@ export default function CollecteDetailPage() {
             La collecte sera déplacée vers l'historique. Elle restera consultable mais n'apparaîtra plus dans la liste principale.
           </p>
           <DialogFooter className="gap-2 mt-4">
-            <Button variant="outline" onClick={() => setArchiveOpen(false)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
+            <Button variant="outline" onClick={() => setArchiveOpen(false)} className="border-slate-200 text-muted-foreground bg-transparent">Annuler</Button>
             <Button disabled={archivePending} onClick={() => archiveCollecte()} className="bg-purple-500 hover:bg-purple-600 text-white">
               {archivePending ? 'Archivage…' : 'Confirmer l\'archivage'}
             </Button>
@@ -632,7 +632,7 @@ export default function CollecteDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-800">{c.member_name}</p>
-                  <p className="text-xs text-slate-400">{fmtDateTime(c.contributed_at)}</p>
+                  <p className="text-xs text-muted-foreground">{fmtDateTime(c.contributed_at)}</p>
                 </div>
                 <p className="text-sm font-semibold text-primary">{fmtEur(c.amount)}</p>
               </li>

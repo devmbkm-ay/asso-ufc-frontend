@@ -94,7 +94,7 @@ export default function HistoriquePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-800">Historique</h1>
-        <p className="text-sm text-slate-400 mt-0.5">
+        <p className="text-sm text-muted-foreground mt-0.5">
           Archives des collectes et événements passés
         </p>
       </div>
@@ -104,15 +104,15 @@ export default function HistoriquePage() {
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-primary">{fmtEur(totalCollecte)}</p>
-            <p className="text-xs text-slate-400 mt-1">Total collecté (toutes collectes)</p>
+            <p className="text-xs text-muted-foreground mt-1">Total collecté (toutes collectes)</p>
           </div>
           <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-slate-800">{archived.length}</p>
-            <p className="text-xs text-slate-400 mt-1">Collecte{archived.length > 1 ? 's' : ''} archivée{archived.length > 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground mt-1">Collecte{archived.length > 1 ? 's' : ''} archivée{archived.length > 1 ? 's' : ''}</p>
           </div>
           <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-slate-800">{finished.length}</p>
-            <p className="text-xs text-slate-400 mt-1">Événement{finished.length > 1 ? 's' : ''} terminé{finished.length > 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground mt-1">Événement{finished.length > 1 ? 's' : ''} terminé{finished.length > 1 ? 's' : ''}</p>
           </div>
         </div>
       )}
@@ -144,17 +144,17 @@ export default function HistoriquePage() {
           {/* Filters */}
           {archived.length > 0 && (
             <div className="flex gap-2 flex-wrap">
-              <select value={collecteYear} onChange={e => setCollecteYear(e.target.value)} className={SELECT_CLS}>
+              <select value={collecteYear} onChange={e => setCollecteYear(e.target.value)} aria-label="Filtrer les collectes par année" className={SELECT_CLS}>
                 <option value="">Toutes les années</option>
                 {collecteYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
-              <select value={collecteCategory} onChange={e => setCollecteCategory(e.target.value)} className={SELECT_CLS}>
+              <select value={collecteCategory} onChange={e => setCollecteCategory(e.target.value)} aria-label="Filtrer les collectes par catégorie" className={SELECT_CLS}>
                 {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
               {(collecteYear || collecteCategory) && (
                 <button
                   onClick={() => { setCollecteYear(''); setCollecteCategory('') }}
-                  className="text-xs text-slate-400 hover:text-slate-800 transition-colors px-2"
+                  className="text-xs text-muted-foreground hover:text-slate-800 transition-colors px-2"
                 >
                   Réinitialiser
                 </button>
@@ -209,8 +209,8 @@ export default function HistoriquePage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-muted-foreground">{categoryPrefix(c.category)} {c.beneficiary_name}</p>
+                  <p className="text-[11px] text-muted-foreground">
                     {fmtDate(c.start_date)} → {fmtDate(c.end_date)}
                     {c.archived_at && (
                       <span className="ml-2 text-violet-400">· Archivé le {fmtDate(c.archived_at)}</span>
@@ -224,7 +224,7 @@ export default function HistoriquePage() {
                     <HandCoins size={13} />
                     <p className="text-base font-bold">{fmtEur(Number(c.total_collected))}</p>
                   </div>
-                  <div className="flex items-center gap-1 justify-end text-xs text-slate-400">
+                  <div className="flex items-center gap-1 justify-end text-xs text-muted-foreground">
                     <Users size={11} className="text-primary" />
                     {c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}
                   </div>
@@ -252,11 +252,11 @@ export default function HistoriquePage() {
           {/* Filters */}
           {finished.length > 0 && (
             <div className="flex gap-2 flex-wrap">
-              <select value={eventYear} onChange={e => setEventYear(e.target.value)} className={SELECT_CLS}>
+              <select value={eventYear} onChange={e => setEventYear(e.target.value)} aria-label="Filtrer les événements par année" className={SELECT_CLS}>
                 <option value="">Toutes les années</option>
                 {eventYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
-              <select value={eventStatus} onChange={e => setEventStatus(e.target.value)} className={SELECT_CLS}>
+              <select value={eventStatus} onChange={e => setEventStatus(e.target.value)} aria-label="Filtrer les événements par statut" className={SELECT_CLS}>
                 <option value="">Tous les statuts</option>
                 <option value="completed">Terminés</option>
                 <option value="cancelled">Annulés</option>
@@ -264,7 +264,7 @@ export default function HistoriquePage() {
               {(eventYear || eventStatus) && (
                 <button
                   onClick={() => { setEventYear(''); setEventStatus('') }}
-                  className="text-xs text-slate-400 hover:text-slate-800 transition-colors px-2"
+                  className="text-xs text-muted-foreground hover:text-slate-800 transition-colors px-2"
                 >
                   Réinitialiser
                 </button>
@@ -307,8 +307,8 @@ export default function HistoriquePage() {
                   {/* Date block */}
                   <div className="text-center w-12 shrink-0 pt-0.5">
                     <p className="text-2xl font-bold text-primary leading-none">{d.getDate()}</p>
-                    <p className="text-[10px] text-slate-400 uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{d.getFullYear()}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{d.getFullYear()}</p>
                   </div>
 
                   {/* Content */}
@@ -322,7 +322,7 @@ export default function HistoriquePage() {
                     {ev.description && (
                       <p className="text-xs text-slate-500 line-clamp-1">{ev.description}</p>
                     )}
-                    <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                       {ev.location && (
                         <div className="flex items-center gap-1.5">
                           <MapPin size={11} className="text-primary" />
