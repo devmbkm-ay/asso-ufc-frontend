@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { members, invites, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -13,7 +13,7 @@ import { SkeletonTableRow } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock, CheckCircle2, XCircle, Circle, Info } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
 const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
@@ -26,11 +26,11 @@ const STATUS_TABS = [
   { value: 'honorary', label: 'Honoraires' },
 ]
 
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  inactive: { label: 'Inactif', className: 'bg-slate-100 text-slate-500 border-slate-200' },
-  suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
-  honorary: { label: 'Honoraire', className: 'bg-violet-50 text-violet-600 border-violet-200' },
+const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
+  active: { label: 'Actif', status: 'active', icon: <CheckCircle2 size={11} /> },
+  inactive: { label: 'Inactif', status: 'inactive', icon: <Circle size={11} /> },
+  suspended: { label: 'Suspendu', status: 'cancelled', icon: <XCircle size={11} /> },
+  honorary: { label: 'Honoraire', status: 'info', icon: <Info size={11} /> },
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -62,7 +62,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 export default function MembresPage() {
   const { user } = useAuth()
@@ -251,13 +251,13 @@ export default function MembresPage() {
               <Button
                 onClick={() => setInviteOpen(true)}
                 variant="outline"
-                className="border-[rgba(99,102,241,0.4)] text-[#6366F1] hover:bg-indigo-50 gap-1.5"
+                className="border-primary/40 text-primary hover:bg-primary/10 gap-1.5"
               >
                 <Mail size={14} />
                 Inviter
               </Button>
 
-              <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+              <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle className="text-slate-800">
                     {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
@@ -271,7 +271,7 @@ export default function MembresPage() {
                       onClick={() => { setInviteMode('single'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'single' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'single' ? 'bg-primary/15 text-primary' : 'text-slate-500 hover:text-slate-800',
                       )}
                     >
                       Un membre
@@ -281,7 +281,7 @@ export default function MembresPage() {
                       onClick={() => { setInviteMode('bulk'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'bulk' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'bulk' ? 'bg-primary/15 text-primary' : 'text-slate-500 hover:text-slate-800',
                       )}
                     >
                       Plusieurs (liste)
@@ -316,7 +316,7 @@ export default function MembresPage() {
                         Annuler
                       </Button>
                       <Button type="submit" disabled={invitePending}
-                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        className="bg-primary hover:bg-primary/80 text-white">
                         {invitePending ? 'Envoi…' : "Envoyer l'invitation"}
                       </Button>
                     </DialogFooter>
@@ -350,7 +350,7 @@ export default function MembresPage() {
                         Annuler
                       </Button>
                       <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
-                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        className="bg-primary hover:bg-primary/80 text-white">
                         {bulkPending ? 'Envoi…' : `Envoyer (${parseBulkEmails(bulkEmails).length})`}
                       </Button>
                     </DialogFooter>
@@ -376,7 +376,7 @@ export default function MembresPage() {
                       </div>
                     )}
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-white">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -404,7 +404,7 @@ export default function MembresPage() {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/80 text-white">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -416,13 +416,13 @@ export default function MembresPage() {
             <Dialog open={open} onOpenChange={handleOpenChange}>
               <Button
                 onClick={() => setOpen(true)}
-                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-medium gap-1.5 shrink-0"
+                className="bg-primary hover:bg-primary/80 text-white text-sm font-medium gap-1.5 shrink-0"
               >
                 <Plus size={14} />
                 Nouveau membre
               </Button>
 
-              <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+              <DialogContent className="bg-white border-primary/15 sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
                 </DialogHeader>
@@ -492,7 +492,7 @@ export default function MembresPage() {
                     <Button
                       type="submit"
                       disabled={isPending}
-                      className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                      className="bg-primary hover:bg-primary/80 text-white"
                     >
                       {isPending ? 'Création…' : 'Créer le membre'}
                     </Button>
@@ -556,7 +556,7 @@ export default function MembresPage() {
               className={cn(
                 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 status === t.value
-                  ? 'bg-indigo-100 text-[#6366F1]'
+                  ? 'bg-primary/15 text-primary'
                   : 'text-slate-500 hover:text-slate-800',
               )}
             >
@@ -567,7 +567,7 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
@@ -621,7 +621,7 @@ export default function MembresPage() {
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-slate-800 group-hover:text-[#6366F1] transition-colors">
+                        <span className="font-medium text-slate-800 group-hover:text-primary transition-colors">
                           {m.first_name} {m.last_name}
                         </span>
                       </Link>
@@ -654,10 +654,10 @@ export default function MembresPage() {
                   <td className="px-5 py-3.5">
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="block">
-                        <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+                        <StatusBadge status={st.status} label={st.label} icon={st.icon} />
                       </Link>
                     ) : (
-                      <Badge className={`text-[10px] border ${st.className}`}>{st.label}</Badge>
+                      <StatusBadge status={st.status} label={st.label} icon={st.icon} />
                     )}
                   </td>
                 </tr>

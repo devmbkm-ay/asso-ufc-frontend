@@ -113,7 +113,7 @@ export default function MaCotisationPage() {
           { label: `Total ${year}`, value: fmtAmount(totalPaidThisYear) },
           { label: 'Total cumulé', value: fmtAmount(totalAllTime) },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+          <div key={label} className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-lg font-bold text-slate-800">{value}</p>
             <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
           </div>
@@ -146,7 +146,7 @@ export default function MaCotisationPage() {
                   size="sm"
                   onClick={() => { setConfirmingId(p.id); confirmPayment(p.id) }}
                   disabled={confirmingId === p.id}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
+                  className="bg-primary hover:bg-primary/80 text-white gap-1.5 shrink-0"
                 >
                   <CheckCircle2 size={13} />
                   {confirmingId === p.id ? 'En cours…' : "J'ai réglé"}
@@ -190,7 +190,7 @@ export default function MaCotisationPage() {
 
       {/* Couverture mensuelle (seulement pour plans mensuels) */}
       {isMonthlyPlan && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-800">Couverture {year}</h2>
             <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-lg px-2 py-1">
@@ -232,7 +232,7 @@ export default function MaCotisationPage() {
       )}
 
       {/* Historique (confirmés + annulés) */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-800">Paiements {year}</h2>
         </div>

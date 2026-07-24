@@ -69,10 +69,16 @@ export async function apiRequest<T>(
       },
     })
 
-  let res = await doFetch(getToken())
+  const initialToken = getToken()
+  let res = await doFetch(initialToken)
 
-  // On 401, attempt one token refresh then retry
-  if (res.status === 401) {
+  // A 401 only means "session expired" when the request actually carried a
+  // token — i.e. an authenticated call got rejected. A 401 with no token
+  // (login, register, forgot-password, ...) is the endpoint rejecting the
+  // submitted credentials/data, not an expired session — let it fall through
+  // to the generic error handling below so the backend's real detail message
+  // (e.g. "Email ou mot de passe incorrect") reaches the caller.
+  if (res.status === 401 && initialToken) {
     const newToken = await tryRefresh()
     if (newToken) {
       res = await doFetch(newToken)

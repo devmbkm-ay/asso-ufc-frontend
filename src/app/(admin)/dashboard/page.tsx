@@ -75,20 +75,20 @@ export default function DashboardPage() {
 
       {/* Événement en avant */}
       {!publishedEvents ? (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
           <Skeleton className="h-6 w-40" />
         </div>
       ) : featuredEvent ? (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="w-14 h-14 rounded-xl bg-indigo-50 flex flex-col items-center justify-center shrink-0">
-              <span className="text-xl font-bold text-[#6366F1] leading-none">{new Date(featuredEvent.event_date).getDate()}</span>
-              <span className="text-[10px] font-medium text-[#6366F1] uppercase mt-0.5">{MONTH_FR[new Date(featuredEvent.event_date).getMonth()]}</span>
+            <div className="w-14 h-14 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
+              <span className="text-xl font-bold text-primary leading-none">{new Date(featuredEvent.event_date).getDate()}</span>
+              <span className="text-[10px] font-medium text-primary uppercase mt-0.5">{MONTH_FR[new Date(featuredEvent.event_date).getMonth()]}</span>
             </div>
             <div className="min-w-0">
               <Badge className={cn(
                 'text-[10px] border mb-1.5',
-                isToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-[#6366F1] border-indigo-200',
+                isToday ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-primary/10 text-primary border-primary/20',
               )}>
                 {isToday ? "Aujourd'hui" : 'Prochain événement'}
               </Badge>
@@ -96,12 +96,12 @@ export default function DashboardPage() {
               <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-1">
                 {featuredEvent.location && (
                   <span className="flex items-center gap-1">
-                    <MapPin size={11} className="text-[#6366F1]" />
+                    <MapPin size={11} className="text-primary" />
                     {featuredEvent.location}
                   </span>
                 )}
                 <span className="flex items-center gap-1">
-                  <Users size={11} className="text-[#6366F1]" />
+                  <Users size={11} className="text-primary" />
                   {featuredEvent.registrations_count} inscrit{featuredEvent.registrations_count > 1 ? 's' : ''}
                   {featuredEvent.capacity && ` / ${featuredEvent.capacity}`}
                 </span>
@@ -110,18 +110,18 @@ export default function DashboardPage() {
           </div>
           <a
             href="/evenements"
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0 self-start sm:self-center"
+            className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary shrink-0 self-start sm:self-center"
           >
             Gérer <ChevronRight size={13} />
           </a>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
           <EmptyState
             title="Aucun événement publié pour le moment"
             description="Les événements à venir apparaîtront ici dès leur publication."
             action={
-              <a href="/evenements" className="inline-flex items-center gap-1 text-xs font-medium text-[#6366F1] hover:text-[#4F46E5] shrink-0">
+              <a href="/evenements" className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary shrink-0">
                 Voir les événements <ChevronRight size={13} />
               </a>
             }
@@ -158,13 +158,13 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Derniers membres */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-primary/15 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Users size={15} className="text-[#6366F1]" />
+              <Users size={15} className="text-primary" />
               <h2 className="text-sm font-semibold text-slate-800">Derniers membres</h2>
             </div>
-            <a href="/membres" className="text-xs text-[#6366F1] hover:underline">Voir tous</a>
+            <a href="/membres" className="text-xs text-primary hover:underline">Voir tous</a>
           </div>
           <ul className="space-y-3">
             {membersData?.items.map(m => {
@@ -208,9 +208,9 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5">
+          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-4">
-              <CalendarDays size={15} className="text-[#6366F1]" />
+              <CalendarDays size={15} className="text-primary" />
               <h2 className="text-sm font-semibold text-slate-800">Événements à venir</h2>
             </div>
             <ul className="space-y-3">
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                 return (
                   <li key={ev.id} className="flex gap-3">
                     <div className="text-center w-10 shrink-0">
-                      <p className="text-lg font-bold text-[#6366F1] leading-none">{d.getDate()}</p>
+                      <p className="text-lg font-bold text-primary leading-none">{d.getDate()}</p>
                       <p className="text-[10px] text-slate-400 uppercase">{MONTH_FR[d.getMonth()]}</p>
                     </div>
                     <div className="min-w-0">

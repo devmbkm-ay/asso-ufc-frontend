@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
@@ -22,7 +21,7 @@ const statusBadgeVariants = cva(
     }
 )
 
-interface StatusBadgeProps extends VariantProps<typeof statusBadgeVariants> {
+export interface StatusBadgeProps extends VariantProps<typeof statusBadgeVariants> {
     label: string
     icon?: React.ReactNode
     className?: string

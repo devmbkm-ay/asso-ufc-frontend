@@ -19,7 +19,7 @@ const ROLE_META: Record<string, {
   bg: string
   border: string
 }> = {
-  super_admin: { label: 'Super admin', icon: Crown, color: 'text-[#6366F1]', bg: 'bg-indigo-50', border: 'border-indigo-200' },
+  super_admin: { label: 'Super admin', icon: Crown, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20' },
   president: { label: 'Président', icon: Award, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' },
   treasurer: { label: 'Trésorier', icon: Wallet, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
   secretary: { label: 'Secrétaire', icon: BookOpen, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
@@ -82,7 +82,7 @@ export default function RolesPage() {
           const m = ROLE_META[role]
           const Icon = m.icon
           return (
-            <div key={role} className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-3 flex items-center gap-2.5">
+            <div key={role} className="bg-white rounded-xl border border-primary/15 shadow-sm p-3 flex items-center gap-2.5">
               <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0', m.bg)}>
                 <Icon size={13} className={m.color} />
               </div>
@@ -93,7 +93,7 @@ export default function RolesPage() {
       </div>
 
       {/* Members list */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-800">Membres & rôles</h2>
         </div>
@@ -177,7 +177,7 @@ export default function RolesPage() {
                           <select
                             value={selectedRole}
                             onChange={e => { setSelectedRole(e.target.value); setError(null) }}
-                            className="text-xs rounded-md border border-slate-200 bg-white text-slate-800 px-2 py-1 focus:outline-none focus:border-[#6366F1]"
+                            className="text-xs rounded-md border border-slate-200 bg-white text-slate-800 px-2 py-1 focus:outline-none focus:border-primary"
                           >
                             <option value="">Choisir…</option>
                             {availableRoles.map(r => (
@@ -188,7 +188,7 @@ export default function RolesPage() {
                             size="sm"
                             disabled={!selectedRole || isAssigning}
                             onClick={() => assign({ id: m.id, role: selectedRole })}
-                            className="h-6 px-2 text-[11px] bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                            className="h-6 px-2 text-[11px] bg-primary hover:bg-primary/80 text-white"
                           >
                             OK
                           </Button>
@@ -202,7 +202,7 @@ export default function RolesPage() {
                       ) : (
                         <button
                           onClick={() => { setAddingFor(m.id); setSelectedRole('') }}
-                          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-[#6366F1] transition-colors"
+                          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-primary transition-colors"
                           title="Attribuer un rôle"
                         >
                           <Plus size={12} />
