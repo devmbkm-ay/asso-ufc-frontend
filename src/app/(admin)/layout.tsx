@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
 import { Sidebar } from '@/components/admin/Sidebar'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { PageTransition } from '@/components/PageTransition'
 import { Menu } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -23,7 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -39,19 +40,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-[#1F2139] border-b border-[rgba(255,255,255,0.10)]">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-sidebar border-b border-sidebar-border">
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="Ouvrir le menu"
-          className="p-1.5 rounded-md text-[rgba(255,255,255,0.70)] hover:text-white hover:bg-[rgba(255,255,255,0.10)] transition-colors"
+          className="p-1.5 rounded-md text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10 transition-colors"
         >
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full bg-linear-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-xs font-bold text-white">M</span>
+            <span className="text-xs font-bold text-sidebar-foreground">M</span>
           </div>
-          <span className="text-sm font-semibold text-white">Fondation Météo Assistance</span>
+          <span className="text-sm font-semibold text-sidebar-foreground">Fondation Météo Assistance</span>
         </div>
       </div>
 
@@ -67,8 +68,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SheetContent>
       </Sheet>
 
-      <main className="flex-1 overflow-y-auto pt-14 md:pt-0 bg-[#F8FAFF]">
-        {children}
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0 bg-background">
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   )

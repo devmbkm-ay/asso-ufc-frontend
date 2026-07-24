@@ -352,17 +352,13 @@
     }
   }
 
-  /* Boutons - transitions fluides */
+  /* Boutons - hover = background-color only (voir buttonVariants), press = scale(0.98) */
   button {
-    transition: all var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--duration-fast) ease-out, color var(--duration-fast) ease-out, transform var(--duration-fast) ease-out;
   }
 
-  button:hover {
-    transform: translateY(-2px);
-  }
-
-  button:active {
-    transform: translateY(0);
+  button:active:not(:disabled) {
+    transform: scale(0.98);
   }
 
   /* Links et éléments interactifs */
@@ -374,13 +370,7 @@
   input,
   textarea,
   select {
-    transition: all var(--duration-fast) ease;
-  }
-
-  input:focus,
-  textarea:focus,
-  select:focus {
-    transform: scale(1.01);
+    transition: border-color var(--duration-fast) ease;
   }
 
   /* Dialog / Modal animations */
@@ -388,10 +378,21 @@
     animation: scaleIn var(--duration-base) cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Page transitions */
-  main {
-    animation: fadeIn var(--duration-slow) ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    button:active:not(:disabled) {
+      transform: none;
+    }
+
+    .animate-page-in {
+      animation: none;
+    }
   }
+}
+
+/* Page transition — re-triggers on route change because PageTransition
+   keys its wrapper by pathname, forcing a remount (see components/PageTransition.tsx) */
+.animate-page-in {
+  animation: fadeIn var(--duration-slow) ease-out;
 }
 
 /* ── App shell background ─────────────────────────────────────────────────── */
