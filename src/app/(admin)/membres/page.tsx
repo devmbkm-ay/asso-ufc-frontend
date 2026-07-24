@@ -89,6 +89,7 @@ export default function MembresPage() {
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
+  const [selectedPending, setSelectedPending] = useState<string[]>([])
 
   const queryClient = useQueryClient()
 
@@ -126,6 +127,12 @@ export default function MembresPage() {
     enabled: canSeePending,
     select: data => data.items,
   })
+
+  // Drop any selected id no longer in the current pending list (e.g. after a
+  // single-row approve/reject) without syncing state via an effect.
+  const validSelectedPending = pendingMembers
+    ? selectedPending.filter(id => pendingMembers.some(pm => pm.id === id))
+    : []
 
   const { mutate: createMember, isPending } = useMutation({
     mutationFn: members.create,
@@ -186,6 +193,22 @@ export default function MembresPage() {
     },
   })
 
+  const { mutate: approveSelected, isPending: approveSelectedPending } = useMutation({
+    mutationFn: (ids: string[]) => Promise.all(ids.map(id => members.updateStatus(id, 'active'))),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      setSelectedPending([])
+    },
+  })
+
+  const { mutate: rejectSelected, isPending: rejectSelectedPending } = useMutation({
+    mutationFn: (ids: string[]) => Promise.all(ids.map(id => members.updateStatus(id, 'inactive'))),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      setSelectedPending([])
+    },
+  })
+
   function closeModal() {
     setOpen(false)
     setForm(EMPTY_FORM)
@@ -220,6 +243,14 @@ export default function MembresPage() {
     navigator.clipboard.writeText(activeJoinCode.link)
     setCodeCopied(true)
     setTimeout(() => setCodeCopied(false), 2000)
+  }
+
+  function togglePendingSelection(id: string) {
+    setSelectedPending(sel => sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id])
+  }
+
+  function toggleAllPending(ids: string[]) {
+    setSelectedPending(sel => sel.length === ids.length ? [] : ids)
   }
 
   function fmtExpiry(iso: string) {
@@ -561,18 +592,68 @@ export default function MembresPage() {
       {/* Membres en attente d'approbation (auto-inscription via lien d'adhésion) */}
       {canSeePending && pendingMembers && pendingMembers.length > 0 && (
         <div className="bg-warning/10 border border-warning/30 rounded-xl p-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <Clock size={14} className="text-warning" />
-            <span className="text-sm font-semibold text-warning">
-              {`${pendingMembers.length} inscription${pendingMembers.length > 1 ? 's' : ''} en attente d'approbation`}
-            </span>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Clock size={14} className="text-warning" />
+              <span className="text-sm font-semibold text-warning">
+                {`${pendingMembers.length} inscription${pendingMembers.length > 1 ? 's' : ''} en attente d'approbation`}
+              </span>
+            </div>
+            {isSuperAdmin && validSelectedPending.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">{validSelectedPending.length} sélectionné{validSelectedPending.length > 1 ? 's' : ''}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={approveSelectedPending}
+                  onClick={() => approveSelected(validSelectedPending)}
+                  className="text-success border-success/30 hover:bg-success/10 gap-1"
+                >
+                  <UserCheck size={12} />
+                  Approuver la sélection
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={rejectSelectedPending}
+                  onClick={() => rejectSelected(validSelectedPending)}
+                  className="text-error border-error/30 hover:bg-error/10 gap-1"
+                >
+                  <UserX size={12} />
+                  Refuser la sélection
+                </Button>
+              </div>
+            )}
           </div>
+
+          {isSuperAdmin && pendingMembers.length > 1 && (
+            <label className="flex items-center gap-2 text-xs text-muted-foreground pl-0.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={validSelectedPending.length === pendingMembers.length}
+                onChange={() => toggleAllPending(pendingMembers.map(pm => pm.id))}
+                className="accent-primary"
+              />
+              Tout sélectionner
+            </label>
+          )}
+
           <div className="space-y-1.5">
             {pendingMembers.map(pm => (
               <div key={pm.id} className="flex items-center justify-between gap-3 bg-card border border-warning/20 rounded-lg px-3 py-2">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{pm.first_name} {pm.last_name}</p>
-                  <p className="text-[10px] text-muted-foreground">{pm.email}</p>
+                <div className="flex items-center gap-3">
+                  {isSuperAdmin && (
+                    <input
+                      type="checkbox"
+                      checked={validSelectedPending.includes(pm.id)}
+                      onChange={() => togglePendingSelection(pm.id)}
+                      className="accent-primary shrink-0"
+                    />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{pm.first_name} {pm.last_name}</p>
+                    <p className="text-[10px] text-muted-foreground">{pm.email}</p>
+                  </div>
                 </div>
                 {isSuperAdmin && (
                   <div className="flex gap-1.5 shrink-0">
