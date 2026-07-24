@@ -149,6 +149,7 @@ export default function DashboardPage() {
           label="En attente"
           value={kpis?.pending_count ?? '—'}
           sub="paiements à confirmer"
+          href="/cotisations"
         />
       </div>
 
