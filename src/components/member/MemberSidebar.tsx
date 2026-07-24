@@ -33,7 +33,7 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
           <span className="text-sm font-bold text-white">M</span>
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">Mboka</p>
+          <p className="text-sm font-semibold text-white truncate">Fondation Météo Assistance</p>
           <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">Espace membre</p>
         </div>
       </div>

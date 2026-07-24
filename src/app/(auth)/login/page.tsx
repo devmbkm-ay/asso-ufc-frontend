@@ -45,7 +45,7 @@ function LoginForm() {
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
               <span className="text-2xl font-bold text-primary">M</span>
             </div>
-            <h1 className="text-2xl font-semibold text-card-foreground tracking-wide">Mboka</h1>
+            <h1 className="text-2xl font-semibold text-card-foreground tracking-wide">Fondation Météo Assistance</h1>
             <p className="text-sm text-muted-foreground mt-1">Bienvenue dans votre espace</p>
           </div>
 

@@ -368,7 +368,7 @@ export default function EvenementsPage() {
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500">Lieu <span className="text-slate-400">(optionnel)</span></label>
-              <Input value={createForm.location} onChange={cf('location')} placeholder="Salle Mboka, Bordeaux" className={FIELD} />
+              <Input value={createForm.location} onChange={cf('location')} placeholder="Salle des fêtes, Bordeaux" className={FIELD} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500">Description <span className="text-slate-400">(optionnel)</span></label>

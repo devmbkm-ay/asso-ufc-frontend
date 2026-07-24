@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="w-7 h-7 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-xs font-bold text-white">M</span>
           </div>
-          <span className="text-sm font-semibold text-white">Mboka</span>
+          <span className="text-sm font-semibold text-white">Fondation Météo Assistance</span>
         </div>
       </div>
 

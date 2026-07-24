@@ -8,7 +8,7 @@ const geistSans = Geist({ variable: '--font-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Mboka — Gestion associative',
+  title: 'Fondation Météo Assistance — Gestion associative',
   description: 'Plateforme de gestion pour associations de la diaspora africaine',
 }
 
