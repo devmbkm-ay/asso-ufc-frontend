@@ -22,7 +22,7 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
   const { user, logout } = useAuth()
 
   const isElevated = user?.roles.some(r =>
-    ['super_admin', 'treasurer', 'secretary'].includes(r),
+    ['super_admin', 'president', 'treasurer', 'secretary'].includes(r),
   )
 
   return (

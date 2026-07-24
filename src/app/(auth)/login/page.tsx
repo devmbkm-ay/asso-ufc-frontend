@@ -25,7 +25,7 @@ function LoginForm() {
     try {
       const me = await login(email, password)
       const isElevated = me.roles.some(r =>
-        ['super_admin', 'treasurer', 'secretary'].includes(r),
+        ['super_admin', 'president', 'treasurer', 'secretary'].includes(r),
       )
       router.push(isElevated ? '/dashboard' : '/mon-espace')
     } catch (err: unknown) {

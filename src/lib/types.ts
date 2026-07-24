@@ -169,3 +169,13 @@ export interface MemberInvite {
   created_at: string
   is_valid: boolean
 }
+
+export interface SkippedInvite {
+  email: string
+  reason: string
+}
+
+export interface BulkInviteResult {
+  created: MemberInvite[]
+  skipped: SkippedInvite[]
+}

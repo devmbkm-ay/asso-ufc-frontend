@@ -33,6 +33,7 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 
 const ROLE_LABEL: Record<string, string> = {
   super_admin:    'Administrateur',
+  president:      'Président(e)',
   treasurer:      'Trésorier(ère)',
   secretary:      'Secrétaire',
   member:         'Adhérent(e)',
@@ -65,6 +66,8 @@ export default function MembresPage() {
   const { user } = useAuth()
   const isAdmin      = user?.roles?.some(r => ADMIN_ROLES.includes(r)) ?? false
   const isSuperAdmin = user?.roles?.includes('super_admin') ?? false
+  const isPresident  = user?.roles?.includes('president') ?? false
+  const canInvite    = isSuperAdmin || isPresident
 
   const [search, setSearch]               = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -76,10 +79,13 @@ export default function MembresPage() {
 
   // Invite modal state
   const [inviteOpen, setInviteOpen]       = useState(false)
+  const [inviteMode, setInviteMode]       = useState<'single' | 'bulk'>('single')
   const [inviteEmail, setInviteEmail]     = useState('')
   const [inviteError, setInviteError]     = useState<string | null>(null)
   const [inviteLink, setInviteLink]       = useState<string | null>(null)
   const [copied, setCopied]               = useState(false)
+  const [bulkEmails, setBulkEmails]       = useState('')
+  const [bulkResult, setBulkResult]       = useState<import('@/lib/types').BulkInviteResult | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -101,7 +107,7 @@ export default function MembresPage() {
   const { data: pendingInvites } = useQuery({
     queryKey: ['invites'],
     queryFn:  invites.list,
-    enabled:  isSuperAdmin,
+    enabled:  canInvite,
     select:   data => data.filter(i => i.is_valid),
   })
 
@@ -134,6 +140,18 @@ export default function MembresPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['invites'] }),
   })
 
+  const { mutate: sendBulkInvites, isPending: bulkPending } = useMutation({
+    mutationFn: (emails: string[]) => invites.bulkCreate(emails),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['invites'] })
+      setBulkResult(data)
+      setInviteError(null)
+    },
+    onError: (err: unknown) => {
+      setInviteError(err instanceof ApiError ? err.message : 'Erreur inattendue')
+    },
+  })
+
   function closeModal() {
     setOpen(false)
     setForm(EMPTY_FORM)
@@ -142,16 +160,32 @@ export default function MembresPage() {
 
   function closeInviteModal() {
     setInviteOpen(false)
+    setInviteMode('single')
     setInviteEmail('')
     setInviteError(null)
     setInviteLink(null)
     setCopied(false)
+    setBulkEmails('')
+    setBulkResult(null)
   }
 
   function handleInviteSubmit(e: React.FormEvent) {
     e.preventDefault()
     setInviteError(null)
     sendInvite(inviteEmail)
+  }
+
+  function parseBulkEmails(raw: string): string[] {
+    const parts = raw.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
+    return Array.from(new Set(parts))
+  }
+
+  function handleBulkSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setInviteError(null)
+    const emails = parseBulkEmails(bulkEmails)
+    if (emails.length === 0) return
+    sendBulkInvites(emails)
   }
 
   function copyLink() {
@@ -210,8 +244,8 @@ export default function MembresPage() {
 
         {isAdmin && (
           <div className="flex gap-2 shrink-0">
-            {/* Invite modal — super_admin only */}
-            {isSuperAdmin && <Dialog open={inviteOpen} onOpenChange={v => { if (!v) closeInviteModal(); else setInviteOpen(true) }}>
+            {/* Invite modal — super_admin & president */}
+            {canInvite && <Dialog open={inviteOpen} onOpenChange={v => { if (!v) closeInviteModal(); else setInviteOpen(true) }}>
               <Button
                 onClick={() => setInviteOpen(true)}
                 variant="outline"
@@ -224,12 +258,37 @@ export default function MembresPage() {
               <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle className="text-slate-800">
-                    {inviteLink ? 'Invitation envoyée' : 'Inviter un membre'}
+                    {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
                   </DialogTitle>
                 </DialogHeader>
 
-                {!inviteLink ? (
-                  <form onSubmit={handleInviteSubmit} className="space-y-4 mt-1">
+                {!inviteLink && !bulkResult && (
+                  <div className="flex gap-1 bg-slate-50 border border-slate-200 rounded-lg p-1 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => { setInviteMode('single'); setInviteError(null) }}
+                      className={cn(
+                        'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
+                        inviteMode === 'single' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                      )}
+                    >
+                      Un membre
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setInviteMode('bulk'); setInviteError(null) }}
+                      className={cn(
+                        'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
+                        inviteMode === 'bulk' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                      )}
+                    >
+                      Plusieurs (liste)
+                    </button>
+                  </div>
+                )}
+
+                {!inviteLink && !bulkResult && inviteMode === 'single' && (
+                  <form onSubmit={handleInviteSubmit} className="space-y-4 mt-3">
                     <div className="space-y-1.5">
                       <label className="text-xs text-slate-500">Adresse email du futur membre *</label>
                       <Input
@@ -260,7 +319,69 @@ export default function MembresPage() {
                       </Button>
                     </DialogFooter>
                   </form>
-                ) : (
+                )}
+
+                {!inviteLink && !bulkResult && inviteMode === 'bulk' && (
+                  <form onSubmit={handleBulkSubmit} className="space-y-4 mt-3">
+                    <div className="space-y-1.5">
+                      <label className="text-xs text-slate-500">Emails des futurs membres *</label>
+                      <textarea
+                        value={bulkEmails}
+                        onChange={e => setBulkEmails(e.target.value)}
+                        required
+                        rows={6}
+                        placeholder={'un email par ligne\nex: prenom.nom@example.com'}
+                        className={cn(FIELD_CLASS, 'w-full rounded-md border px-3 py-2 text-sm focus:outline-none')}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      Un email par ligne (ou séparés par une virgule). Chaque personne reçoit son propre lien d'inscription, valable 7 jours.
+                    </p>
+                    {inviteError && (
+                      <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                        {inviteError}
+                      </p>
+                    )}
+                    <DialogFooter className="gap-2">
+                      <Button type="button" variant="outline" onClick={closeInviteModal}
+                        className="border-slate-200 text-slate-500 bg-transparent">
+                        Annuler
+                      </Button>
+                      <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
+                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        {bulkPending ? 'Envoi…' : `Envoyer (${parseBulkEmails(bulkEmails).length})`}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                )}
+
+                {bulkResult && (
+                  <div className="space-y-4 mt-1">
+                    <p className="text-sm text-slate-800">
+                      <strong>{bulkResult.created.length}</strong> invitation{bulkResult.created.length > 1 ? 's' : ''} envoyée{bulkResult.created.length > 1 ? 's' : ''}.
+                    </p>
+                    {bulkResult.skipped.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs text-slate-500">{bulkResult.skipped.length} ignorée{bulkResult.skipped.length > 1 ? 's' : ''} :</p>
+                        <ul className="max-h-32 overflow-y-auto space-y-1">
+                          {bulkResult.skipped.map(s => (
+                            <li key={s.email} className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 flex justify-between gap-2">
+                              <span className="truncate">{s.email}</span>
+                              <span className="text-slate-400 shrink-0">{s.reason}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <DialogFooter>
+                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        Fermer
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                )}
+
+                {inviteLink && (
                   <div className="space-y-4 mt-1">
                     <p className="text-sm text-slate-800">
                       Invitation envoyée à <strong>{inviteEmail}</strong>.
@@ -382,7 +503,7 @@ export default function MembresPage() {
       </div>
 
       {/* Invitations en attente */}
-      {isSuperAdmin && pendingInvites && pendingInvites.length > 0 && (
+      {canInvite && pendingInvites && pendingInvites.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
           <div className="flex items-center gap-2">
             <Clock size={14} className="text-amber-600" />

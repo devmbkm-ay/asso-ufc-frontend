@@ -365,6 +365,11 @@ export const invites = {
       method: 'POST',
       body: JSON.stringify({ email }),
     }),
+  bulkCreate: (emails: string[]) =>
+    apiRequest<import('./types').BulkInviteResult>('/api/v1/invites/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ emails }),
+    }),
   list: () => apiRequest<import('./types').MemberInvite[]>('/api/v1/invites'),
   revoke: (token: string) =>
     apiRequest<void>(`/api/v1/invites/${token}`, { method: 'DELETE' }),

@@ -12,7 +12,7 @@ export default function Home() {
     if (loading) return
     if (!user) { router.push('/login'); return }
     const isElevated = user.roles.some(r =>
-      ['super_admin', 'treasurer', 'secretary'].includes(r),
+      ['super_admin', 'president', 'treasurer', 'secretary'].includes(r),
     )
     router.push(isElevated ? '/dashboard' : '/mon-espace')
   }, [user, loading, router])

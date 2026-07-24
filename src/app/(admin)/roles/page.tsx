@@ -6,7 +6,7 @@ import { members as membersApi, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Shield, Crown, BookOpen, Wallet, User, X, Plus } from 'lucide-react'
+import { Shield, Crown, Award, BookOpen, Wallet, User, X, Plus } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
 const ROLE_META: Record<string, {
@@ -17,12 +17,13 @@ const ROLE_META: Record<string, {
   border: string
 }> = {
   super_admin: { label: 'Super admin', icon: Crown,    color: 'text-[#6366F1]',  bg: 'bg-indigo-50',    border: 'border-indigo-200' },
+  president:   { label: 'Président',   icon: Award,    color: 'text-amber-700',  bg: 'bg-amber-50',     border: 'border-amber-200' },
   treasurer:   { label: 'Trésorier',   icon: Wallet,   color: 'text-purple-700', bg: 'bg-purple-50',    border: 'border-purple-200' },
   secretary:   { label: 'Secrétaire',  icon: BookOpen, color: 'text-emerald-700',bg: 'bg-emerald-50',   border: 'border-emerald-200' },
   member:      { label: 'Membre',      icon: User,     color: 'text-gray-500',   bg: 'bg-gray-100',     border: 'border-gray-200' },
 }
 
-const ALL_ROLES = ['super_admin', 'treasurer', 'secretary', 'member']
+const ALL_ROLES = ['super_admin', 'president', 'treasurer', 'secretary', 'member']
 
 export default function RolesPage() {
   const { user } = useAuth()

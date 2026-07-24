@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (loading) return
     if (!user) { router.push('/login'); return }
     const isElevated = user.roles.some(r =>
-      ['super_admin', 'treasurer', 'secretary'].includes(r),
+      ['super_admin', 'president', 'treasurer', 'secretary'].includes(r),
     )
     if (!isElevated) router.push('/mon-espace')
   }, [user, loading, router])
