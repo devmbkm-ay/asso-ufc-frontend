@@ -60,7 +60,7 @@ const EMPTY_FORM = {
   birth_date: '',
 }
 
-const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD_CLASS = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 export default function MembresPage() {
   const { user } = useAuth()
@@ -249,13 +249,13 @@ export default function MembresPage() {
               <Button
                 onClick={() => setInviteOpen(true)}
                 variant="outline"
-                className="border-[rgba(99,102,241,0.4)] text-[#6366F1] hover:bg-indigo-50 gap-1.5"
+                className="border-primary/40 text-primary hover:bg-indigo-50 gap-1.5"
               >
                 <Mail size={14} />
                 Inviter
               </Button>
 
-              <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+              <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle className="text-slate-800">
                     {inviteLink ? 'Invitation envoyée' : bulkResult ? 'Invitations envoyées' : 'Inviter des membres'}
@@ -269,7 +269,7 @@ export default function MembresPage() {
                       onClick={() => { setInviteMode('single'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'single' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'single' ? 'bg-indigo-100 text-primary' : 'text-slate-500 hover:text-slate-800',
                       )}
                     >
                       Un membre
@@ -279,7 +279,7 @@ export default function MembresPage() {
                       onClick={() => { setInviteMode('bulk'); setInviteError(null) }}
                       className={cn(
                         'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                        inviteMode === 'bulk' ? 'bg-indigo-100 text-[#6366F1]' : 'text-slate-500 hover:text-slate-800',
+                        inviteMode === 'bulk' ? 'bg-indigo-100 text-primary' : 'text-slate-500 hover:text-slate-800',
                       )}
                     >
                       Plusieurs (liste)
@@ -314,7 +314,7 @@ export default function MembresPage() {
                         Annuler
                       </Button>
                       <Button type="submit" disabled={invitePending}
-                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         {invitePending ? 'Envoi…' : "Envoyer l'invitation"}
                       </Button>
                     </DialogFooter>
@@ -348,7 +348,7 @@ export default function MembresPage() {
                         Annuler
                       </Button>
                       <Button type="submit" disabled={bulkPending || parseBulkEmails(bulkEmails).length === 0}
-                        className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         {bulkPending ? 'Envoi…' : `Envoyer (${parseBulkEmails(bulkEmails).length})`}
                       </Button>
                     </DialogFooter>
@@ -374,7 +374,7 @@ export default function MembresPage() {
                       </div>
                     )}
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -402,7 +402,7 @@ export default function MembresPage() {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={closeInviteModal} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                      <Button onClick={closeInviteModal} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                         Fermer
                       </Button>
                     </DialogFooter>
@@ -414,13 +414,13 @@ export default function MembresPage() {
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <Button
               onClick={() => setOpen(true)}
-              className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-medium gap-1.5 shrink-0"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium gap-1.5 shrink-0"
             >
               <Plus size={14} />
               Nouveau membre
             </Button>
 
-            <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+            <DialogContent className="bg-white border-primary/15 sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-slate-800">Nouveau membre</DialogTitle>
               </DialogHeader>
@@ -490,7 +490,7 @@ export default function MembresPage() {
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
                     {isPending ? 'Création…' : 'Créer le membre'}
                   </Button>
@@ -554,7 +554,7 @@ export default function MembresPage() {
               className={cn(
                 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 status === t.value
-                  ? 'bg-indigo-100 text-[#6366F1]'
+                  ? 'bg-indigo-100 text-primary'
                   : 'text-slate-500 hover:text-slate-800',
               )}
             >
@@ -565,7 +565,7 @@ export default function MembresPage() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
@@ -608,7 +608,7 @@ export default function MembresPage() {
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
                         {avatar}
-                        <span className="font-medium text-slate-800 group-hover:text-[#6366F1] transition-colors">
+                        <span className="font-medium text-slate-800 group-hover:text-primary transition-colors">
                           {m.first_name} {m.last_name}
                         </span>
                       </Link>

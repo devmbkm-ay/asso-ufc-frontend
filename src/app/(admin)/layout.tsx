@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Sidebar } from '@/components/admin/Sidebar'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Menu } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -23,8 +24,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF]">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -32,14 +33,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null
 
   return (
-    <div className="flex h-screen overflow-hidden mboka-bg">
+    <div className="flex h-screen overflow-hidden brand-bg">
       {/* Desktop sidebar */}
       <div className="hidden md:flex h-full">
         <Sidebar />
       </div>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-[#1F2139] border-b border-[rgba(255,255,255,0.10)]">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 h-14 px-4 bg-sidebar border-b border-[rgba(255,255,255,0.10)]">
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="Ouvrir le menu"
@@ -48,10 +49,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-xs font-bold text-white">M</span>
-          </div>
-          <span className="text-sm font-semibold text-white">Mboka</span>
+          <Logo size={28} className="shrink-0" />
+          <span className="text-sm font-display font-semibold text-sidebar-foreground">Fondation Météo Assistance</span>
         </div>
       </div>
 

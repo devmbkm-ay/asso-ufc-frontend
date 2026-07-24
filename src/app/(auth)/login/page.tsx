@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Logo } from '@/components/brand/Logo'
 
 function LoginForm() {
   const { login } = useAuth()
@@ -38,14 +39,12 @@ function LoginForm() {
   const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
-              <span className="text-2xl font-bold text-primary">M</span>
-            </div>
-            <h1 className="text-2xl font-semibold text-card-foreground tracking-wide">Mboka</h1>
+            <Logo size={56} className="mx-auto mb-4" />
+            <h1 className="text-xl font-display font-medium text-card-foreground text-balance">Fondation Météo Assistance</h1>
             <p className="text-sm text-muted-foreground mt-1">Bienvenue dans votre espace</p>
           </div>
 
@@ -96,7 +95,7 @@ function LoginForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-violet-600 text-primary-foreground font-semibold h-11"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11"
             >
               {loading ? 'Connexion…' : 'Se connecter'}
             </Button>
@@ -116,7 +115,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen mboka-bg" />}>
+    <Suspense fallback={<div className="min-h-screen brand-bg" />}>
       <LoginForm />
     </Suspense>
   )

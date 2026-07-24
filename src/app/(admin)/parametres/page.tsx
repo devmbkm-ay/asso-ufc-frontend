@@ -10,7 +10,7 @@ import { CheckCircle2, AlertCircle, User, Phone, MapPin, KeyRound } from 'lucide
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-const inputCls = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1] h-9 text-sm'
+const inputCls = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary h-9 text-sm'
 
 export default function ParametresPage() {
   const { user } = useAuth()
@@ -56,20 +56,20 @@ export default function ParametresPage() {
         <p className="text-sm text-slate-400 mt-1">Gérez votre profil et vos informations de contact.</p>
       </div>
 
-      <div className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-5 flex items-center gap-4 shadow-sm">
-        <div className="w-14 h-14 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0">
-          <span className="text-xl font-bold text-white">
+      <div className="bg-white border border-primary/15 rounded-xl p-5 flex items-center gap-4 shadow-sm">
+        <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <span className="text-xl font-bold text-primary-foreground">
             {user?.first_name?.[0]}{user?.last_name?.[0]}
           </span>
         </div>
         <div>
           <p className="text-sm font-semibold text-slate-800">{user?.first_name} {user?.last_name}</p>
           <p className="text-xs text-slate-400">{user?.email}</p>
-          <p className="text-xs text-[#6366F1] mt-0.5">{((user?.roles ?? []) as string[])[0] ?? 'Membre'}</p>
+          <p className="text-xs text-primary mt-0.5">{((user?.roles ?? []) as string[])[0] ?? 'Membre'}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-6 space-y-5 shadow-sm">
+      <form onSubmit={handleSubmit} className="bg-white border border-primary/15 rounded-xl p-6 space-y-5 shadow-sm">
         <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Informations personnelles</p>
 
         <div className="grid grid-cols-2 gap-4">
@@ -124,21 +124,21 @@ export default function ParametresPage() {
           type="submit"
           disabled={status === 'loading'}
           size="sm"
-          className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-semibold"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
         >
           {status === 'loading' ? 'Sauvegarde…' : 'Enregistrer les modifications'}
         </Button>
       </form>
 
-      <div className="bg-white border border-[rgba(99,102,241,0.15)] rounded-xl p-5 flex items-center justify-between gap-3 shadow-sm">
+      <div className="bg-white border border-primary/15 rounded-xl p-5 flex items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-2.5">
-          <KeyRound size={15} className="text-[#6366F1]" />
+          <KeyRound size={15} className="text-primary" />
           <div>
             <p className="text-sm font-medium text-slate-800">Mot de passe</p>
             <p className="text-xs text-slate-400">Recevez un lien par email pour le réinitialiser.</p>
           </div>
         </div>
-        <Link href="/mot-de-passe-oublie" className="text-sm text-[#6366F1] hover:underline font-medium shrink-0">
+        <Link href="/mot-de-passe-oublie" className="text-sm text-primary hover:underline font-medium shrink-0">
           Changer
         </Link>
       </div>

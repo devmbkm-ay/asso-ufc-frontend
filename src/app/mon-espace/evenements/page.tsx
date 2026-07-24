@@ -134,7 +134,7 @@ export default function EvenementsPage() {
           'bg-white rounded-xl border shadow-sm p-5 space-y-4',
           isPast
             ? 'border-slate-200 opacity-75'
-            : 'border-[rgba(99,102,241,0.15)]',
+            : 'border-primary/15',
         )}
       >
         {/* Header */}
@@ -190,7 +190,7 @@ export default function EvenementsPage() {
           <div>
             <button
               onClick={() => setExpandedRegistrants(m => ({ ...m, [e.id]: !m[e.id] }))}
-              className="flex items-center gap-1 text-xs text-[#6366F1] hover:underline"
+              className="flex items-center gap-1 text-xs text-primary hover:underline"
             >
               {registrantsOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
               {registrantsOpen ? 'Masquer les inscrits' : 'Voir les inscrits'}
@@ -233,7 +233,7 @@ export default function EvenementsPage() {
                   size="sm"
                   onClick={() => confirmRegister(e.id)}
                   disabled={registeringId === e.id || loadingRegs}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5"
                 >
                   {registeringId === e.id ? 'Inscription…' : 'Confirmer'}
                 </Button>
@@ -249,7 +249,7 @@ export default function EvenementsPage() {
                 size="sm"
                 onClick={() => startRegister(e)}
                 disabled={loadingRegs}
-                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5"
               >
                 <CheckCircle2 size={13} />
                 S&apos;inscrire

@@ -37,7 +37,7 @@ const COLLECTE_STATUS_BADGE: Record<string, string> = {
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -196,7 +196,7 @@ export default function EvenementsPage() {
         {canWrite && (
           <Button
             onClick={() => { setCreateOpen(true); setCreateError(null) }}
-            className="bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-1.5 shrink-0"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 shrink-0"
           >
             <Plus size={14} />
             Nouvel événement
@@ -208,7 +208,7 @@ export default function EvenementsPage() {
       {activeCollectes && activeCollectes.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <Heart size={13} className="text-[#6366F1]" />
+            <Heart size={13} className="text-primary" />
             <h2 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">
               Annonces en cours
             </h2>
@@ -220,13 +220,13 @@ export default function EvenementsPage() {
                 <Link
                   key={c.id}
                   href={`/collectes/${c.id}`}
-                  className="shrink-0 w-56 bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 hover:border-[rgba(99,102,241,0.35)] transition-colors"
+                  className="shrink-0 w-56 bg-white rounded-xl border border-primary/15 shadow-sm p-4 hover:border-primary/35 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
                       {c.photo_url
                         ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
-                        : <Heart size={16} className="text-[#6366F1]" />
+                        : <Heart size={16} className="text-primary" />
                       }
                     </div>
                     <div className="min-w-0">
@@ -235,7 +235,7 @@ export default function EvenementsPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-xs text-[#6366F1] font-semibold">
+                    <div className="flex items-center gap-1 text-xs text-primary font-semibold">
                       <HandCoins size={11} />
                       {fmtEur(c.total_collected)}
                     </div>
@@ -265,7 +265,7 @@ export default function EvenementsPage() {
             className={cn(
               'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
               statusFilter === t.value
-                ? 'bg-indigo-100 text-[#6366F1]'
+                ? 'bg-indigo-100 text-primary'
                 : 'text-slate-500 hover:text-slate-800',
             )}
           >
@@ -289,10 +289,10 @@ export default function EvenementsPage() {
           return (
             <div
               key={ev.id}
-              className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex gap-5 hover:border-[rgba(99,102,241,0.30)] transition-colors"
+              className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5 hover:border-primary/30 transition-colors"
             >
               <div className="text-center w-12 shrink-0 pt-0.5">
-                <p className="text-2xl font-bold text-[#6366F1] leading-none">{d.getDate()}</p>
+                <p className="text-2xl font-bold text-primary leading-none">{d.getDate()}</p>
                 <p className="text-[10px] text-slate-400 uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">{d.getFullYear()}</p>
               </div>
@@ -305,7 +305,7 @@ export default function EvenementsPage() {
                     {canWrite && ev.status !== 'cancelled' && (
                       <button
                         onClick={() => openEdit(ev)}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-indigo-50 transition-colors"
                         title="Modifier"
                       >
                         <Pencil size={12} />
@@ -328,19 +328,19 @@ export default function EvenementsPage() {
                 <div className="flex flex-wrap gap-4 text-xs text-slate-400">
                   {ev.location && (
                     <div className="flex items-center gap-1.5">
-                      <MapPin size={11} className="text-[#6366F1]" />
+                      <MapPin size={11} className="text-primary" />
                       {ev.location}
                     </div>
                   )}
                   <div className={cn('flex items-center gap-1.5', capacityFull && 'text-amber-600')}>
-                    <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-[#6366F1]'} />
+                    <Users size={11} className={capacityFull ? 'text-amber-500' : 'text-primary'} />
                     {ev.registrations_count} inscrit{ev.registrations_count > 1 ? 's' : ''}
                     {ev.capacity && ` / ${ev.capacity}`}
                     {capacityFull && ' · Complet'}
                   </div>
                   {ev.ticket_price > 0 && (
                     <div className="flex items-center gap-1.5">
-                      <Ticket size={11} className="text-[#6366F1]" />
+                      <Ticket size={11} className="text-primary" />
                       {fmtEur(ev.ticket_price)}
                     </div>
                   )}
@@ -353,7 +353,7 @@ export default function EvenementsPage() {
 
       {/* ── Modale création ─────────────────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={open => { if (!open) { setCreateOpen(false); setCreateForm(EMPTY_CREATE); setCreateError(null) } }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-slate-800">Nouvel événement</DialogTitle>
           </DialogHeader>
@@ -368,7 +368,7 @@ export default function EvenementsPage() {
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500">Lieu <span className="text-slate-400">(optionnel)</span></label>
-              <Input value={createForm.location} onChange={cf('location')} placeholder="Salle Mboka, Bordeaux" className={FIELD} />
+              <Input value={createForm.location} onChange={cf('location')} placeholder="Salle des fêtes, Bordeaux" className={FIELD} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-slate-500">Description <span className="text-slate-400">(optionnel)</span></label>
@@ -377,7 +377,7 @@ export default function EvenementsPage() {
                 onChange={cf('description')}
                 rows={3}
                 placeholder="Décrivez l'événement…"
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -396,7 +396,7 @@ export default function EvenementsPage() {
             )}
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={creating} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+              <Button type="submit" disabled={creating} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 {creating ? 'Création…' : 'Créer'}
               </Button>
             </DialogFooter>
@@ -406,7 +406,7 @@ export default function EvenementsPage() {
 
       {/* ── Modale édition ──────────────────────────────────────────────────── */}
       <Dialog open={!!editTarget} onOpenChange={open => { if (!open) setEditTarget(null) }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-slate-800">Modifier l'événement</DialogTitle>
           </DialogHeader>
@@ -429,7 +429,7 @@ export default function EvenementsPage() {
                 value={editForm.description}
                 onChange={ef('description')}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -447,7 +447,7 @@ export default function EvenementsPage() {
               <select
                 value={editForm.status}
                 onChange={ef('status')}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
               >
                 <option value="draft">Brouillon</option>
                 <option value="published">Publié</option>
@@ -459,7 +459,7 @@ export default function EvenementsPage() {
             )}
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200 text-slate-500 bg-transparent">Annuler</Button>
-              <Button type="submit" disabled={updating} className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+              <Button type="submit" disabled={updating} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 {updating ? 'Sauvegarde…' : 'Enregistrer'}
               </Button>
             </DialogFooter>
@@ -469,7 +469,7 @@ export default function EvenementsPage() {
 
       {/* ── Confirmation annulation ─────────────────────────────────────────── */}
       <Dialog open={!!cancelTarget} onOpenChange={open => { if (!open) setCancelTarget(null) }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-800 flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />

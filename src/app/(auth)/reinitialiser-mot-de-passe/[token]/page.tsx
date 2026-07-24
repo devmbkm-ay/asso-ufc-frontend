@@ -7,6 +7,7 @@ import { auth, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CheckCircle2 } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
 
 const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
@@ -45,14 +46,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center mboka-bg px-4">
+    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
-              <span className="text-2xl font-bold text-primary">M</span>
-            </div>
+            <Logo size={56} className="mx-auto mb-4" />
             <h1 className="text-xl font-semibold text-card-foreground tracking-wide">Nouveau mot de passe</h1>
           </div>
 

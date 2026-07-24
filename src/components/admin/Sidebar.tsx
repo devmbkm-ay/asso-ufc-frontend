@@ -8,6 +8,7 @@ import {
   Bell, Download, Shield, Settings, LogOut, Heart, History,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Logo } from '@/components/brand/Logo'
 
 const NAV = [
   {
@@ -42,14 +43,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const { user, logout } = useAuth()
 
   return (
-    <aside className="flex flex-col w-56 h-full bg-[#1F2139] border-r border-[rgba(99,102,241,0.20)] shrink-0">
+    <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(255,255,255,0.10)]">
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center shrink-0 shadow-lg">
-          <span className="text-sm font-bold text-white">M</span>
-        </div>
+        <Logo size={32} className="shrink-0" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">Mboka</p>
+          <p className="text-sm font-display font-semibold text-sidebar-foreground truncate">Fondation Météo Assistance</p>
           <p className="text-xs text-[rgba(255,255,255,0.55)] truncate">{user?.roles?.[0] ?? 'Membre'}</p>
         </div>
       </div>
@@ -72,7 +71,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                       className={cn(
                         'flex items-center gap-2.5 px-2 py-2 rounded-md text-sm transition-colors',
                         active
-                          ? 'bg-[#312E81] text-[#E0E7FF] font-medium border-l-2 border-[#818CF8]'
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-2 border-sidebar-ring'
                           : 'text-[rgba(255,255,255,0.70)] hover:text-white hover:bg-[rgba(255,255,255,0.08)] border-l-2 border-transparent',
                       )}
                     >
@@ -90,8 +89,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* User footer */}
       <div className="border-t border-[rgba(255,255,255,0.10)] p-3">
         <div className="flex items-center gap-2.5 px-2 py-2">
-          <div className="w-7 h-7 rounded-full bg-[#312E81] flex items-center justify-center shrink-0">
-            <span className="text-xs font-semibold text-white">
+          <div className="w-7 h-7 rounded-full bg-sidebar-accent flex items-center justify-center shrink-0">
+            <span className="text-xs font-semibold text-sidebar-accent-foreground">
               {user?.first_name?.[0]}{user?.last_name?.[0]}
             </span>
           </div>
@@ -102,6 +101,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           </div>
           <button
             onClick={logout}
+            aria-label="Déconnexion"
             className="text-[rgba(255,255,255,0.40)] hover:text-red-300 transition-colors"
             title="Déconnexion"
           >

@@ -71,7 +71,7 @@ export default function CollectesPage() {
               <Link
                 key={c.id}
                 href={`/mon-espace/collectes/${c.id}`}
-                className="block bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 hover:border-[#6366F1]/40 hover:shadow-md transition-all group"
+                className="block bg-white rounded-xl border border-primary/15 shadow-sm p-5 hover:border-primary/40 hover:shadow-md transition-all group"
               >
                 <div className="flex items-start gap-4">
                   {/* Photo or icon */}
@@ -83,14 +83,14 @@ export default function CollectesPage() {
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                      <Heart size={18} className="text-[#6366F1]" />
+                      <Heart size={18} className="text-primary" />
                     </div>
                   )}
 
                   <div className="flex-1 min-w-0">
                     {/* Title + status */}
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-[#6366F1] transition-colors line-clamp-1">
+                      <p className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors line-clamp-1">
                         {c.title}
                       </p>
                       <span className={cn(
@@ -117,7 +117,7 @@ export default function CollectesPage() {
                       {c.status === 'active' && (
                         <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                           <div
-                            className="h-full rounded-full bg-[#6366F1] transition-all"
+                            className="h-full rounded-full bg-primary transition-all"
                             style={{ width: `${pct}%` }}
                           />
                         </div>

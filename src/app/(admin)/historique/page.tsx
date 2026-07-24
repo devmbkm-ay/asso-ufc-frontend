@@ -26,7 +26,7 @@ const EVENT_STATUS_LABEL: Record<string, { label: string; className: string }> =
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']
 
-const SELECT_CLS = 'rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#6366F1]'
+const SELECT_CLS = 'rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -100,15 +100,15 @@ export default function HistoriquePage() {
       {/* Stats globales */}
       {(archived.length > 0 || finished.length > 0) && (
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
-            <p className="text-xl font-bold text-[#6366F1]">{fmtEur(totalCollecte)}</p>
+          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+            <p className="text-xl font-bold text-primary">{fmtEur(totalCollecte)}</p>
             <p className="text-xs text-slate-400 mt-1">Total collecté (toutes collectes)</p>
           </div>
-          <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-slate-800">{archived.length}</p>
             <p className="text-xs text-slate-400 mt-1">Collecte{archived.length > 1 ? 's' : ''} archivée{archived.length > 1 ? 's' : ''}</p>
           </div>
-          <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+          <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
             <p className="text-xl font-bold text-slate-800">{finished.length}</p>
             <p className="text-xs text-slate-400 mt-1">Événement{finished.length > 1 ? 's' : ''} terminé{finished.length > 1 ? 's' : ''}</p>
           </div>
@@ -127,7 +127,7 @@ export default function HistoriquePage() {
             className={cn(
               'px-4 py-1.5 rounded-md text-xs font-medium transition-colors',
               tab === t.value
-                ? 'bg-indigo-100 text-[#6366F1]'
+                ? 'bg-indigo-100 text-primary'
                 : 'text-slate-500 hover:text-slate-800',
             )}
           >
@@ -180,13 +180,13 @@ export default function HistoriquePage() {
             {filteredCollectes.map(c => (
               <div
                 key={c.id}
-                className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex gap-4"
+                className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-4"
               >
                 {/* Photo */}
                 <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
                   {c.photo_url
                     ? <img src={c.photo_url} alt={c.beneficiary_name} className="w-full h-full object-cover" />
-                    : <Heart size={18} className="text-[#6366F1]" />
+                    : <Heart size={18} className="text-primary" />
                   }
                 </div>
 
@@ -195,7 +195,7 @@ export default function HistoriquePage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-semibold text-slate-800">{c.title}</p>
                     {c.category && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-[#6366F1] border border-[rgba(99,102,241,0.2)]">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-primary border border-primary/20">
                         {categoryLabel(c.category)}
                       </span>
                     )}
@@ -211,12 +211,12 @@ export default function HistoriquePage() {
 
                 {/* Stats */}
                 <div className="text-right shrink-0 space-y-1.5">
-                  <div className="flex items-center gap-1 justify-end text-[#6366F1]">
+                  <div className="flex items-center gap-1 justify-end text-primary">
                     <HandCoins size={13} />
                     <p className="text-base font-bold">{fmtEur(Number(c.total_collected))}</p>
                   </div>
                   <div className="flex items-center gap-1 justify-end text-xs text-slate-400">
-                    <Users size={11} className="text-[#6366F1]" />
+                    <Users size={11} className="text-primary" />
                     {c.contributors_count} contributeur{c.contributors_count > 1 ? 's' : ''}
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function HistoriquePage() {
           {filteredCollectes.length > 1 && (
             <div className="text-right text-sm text-slate-500 border-t border-slate-100 pt-3">
               Total affiché :{' '}
-              <span className="font-semibold text-[#6366F1]">
+              <span className="font-semibold text-primary">
                 {fmtEur(filteredCollectes.reduce((s, c) => s + Number(c.total_collected), 0))}
               </span>
               {' '}· {filteredCollectes.length} collecte{filteredCollectes.length > 1 ? 's' : ''}
@@ -286,11 +286,11 @@ export default function HistoriquePage() {
               return (
                 <div
                   key={ev.id}
-                  className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 flex gap-5"
+                  className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 flex gap-5"
                 >
                   {/* Date block */}
                   <div className="text-center w-12 shrink-0 pt-0.5">
-                    <p className="text-2xl font-bold text-[#6366F1] leading-none">{d.getDate()}</p>
+                    <p className="text-2xl font-bold text-primary leading-none">{d.getDate()}</p>
                     <p className="text-[10px] text-slate-400 uppercase mt-0.5">{MONTH_FR[d.getMonth()]}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{d.getFullYear()}</p>
                   </div>
@@ -309,17 +309,17 @@ export default function HistoriquePage() {
                     <div className="flex flex-wrap gap-4 text-xs text-slate-400">
                       {ev.location && (
                         <div className="flex items-center gap-1.5">
-                          <MapPin size={11} className="text-[#6366F1]" />
+                          <MapPin size={11} className="text-primary" />
                           {ev.location}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5">
-                        <Users size={11} className="text-[#6366F1]" />
+                        <Users size={11} className="text-primary" />
                         {ev.registrations_count} inscrit{ev.registrations_count > 1 ? 's' : ''}
                       </div>
                       {ev.ticket_price > 0 && (
                         <div className="flex items-center gap-1.5">
-                          <Ticket size={11} className="text-[#6366F1]" />
+                          <Ticket size={11} className="text-primary" />
                           {fmtEur(Number(ev.ticket_price))}
                         </div>
                       )}

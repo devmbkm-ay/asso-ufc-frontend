@@ -43,7 +43,7 @@ const STATUS_BADGE: Record<string, { label: string; className: string }> = {
   closed: { label: 'Clôturée', className: 'text-[10px] border bg-orange-50 text-orange-600 border-orange-200' },
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 export default function CollecteDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -230,7 +230,7 @@ export default function CollecteDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -251,12 +251,12 @@ export default function CollecteDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-6">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-6">
         <div className="flex gap-5">
           <div className="w-20 h-20 rounded-full shrink-0 overflow-hidden bg-indigo-50 flex items-center justify-center">
             {collecte.photo_url
               ? <img src={collecte.photo_url} alt={collecte.beneficiary_name} className="w-full h-full object-cover" />
-              : <Heart size={30} className="text-[#6366F1]" />
+              : <Heart size={30} className="text-primary" />
             }
           </div>
 
@@ -266,7 +266,7 @@ export default function CollecteDetailPage() {
                 <h1 className="text-xl font-semibold text-slate-800">{collecte.title}</h1>
                 <p className="text-sm text-slate-400 mt-0.5">{categoryPrefix(collecte.category)} {collecte.beneficiary_name}</p>
                 {collecte.category && (
-                  <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-[#6366F1] border border-[rgba(99,102,241,0.2)]">
+                  <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 text-primary border border-primary/20">
                     {categoryLabel(collecte.category)}
                   </span>
                 )}
@@ -278,7 +278,7 @@ export default function CollecteDetailPage() {
                 {canEdit && !collecte.is_archived && (
                   <button
                     onClick={openEditModal}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
+                    className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-indigo-50 transition-colors"
                     title="Modifier"
                   >
                     <Pencil size={14} />
@@ -322,14 +322,14 @@ export default function CollecteDetailPage() {
 
       {/* Progression vers l'objectif */}
       {!!collecte.goal_amount && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
           <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
             <span>{fmtEur(collecte.total_collected)} collectés</span>
             <span>Objectif {fmtEur(collecte.goal_amount)}</span>
           </div>
           <div className="h-2 rounded-full bg-indigo-50 overflow-hidden">
             <div
-              className="h-full rounded-full bg-[#6366F1]"
+              className="h-full rounded-full bg-primary"
               style={{ width: `${Math.min((collecte.total_collected / collecte.goal_amount) * 100, 100)}%` }}
             />
           </div>
@@ -338,20 +338,20 @@ export default function CollecteDetailPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
-          <p className="text-2xl font-bold text-[#6366F1]">{fmtEur(collecte.total_collected)}</p>
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
+          <p className="text-2xl font-bold text-primary">{fmtEur(collecte.total_collected)}</p>
           <p className="text-xs text-slate-400 mt-1">Total collecté</p>
         </div>
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
-            <Users size={14} className="text-[#6366F1]" />
+            <Users size={14} className="text-primary" />
             <p className="text-2xl font-bold text-slate-800">{collecte.contributors_count}</p>
           </div>
           <p className="text-xs text-slate-400 mt-1">Contributeur{collecte.contributors_count > 1 ? 's' : ''}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4 text-center">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4 text-center">
           <div className="flex items-center justify-center gap-1.5">
-            <Clock size={14} className="text-[#6366F1]" />
+            <Clock size={14} className="text-primary" />
             <p className="text-2xl font-bold text-slate-800">
               {collecte.is_active ? remaining : '—'}
             </p>
@@ -370,13 +370,13 @@ export default function CollecteDetailPage() {
         <Dialog open={openContrib} onOpenChange={next => { if (!next) closeContribModal(); else setOpenContrib(true) }}>
           <Button
             onClick={() => setOpenContrib(true)}
-            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white gap-2 py-5 text-base"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2 py-5 text-base"
           >
             <HandCoins size={18} />
             Contribuer — minimum {fmtEur(collecte.min_amount)}
           </Button>
 
-          <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+          <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
             <DialogHeader>
               <DialogTitle className="text-slate-800">Ma contribution</DialogTitle>
             </DialogHeader>
@@ -419,7 +419,7 @@ export default function CollecteDetailPage() {
                 <Button
                   type="submit"
                   disabled={contribPending}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {contribPending ? 'Envoi…' : 'Confirmer'}
                 </Button>
@@ -431,7 +431,7 @@ export default function CollecteDetailPage() {
 
       {/* Modal édition */}
       <Dialog open={openEdit} onOpenChange={next => { if (!next) closeEditModal(); else setOpenEdit(true) }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-slate-800">Modifier la collecte</DialogTitle>
           </DialogHeader>
@@ -480,7 +480,7 @@ export default function CollecteDetailPage() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-300 text-xs text-slate-400 hover:border-[#6366F1] hover:text-[#6366F1] transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-slate-300 text-xs text-slate-400 hover:border-primary hover:text-primary transition-colors"
                 >
                   <ImagePlus size={14} />
                   Choisir une photo
@@ -494,7 +494,7 @@ export default function CollecteDetailPage() {
                 value={editForm.description}
                 onChange={editField('description')}
                 rows={3}
-                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#6366F1] resize-none"
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
               />
             </div>
 
@@ -542,7 +542,7 @@ export default function CollecteDetailPage() {
               <Button
                 type="submit"
                 disabled={editPending || uploading}
-                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 {uploading ? 'Upload…' : editPending ? 'Sauvegarde…' : 'Enregistrer'}
               </Button>
@@ -553,7 +553,7 @@ export default function CollecteDetailPage() {
 
       {/* ── Dialog clôture ───────────────────────────────────────────────────── */}
       <Dialog open={closeOpen} onOpenChange={open => { if (!open) setCloseOpen(false) }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-800 flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
@@ -574,7 +574,7 @@ export default function CollecteDetailPage() {
 
       {/* ── Dialog archivage ─────────────────────────────────────────────────── */}
       <Dialog open={archiveOpen} onOpenChange={open => { if (!open) setArchiveOpen(false) }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-800 flex items-center gap-2">
               <Archive size={16} className="text-purple-500" />
@@ -594,7 +594,7 @@ export default function CollecteDetailPage() {
       </Dialog>
 
       {/* Liste contributions */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-800">Contributions</h2>
         </div>
@@ -620,7 +620,7 @@ export default function CollecteDetailPage() {
                   <p className="text-sm font-medium text-slate-800">{c.member_name}</p>
                   <p className="text-xs text-slate-400">{fmtDateTime(c.contributed_at)}</p>
                 </div>
-                <p className="text-sm font-semibold text-[#6366F1]">{fmtEur(c.amount)}</p>
+                <p className="text-sm font-semibold text-primary">{fmtEur(c.amount)}</p>
               </li>
             ))}
           </ul>

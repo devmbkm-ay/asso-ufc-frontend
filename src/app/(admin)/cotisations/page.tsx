@@ -28,7 +28,7 @@ const CELL_STYLE: Record<string, string> = {
   declared:  'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200',
   pending:   'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200',
   cancelled: 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200',
-  none:      'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-[#6366F1]',
+  none:      'bg-slate-100 text-transparent border-slate-200 hover:bg-slate-200 hover:border-primary',
 }
 
 const CELL_SYMBOL: Record<string, string> = {
@@ -59,7 +59,7 @@ const EMPTY_FORM = {
   reference:    '',
 }
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 const FREQ_LABELS: Record<string, string> = {
   monthly:  'Mensuelle',
@@ -304,12 +304,12 @@ export default function CotisationsPage() {
 
       {/* Plans de cotisation */}
       {canWrite && (
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-4">
           <div className="flex items-center justify-between gap-4 mb-3">
             <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Plans de cotisation</h2>
             <button
               onClick={() => { setPlanOpen(true); setPlanError(null); setPlanForm(EMPTY_PLAN) }}
-              className="flex items-center gap-1 text-xs text-[#6366F1] hover:text-[#4F46E5] transition-colors font-medium"
+              className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors font-medium"
             >
               <Plus size={13} />
               Nouveau plan
@@ -326,7 +326,7 @@ export default function CotisationsPage() {
             {plans?.map(p => (
               <div
                 key={p.id}
-                className="flex items-center gap-2 bg-indigo-50 border border-[rgba(99,102,241,0.20)] rounded-lg px-3 py-2"
+                className="flex items-center gap-2 bg-indigo-50 border border-primary/20 rounded-lg px-3 py-2"
               >
                 <div>
                   <p className="text-xs font-semibold text-slate-800">{p.label}</p>
@@ -341,7 +341,7 @@ export default function CotisationsPage() {
                       onClick={() => { setInitingPlanId(p.id); initPayments(p.id) }}
                       disabled={initingPlanId === p.id}
                       title="Initialiser les cotisations en attente pour tous les membres"
-                      className="text-slate-400 hover:text-[#6366F1] transition-colors disabled:opacity-50"
+                      className="text-slate-400 hover:text-primary transition-colors disabled:opacity-50"
                     >
                       <Zap size={13} />
                     </button>
@@ -393,7 +393,7 @@ export default function CotisationsPage() {
                     size="sm"
                     onClick={() => decideDeclared(p.id, 'validate')}
                     disabled={decidingId === p.id}
-                    className="bg-[#6366F1] hover:bg-[#4F46E5] text-white h-8 px-2.5"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground h-8 px-2.5"
                   >
                     <CheckCircle2 size={13} />
                   </Button>
@@ -405,7 +405,7 @@ export default function CotisationsPage() {
       )}
 
       {/* Grid */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-x-auto">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-slate-100">
@@ -460,13 +460,13 @@ export default function CotisationsPage() {
                       >
                         {/* show '+' only for none+canWrite, otherwise symbol */}
                         {cell.status === 'none'
-                          ? (canWrite ? <span className="text-[#6366F1] opacity-0 group-hover:opacity-100">+</span> : '')
+                          ? (canWrite ? <span className="text-primary opacity-0 group-hover:opacity-100">+</span> : '')
                           : CELL_SYMBOL[cell.status]}
                       </button>
                     </td>
                   ))}
                   <td className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">
-                    <span className={rowTotal > 0 ? 'text-[#6366F1]' : 'text-slate-400'}>
+                    <span className={rowTotal > 0 ? 'text-primary' : 'text-slate-400'}>
                       {rowTotal > 0 ? fmtEur(rowTotal) : '—'}
                     </span>
                   </td>
@@ -503,7 +503,7 @@ export default function CotisationsPage() {
 
       {/* Cell dialog */}
       <Dialog open={!!selected} onOpenChange={open => { if (!open) close() }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-800 text-base">{dialogTitle}</DialogTitle>
           </DialogHeader>
@@ -517,7 +517,7 @@ export default function CotisationsPage() {
                   value={form.plan_id}
                   onChange={e => handlePlanChange(e.target.value)}
                   required
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="">Sélectionner un plan</option>
                   {plans?.map(p => (
@@ -558,7 +558,7 @@ export default function CotisationsPage() {
                 <select
                   value={form.method}
                   onChange={e => setForm(f => ({ ...f, method: e.target.value }))}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   {Object.entries(METHOD_LABELS).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
@@ -596,7 +596,7 @@ export default function CotisationsPage() {
                 <Button
                   type="submit"
                   disabled={isRecording || !form.plan_id}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {isRecording ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -719,7 +719,7 @@ export default function CotisationsPage() {
 
       {/* Plan creation dialog */}
       <Dialog open={planOpen} onOpenChange={open => { if (!open) { setPlanOpen(false); setPlanError(null) } }}>
-        <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-sm">
+        <DialogContent className="bg-white border-primary/15 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-800 text-base">Nouveau plan de cotisation</DialogTitle>
           </DialogHeader>
@@ -754,7 +754,7 @@ export default function CotisationsPage() {
                 <select
                   value={planForm.frequency}
                   onChange={e => setPlanForm(f => ({ ...f, frequency: e.target.value as typeof f.frequency }))}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#6366F1]"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="annual">Annuelle</option>
                   <option value="monthly">Mensuelle</option>
@@ -803,7 +803,7 @@ export default function CotisationsPage() {
               <Button
                 type="submit"
                 disabled={isCreatingPlan}
-                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 {isCreatingPlan ? 'Création…' : 'Créer le plan'}
               </Button>

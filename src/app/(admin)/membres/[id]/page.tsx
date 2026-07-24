@@ -15,7 +15,7 @@ import {
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
-const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#6366F1]'
+const FIELD = 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-primary'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const MONTHS_SHORT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -125,7 +125,7 @@ export default function MembrePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[#6366F1] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -172,7 +172,7 @@ export default function MembrePage() {
             {canEdit && (
               <button
                 onClick={openEditModal}
-                className="p-1.5 rounded-md text-slate-400 hover:text-[#6366F1] hover:bg-indigo-50 transition-colors"
+                className="p-1.5 rounded-md text-slate-400 hover:text-primary hover:bg-indigo-50 transition-colors"
                 title="Modifier le profil"
               >
                 <Pencil size={13} />
@@ -182,7 +182,7 @@ export default function MembrePage() {
           {member.roles.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {member.roles.map(r => (
-                <span key={r} className="text-xs text-[#6366F1] bg-indigo-50 px-2 py-0.5 rounded">
+                <span key={r} className="text-xs text-primary bg-indigo-50 px-2 py-0.5 rounded">
                   {r}
                 </span>
               ))}
@@ -193,7 +193,7 @@ export default function MembrePage() {
 
       {canEdit && (
         <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-          <DialogContent className="bg-white border-[rgba(99,102,241,0.15)] sm:max-w-md">
+          <DialogContent className="bg-white border-primary/15 sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-slate-800">Modifier le profil</DialogTitle>
             </DialogHeader>
@@ -247,7 +247,7 @@ export default function MembrePage() {
                 <Button
                   type="submit"
                   disabled={editPending}
-                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   {editPending ? 'Enregistrement…' : 'Enregistrer'}
                 </Button>
@@ -260,33 +260,33 @@ export default function MembrePage() {
       {/* Info + Cotisations cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Informations</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <Mail size={14} className="text-[#6366F1] shrink-0" />
+              <Mail size={14} className="text-primary shrink-0" />
               <span className="text-slate-800">{member.email}</span>
             </div>
             {member.phone && (
               <div className="flex items-center gap-3 text-sm">
-                <Phone size={14} className="text-[#6366F1] shrink-0" />
+                <Phone size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{member.phone}</span>
               </div>
             )}
             {member.address && (
               <div className="flex items-center gap-3 text-sm">
-                <MapPin size={14} className="text-[#6366F1] shrink-0" />
+                <MapPin size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{member.address}</span>
               </div>
             )}
             {member.birth_date && (
               <div className="flex items-center gap-3 text-sm">
-                <Calendar size={14} className="text-[#6366F1] shrink-0" />
+                <Calendar size={14} className="text-primary shrink-0" />
                 <span className="text-slate-800">{fmtDate(member.birth_date)}</span>
               </div>
             )}
             <div className="flex items-center gap-3 text-sm">
-              <Clock size={14} className="text-[#6366F1] shrink-0" />
+              <Clock size={14} className="text-primary shrink-0" />
               <span className="text-slate-500">
                 Membre depuis le <span className="text-slate-800">{fmtDate(member.joined_at)}</span>
               </span>
@@ -294,12 +294,12 @@ export default function MembrePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-primary/15 shadow-sm p-5 space-y-4">
           <h2 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Cotisations</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Total versé</span>
-              <span className="text-sm font-semibold text-[#6366F1]">{fmtEur(totalPaid)}</span>
+              <span className="text-sm font-semibold text-primary">{fmtEur(totalPaid)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Paiements enregistrés</span>
@@ -342,7 +342,7 @@ export default function MembrePage() {
       </div>
 
       {/* Payment history */}
-      <div className="bg-white rounded-xl border border-[rgba(99,102,241,0.15)] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
           <h2 className="text-sm font-semibold text-slate-800">Historique des paiements</h2>
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
