@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/providers/AuthProvider'
+import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -42,8 +43,8 @@ function LoginForm() {
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
-              <span className="text-2xl font-bold text-primary">M</span>
+            <div className="flex justify-center mb-4">
+              <Logo variant="icon" size="md" />
             </div>
             <h1 className="text-2xl font-semibold text-card-foreground tracking-wide">Fondation Météo Assistance</h1>
             <p className="text-sm text-muted-foreground mt-1">Bienvenue dans votre espace</p>

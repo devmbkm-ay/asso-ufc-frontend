@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { auth, ApiError } from '@/lib/api'
+import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CheckCircle2 } from 'lucide-react'
@@ -50,8 +51,8 @@ export default function ResetPasswordPage() {
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-sidebar mb-4">
-              <span className="text-2xl font-bold text-primary">M</span>
+            <div className="flex justify-center mb-4">
+              <Logo variant="icon" size="md" />
             </div>
             <h1 className="text-xl font-semibold text-card-foreground tracking-wide">Nouveau mot de passe</h1>
           </div>
