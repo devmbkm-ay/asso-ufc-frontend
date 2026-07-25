@@ -1,3 +1,5 @@
+import type { PaymentMethodValue, PaymentStatusValue } from './payment-methods'
+
 export interface Member {
   id: string
   first_name: string
@@ -51,8 +53,8 @@ export interface Payment {
   payment_date: string
   period_month?: number
   period_year: number
-  method: string
-  status: string
+  method: PaymentMethodValue
+  status: PaymentStatusValue
   reference?: string
   notes?: string
 }
@@ -146,6 +148,10 @@ export interface ContributionRead {
   member_name: string
   amount: number
   is_anonymous: boolean
+  method: PaymentMethodValue
+  status: PaymentStatusValue
+  // null quand la contribution est anonyme et masquée (même règle que member_id)
+  reference: string | null
   contributed_at: string
 }
 

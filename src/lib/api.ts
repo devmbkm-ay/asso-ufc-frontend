@@ -464,13 +464,28 @@ export const collectes = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  contribute: (id: string, amount: number, is_anonymous = false) =>
+  contribute: (id: string, data: { amount: number; method: string; is_anonymous?: boolean }) =>
     apiRequest<import('./types').ContributionRead>(`/api/v1/collectes/${id}/contributions`, {
       method: 'POST',
-      body: JSON.stringify({ amount, is_anonymous }),
+      body: JSON.stringify({ amount: data.amount, method: data.method, is_anonymous: data.is_anonymous ?? false }),
     }),
   contributions: (id: string) =>
     apiRequest<import('./types').ContributionRead[]>(`/api/v1/collectes/${id}/contributions`),
+  confirmContribution: (collecteId: string, contributionId: string) =>
+    apiRequest<import('./types').ContributionRead>(
+      `/api/v1/collectes/${collecteId}/contributions/${contributionId}/confirm`,
+      { method: 'POST' },
+    ),
+  validateContribution: (collecteId: string, contributionId: string) =>
+    apiRequest<import('./types').ContributionRead>(
+      `/api/v1/collectes/${collecteId}/contributions/${contributionId}/validate`,
+      { method: 'POST' },
+    ),
+  rejectContribution: (collecteId: string, contributionId: string) =>
+    apiRequest<import('./types').ContributionRead>(
+      `/api/v1/collectes/${collecteId}/contributions/${contributionId}/reject`,
+      { method: 'POST' },
+    ),
   update: (id: string, data: {
     title?: string
     beneficiary_name?: string

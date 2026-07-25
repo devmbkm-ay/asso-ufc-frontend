@@ -16,10 +16,11 @@ import {
 } from '@/components/ui/dialog'
 import {
   Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle,
-  CheckCircle2, Circle,
+  CheckCircle2, Circle, XCircle, UserCheck,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 import { categoryLabel, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
+import { PAYMENT_METHOD_LABELS, PAYMENT_METHOD_OPTIONS } from '@/lib/payment-methods'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -58,11 +59,14 @@ export default function CollecteDetailPage() {
 
   const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
   const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
+  const canValidateContrib = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary', 'president'].includes(r))
 
   // ── Contribution state ────────────────────────────────────────────────────
   const [openContrib, setOpenContrib] = useState(false)
   const [amount, setAmount] = useState('')
+  const [method, setMethod] = useState('cash')
   const [contribError, setContribError] = useState<string | null>(null)
+  const [decidingId, setDecidingId] = useState<string | null>(null)
 
   // ── Admin actions state ───────────────────────────────────────────────────
   const [closeOpen, setCloseOpen] = useState(false)
@@ -95,17 +99,39 @@ export default function CollecteDetailPage() {
 
   // ── Contribute mutation ───────────────────────────────────────────────────
   const { mutate: contribute, isPending: contribPending } = useMutation({
-    mutationFn: (amt: number) => collectes.contribute(id, amt),
+    mutationFn: (amt: number) => collectes.contribute(id, { amount: amt, method }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collecte', id] })
       queryClient.invalidateQueries({ queryKey: ['collecte-contributions', id] })
       setOpenContrib(false)
       setAmount('')
+      setMethod('cash')
       setContribError(null)
     },
     onError: (err: unknown) => {
       setContribError(err instanceof ApiError ? err.message : 'Erreur inattendue')
     },
+  })
+
+  // ── Validation trésorier des contributions déclarées ─────────────────────
+  const { mutate: validateContrib } = useMutation({
+    mutationFn: (contributionId: string) => collectes.validateContribution(id, contributionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collecte-contributions', id] })
+      setDecidingId(null)
+    },
+    onError: () => setDecidingId(null),
+  })
+
+  const { mutate: rejectContrib } = useMutation({
+    mutationFn: (contributionId: string) => collectes.rejectContribution(id, contributionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collecte-contributions', id] })
+      setDecidingId(null)
+    },
+    onError: () => setDecidingId(null),
   })
 
   // ── Admin mutations ───────────────────────────────────────────────────────
@@ -243,6 +269,7 @@ export default function CollecteDetailPage() {
   if (!collecte) return null
 
   const remaining = daysLeft(collecte.end_date)
+  const declaredContribs = contributions?.filter(c => c.status === 'declared') ?? []
 
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
@@ -406,6 +433,19 @@ export default function CollecteDetailPage() {
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">€</span>
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground">Moyen de paiement</label>
+                <select
+                  value={method}
+                  onChange={e => setMethod(e.target.value)}
+                  className="w-full h-9 px-3 rounded-md border border-border bg-card text-sm text-foreground focus:outline-none focus:border-primary"
+                >
+                  {PAYMENT_METHOD_OPTIONS.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
 
               {contribError && (
@@ -600,6 +640,52 @@ export default function CollecteDetailPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Contributions à valider */}
+      {canValidateContrib && declaredContribs.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <UserCheck size={15} className="text-blue-600" />
+            <h2 className="text-sm font-semibold text-blue-800">
+              {declaredContribs.length} contribution{declaredContribs.length > 1 ? 's' : ''} à valider
+            </h2>
+          </div>
+          <div className="space-y-2">
+            {declaredContribs.map(c => (
+              <div key={c.id} className="bg-card border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{c.member_name} · {fmtEur(c.amount)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {PAYMENT_METHOD_LABELS[c.method] ?? c.method}
+                    {c.reference && <> · <span className="font-mono">{c.reference}</span></>}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={decidingId === c.id}
+                    onClick={() => { setDecidingId(c.id); rejectContrib(c.id) }}
+                    className="text-red-600 border-red-200 hover:bg-red-50 gap-1"
+                  >
+                    <XCircle size={13} />
+                    Rejeter
+                  </Button>
+                  <Button
+                    size="sm"
+                    disabled={decidingId === c.id}
+                    onClick={() => { setDecidingId(c.id); validateContrib(c.id) }}
+                    className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1"
+                  >
+                    <CheckCircle2 size={13} />
+                    Valider
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Liste contributions */}
       <div className="bg-card rounded-xl border border-primary/15 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
@@ -632,8 +718,20 @@ export default function CollecteDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">{c.member_name}</p>
-                  <p className="text-xs text-muted-foreground">{fmtDateTime(c.contributed_at)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {fmtDateTime(c.contributed_at)} · {PAYMENT_METHOD_LABELS[c.method] ?? c.method}
+                    {c.reference && <> · <span className="font-mono">{c.reference}</span></>}
+                  </p>
                 </div>
+                {c.status !== 'confirmed' && (
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${
+                    c.status === 'declared'
+                      ? 'text-blue-700 bg-blue-50 border-blue-200'
+                      : 'text-amber-700 bg-amber-50 border-amber-200'
+                  }`}>
+                    {c.status === 'declared' ? 'En vérification' : 'En attente'}
+                  </span>
+                )}
                 <p className="text-sm font-semibold text-primary">{fmtEur(c.amount)}</p>
               </li>
             ))}

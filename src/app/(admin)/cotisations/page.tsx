@@ -13,17 +13,10 @@ import {
 } from '@/components/ui/dialog'
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PAYMENT_METHOD_LABELS as METHOD_LABELS } from '@/lib/payment-methods'
 
 const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
 const MONTHS_FULL = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-
-const METHOD_LABELS: Record<string, string> = {
-  cash: 'Espèces',
-  bank_transfer: 'Virement',
-  lydia: 'Lydia',
-  sumeria: 'Sumeria',
-  other: 'Autre',
-}
 
 const CELL_STYLE: Record<string, string> = {
   confirmed: 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200',

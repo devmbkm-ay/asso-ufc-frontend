@@ -11,10 +11,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Toast } from '@/components/ui/toast'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
-  Heart, Users, EyeOff, Eye, AlertCircle,
+  Heart, Users, EyeOff, Eye, AlertCircle, CheckCircle2, UserCheck, Copy, Check, MessageCircle,
 } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 import { categoryLabel } from '@/lib/collecte-categories'
+import { PAYMENT_METHOD_OPTIONS } from '@/lib/payment-methods'
+import { buildWhatsAppShareUrl, buildContributionShareMessage } from '@/lib/whatsapp'
 
 function fmtAmount(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
@@ -35,9 +37,12 @@ export default function CollecteDetailPage() {
 
   const [showForm, setShowForm] = useState(false)
   const [amount, setAmount] = useState('')
+  const [method, setMethod] = useState('wero')
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const [copiedRef, setCopiedRef] = useState<string | null>(null)
 
   const { data: collecte, isLoading: loadingCollecte } = useQuery({
     queryKey: ['collecte', id],
@@ -52,13 +57,14 @@ export default function CollecteDetailPage() {
   })
 
   const { mutate: contribute, isPending } = useMutation({
-    mutationFn: () => collectes.contribute(id, parseFloat(amount), isAnonymous),
+    mutationFn: () => collectes.contribute(id, { amount: parseFloat(amount), method, is_anonymous: isAnonymous }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contributions', id] })
       queryClient.invalidateQueries({ queryKey: ['collecte', id] })
       queryClient.invalidateQueries({ queryKey: ['collectes-active'] })
       setShowForm(false)
       setAmount('')
+      setMethod('wero')
       setIsAnonymous(false)
       setFormError(null)
       setSuccess(true)
@@ -68,6 +74,22 @@ export default function CollecteDetailPage() {
       setFormError(err instanceof ApiError ? err.message : 'Erreur inattendue')
     },
   })
+
+  const { mutate: confirmContribution } = useMutation({
+    mutationFn: (contributionId: string) => collectes.confirmContribution(id, contributionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contributions', id] })
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      setConfirmingId(null)
+    },
+    onError: () => setConfirmingId(null),
+  })
+
+  function copyReference(reference: string) {
+    navigator.clipboard.writeText(reference)
+    setCopiedRef(reference)
+    setTimeout(() => setCopiedRef(null), 2000)
+  }
 
   if (loadingCollecte) {
     return (
@@ -84,6 +106,8 @@ export default function CollecteDetailPage() {
   const canContribute = collecte.status === 'active'
   const myContribs = contributions?.filter(c => c.member_id === user?.id) ?? []
   const myTotal = myContribs.reduce((s, c) => s + c.amount, 0)
+  const myPending = myContribs.filter(c => c.status === 'pending')
+  const myDeclared = myContribs.filter(c => c.status === 'declared')
 
   const minAmount = collecte.min_amount
 
@@ -228,6 +252,22 @@ export default function CollecteDetailPage() {
                 </div>
               </div>
 
+              {/* Method select */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-1.5 block">
+                  Moyen de paiement
+                </label>
+                <select
+                  value={method}
+                  onChange={e => setMethod(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-border text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                >
+                  {PAYMENT_METHOD_OPTIONS.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Anonymous toggle */}
               <button
                 type="button"
@@ -281,6 +321,101 @@ export default function CollecteDetailPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Mes contributions en attente de règlement */}
+      {myPending.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={15} className="text-amber-700" />
+            <h2 className="text-sm font-semibold text-amber-800">
+              {myPending.length} contribution{myPending.length > 1 ? 's' : ''} à régler
+            </h2>
+          </div>
+          <p className="text-xs text-amber-700">
+            Envoyez le montant via {method === 'wero' ? 'Wero' : 'le moyen choisi'} en indiquant la référence
+            dans la note du virement, puis cliquez sur "J'ai réglé".
+          </p>
+          <div className="space-y-3">
+            {myPending.map(c => (
+              <div key={c.id} className="bg-card border border-amber-200 rounded-lg px-4 py-3 space-y-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-medium text-foreground">{fmtAmount(c.amount)}</p>
+                  <Button
+                    size="sm"
+                    onClick={() => { setConfirmingId(c.id); confirmContribution(c.id) }}
+                    disabled={confirmingId === c.id}
+                    className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5 shrink-0"
+                  >
+                    <CheckCircle2 size={13} />
+                    {confirmingId === c.id ? 'En cours…' : "J'ai réglé"}
+                  </Button>
+                </div>
+                {c.reference && (
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-border bg-muted text-muted-foreground font-mono truncate">
+                      {c.reference}
+                    </code>
+                    <Button size="sm" variant="outline" onClick={() => copyReference(c.reference!)}
+                      className="border-border text-muted-foreground gap-1.5 shrink-0">
+                      {copiedRef === c.reference ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                      {copiedRef === c.reference ? 'Copié !' : 'Copier'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-border text-muted-foreground gap-1.5 shrink-0"
+                      onClick={() => window.open(
+                        buildWhatsAppShareUrl(buildContributionShareMessage({
+                          collecteTitle: collecte.title,
+                          amount: c.amount,
+                          referenceCode: c.reference!,
+                        })),
+                        '_blank',
+                      )}
+                    >
+                      <MessageCircle size={13} />
+                      Partager
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Mes contributions en cours de vérification */}
+      {myDeclared.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <UserCheck size={15} className="text-blue-600" />
+            <h2 className="text-sm font-semibold text-blue-800">
+              {myDeclared.length} contribution{myDeclared.length > 1 ? 's' : ''} en cours de vérification
+            </h2>
+          </div>
+          <p className="text-xs text-blue-700">
+            Votre déclaration a été transmise. Le trésorier vérifiera et validera votre paiement prochainement.
+          </p>
+          <div className="space-y-2">
+            {myDeclared.map(c => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between gap-3 bg-card border border-blue-200 rounded-lg px-4 py-3"
+              >
+                <div>
+                  <p className="text-sm font-medium text-foreground">{fmtAmount(c.amount)}</p>
+                  {c.reference && (
+                    <p className="text-xs text-muted-foreground font-mono">{c.reference}</p>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
+                  En vérification
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -342,6 +477,13 @@ export default function CollecteDetailPage() {
                     </p>
                     <p className="text-[10px] text-muted-foreground">{fmtTime(c.contributed_at)}</p>
                   </div>
+
+                  {/* Statut (visible uniquement pour ma propre contribution non confirmée) */}
+                  {c.member_id === user?.id && c.status !== 'confirmed' && (
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {c.status === 'declared' ? 'En vérification' : 'En attente'}
+                    </span>
+                  )}
 
                   {/* Amount */}
                   <span className="text-sm font-semibold text-foreground shrink-0">

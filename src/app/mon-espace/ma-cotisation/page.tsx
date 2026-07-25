@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, ChevronRight, CreditCard, CheckCircle2, Clock, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PAYMENT_METHOD_LABELS as METHOD_LABELS } from '@/lib/payment-methods'
 
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -17,14 +18,6 @@ const MONTHS_FULL = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ]
-
-const METHOD_LABELS: Record<string, string> = {
-  cash: 'Espèces',
-  bank_transfer: 'Virement',
-  lydia: 'Lydia',
-  sumeria: 'Sumeria',
-  other: 'Autre',
-}
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
   confirmed: { label: 'Validé', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
