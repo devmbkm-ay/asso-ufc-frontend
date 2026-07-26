@@ -61,7 +61,7 @@ export default function MembrePage() {
   const queryClient = useQueryClient()
   const [tableYear, setTableYear] = useState(CURRENT_YEAR)
 
-  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canEdit = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
 
   const [openEdit, setOpenEdit] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', phone: '', address: '', birth_date: '' })

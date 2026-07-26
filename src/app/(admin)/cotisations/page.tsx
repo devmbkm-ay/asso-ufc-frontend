@@ -95,8 +95,8 @@ export default function CotisationsPage() {
   const [planForm, setPlanForm] = useState(EMPTY_PLAN)
   const [planError, setPlanError] = useState<string | null>(null)
 
-  const canWrite = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
-  const canValidate = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary'].includes(r))
+  const canWrite = user?.roles.some(r => ['super_admin', 'treasurer', 'president'].includes(r))
+  const canValidate = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary', 'president'].includes(r))
   const canAdmin = user?.roles.includes('super_admin')
 
   const { data: grid, isLoading } = useQuery({

@@ -41,7 +41,7 @@ export default function NotificationsPage() {
   const [result, setResult] = useState<import('@/lib/types').ReminderResult | null>(null)
   const [resultError, setResultError] = useState<string | null>(null)
 
-  const canAction = user?.roles.some(r => ['super_admin', 'treasurer'].includes(r))
+  const canAction = user?.roles.some(r => ['super_admin', 'treasurer', 'president'].includes(r))
 
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],

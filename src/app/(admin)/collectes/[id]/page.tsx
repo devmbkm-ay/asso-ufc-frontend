@@ -57,7 +57,7 @@ export default function CollecteDetailPage() {
   const queryClient = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const canEdit = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canEdit = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
   const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
   const canValidateContrib = user?.roles.some(r => ['super_admin', 'treasurer', 'secretary', 'president'].includes(r))
 

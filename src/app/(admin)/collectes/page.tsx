@@ -66,7 +66,7 @@ export default function CollectesPage() {
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
-  const canCreate = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canCreate = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
 
   const { data, isLoading } = useQuery({
     queryKey: ['collectes'],

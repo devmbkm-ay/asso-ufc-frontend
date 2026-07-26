@@ -80,7 +80,7 @@ export default function EvenementsPage() {
 
   const [cancelTarget, setCancelTarget] = useState<EventRead | null>(null)
 
-  const canWrite = user?.roles.some(r => ['super_admin', 'secretary'].includes(r))
+  const canWrite = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
   const canAdmin = user?.roles.some(r => ['super_admin'].includes(r))
 
   // ── Queries ──────────────────────────────────────────────────────────────

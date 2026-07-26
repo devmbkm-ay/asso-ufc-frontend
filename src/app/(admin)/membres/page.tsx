@@ -71,7 +71,8 @@ export default function MembresPage() {
   const isSuperAdmin = user?.roles?.includes('super_admin') ?? false
   const isPresident = user?.roles?.includes('president') ?? false
   const canInvite = isSuperAdmin || isPresident
-  const canSeePending = isSuperAdmin || (user?.roles?.includes('secretary') ?? false)
+  const canApprovePending = isSuperAdmin || isPresident
+  const canSeePending = isSuperAdmin || isPresident || (user?.roles?.includes('secretary') ?? false)
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -599,7 +600,7 @@ export default function MembresPage() {
                 {`${pendingMembers.length} inscription${pendingMembers.length > 1 ? 's' : ''} en attente d'approbation`}
               </span>
             </div>
-            {isSuperAdmin && validSelectedPending.length > 0 && (
+            {canApprovePending && validSelectedPending.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">{validSelectedPending.length} sélectionné{validSelectedPending.length > 1 ? 's' : ''}</span>
                 <Button
@@ -626,7 +627,7 @@ export default function MembresPage() {
             )}
           </div>
 
-          {isSuperAdmin && pendingMembers.length > 1 && (
+          {canApprovePending && pendingMembers.length > 1 && (
             <label className="flex items-center gap-2 text-xs text-muted-foreground pl-0.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -642,7 +643,7 @@ export default function MembresPage() {
             {pendingMembers.map(pm => (
               <div key={pm.id} className="flex items-center justify-between gap-3 flex-wrap bg-card border border-warning/20 rounded-lg px-3 py-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  {isSuperAdmin && (
+                  {canApprovePending && (
                     <input
                       type="checkbox"
                       checked={validSelectedPending.includes(pm.id)}
@@ -655,7 +656,7 @@ export default function MembresPage() {
                     <p className="text-[10px] text-muted-foreground truncate">{pm.email}</p>
                   </div>
                 </div>
-                {isSuperAdmin && (
+                {canApprovePending && (
                   <div className="flex gap-1.5 shrink-0 ml-auto">
                     <Button
                       size="sm"
