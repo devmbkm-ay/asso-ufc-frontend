@@ -640,8 +640,8 @@ export default function MembresPage() {
 
           <div className="space-y-1.5">
             {pendingMembers.map(pm => (
-              <div key={pm.id} className="flex items-center justify-between gap-3 bg-card border border-warning/20 rounded-lg px-3 py-2">
-                <div className="flex items-center gap-3">
+              <div key={pm.id} className="flex items-center justify-between gap-3 flex-wrap bg-card border border-warning/20 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-3 min-w-0">
                   {isSuperAdmin && (
                     <input
                       type="checkbox"
@@ -650,13 +650,13 @@ export default function MembresPage() {
                       className="accent-primary shrink-0"
                     />
                   )}
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{pm.first_name} {pm.last_name}</p>
-                    <p className="text-[10px] text-muted-foreground">{pm.email}</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{pm.first_name} {pm.last_name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{pm.email}</p>
                   </div>
                 </div>
                 {isSuperAdmin && (
-                  <div className="flex gap-1.5 shrink-0">
+                  <div className="flex gap-1.5 shrink-0 ml-auto">
                     <Button
                       size="sm"
                       variant="outline"
@@ -694,9 +694,9 @@ export default function MembresPage() {
           </div>
           <div className="space-y-1.5">
             {pendingInvites.map(inv => (
-              <div key={inv.id} className="flex items-center justify-between gap-3 bg-card border border-amber-100 rounded-lg px-3 py-2">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{inv.email}</p>
+              <div key={inv.id} className="flex items-center justify-between gap-3 flex-wrap bg-card border border-amber-100 rounded-lg px-3 py-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{inv.email}</p>
                   <p className="text-[10px] text-muted-foreground">
                     Invité par {inv.invited_by_name} · expire le {fmtExpiry(inv.expires_at)}
                   </p>
