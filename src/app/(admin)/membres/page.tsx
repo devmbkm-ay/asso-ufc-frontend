@@ -728,13 +728,13 @@ export default function MembresPage() {
             className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
-        <div className="flex gap-1 bg-muted border border-border rounded-lg p-1">
+        <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 overflow-x-auto">
           {STATUS_TABS.map(t => (
             <button
               key={t.value}
               onClick={() => handleStatus(t.value)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
+                'px-3 py-1.5 rounded-md text-xs font-medium transition-colors shrink-0 whitespace-nowrap',
                 status === t.value
                   ? 'bg-primary/15 text-primary'
                   : 'text-muted-foreground hover:text-foreground',
