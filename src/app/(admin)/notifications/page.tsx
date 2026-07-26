@@ -90,7 +90,7 @@ export default function NotificationsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 pl-12">
+          <div className="flex items-center gap-3 flex-wrap pl-0 sm:pl-12">
             <div className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-2.5 py-1.5">
               <button
                 onClick={() => setReminderMonth(m => m === 1 ? 12 : m - 1)}

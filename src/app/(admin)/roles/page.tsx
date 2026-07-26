@@ -122,7 +122,7 @@ export default function RolesPage() {
               const availableRoles = ALL_ROLES.filter(r => !m.roles.includes(r))
 
               return (
-                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-muted">
+                <li key={m.id} className="px-5 py-3.5 flex items-center gap-4 flex-wrap hover:bg-muted">
                   {/* Avatar */}
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
                     <span className="text-[11px] font-bold">
@@ -138,7 +138,7 @@ export default function RolesPage() {
                   </div>
 
                   {/* Role chips */}
-                  <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                  <div className="flex flex-wrap gap-1.5 flex-1">
                     {m.roles.map(role => {
                       const meta = ROLE_META[role]
                       if (!meta) return null
