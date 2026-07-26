@@ -112,7 +112,7 @@ export default function ExportsPage() {
     setMembresStatus('loading')
     setMembresError('')
     try {
-      const data = await members.list({ size: 1000 })
+      const data = await members.list({ size: 500 })
       downloadCSV(
         data.items.map(m => [
           m.first_name, m.last_name, m.email, m.phone ?? '', m.status ?? '',

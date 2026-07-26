@@ -116,7 +116,7 @@ export default function MembrePage() {
   // All payments — for summary stats
   const { data: allPayments } = useQuery({
     queryKey: ['payments', id, 'all'],
-    queryFn: () => cotisations.payments({ member_id: id, size: 1000 }),
+    queryFn: () => cotisations.payments({ member_id: id, size: 500 }),
     enabled: !!id,
   })
 
