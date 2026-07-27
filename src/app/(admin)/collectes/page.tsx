@@ -438,6 +438,21 @@ function CollecteCard({ collecte: c }: { collecte: import('@/lib/types').Collect
               }
             </div>
           </div>
+
+          {!!c.goal_amount && (
+            <div className="mt-3 space-y-1">
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                <span>{Math.round(Math.min((c.total_collected / c.goal_amount) * 100, 100))}% de l'objectif</span>
+                <span>Objectif {fmtEur(c.goal_amount)}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-primary/10 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${Math.min((c.total_collected / c.goal_amount) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Link>

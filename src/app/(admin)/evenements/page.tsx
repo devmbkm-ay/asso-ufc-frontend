@@ -357,6 +357,14 @@ export default function EvenementsPage() {
                     </div>
                   )}
                 </div>
+                {ev.capacity != null && (
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden max-w-xs">
+                    <div
+                      className={cn('h-full rounded-full transition-all', capacityFull ? 'bg-amber-500' : 'bg-primary')}
+                      style={{ width: `${Math.min((ev.registrations_count / ev.capacity) * 100, 100)}%` }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )

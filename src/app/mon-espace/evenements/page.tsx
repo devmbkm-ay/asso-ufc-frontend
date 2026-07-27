@@ -176,6 +176,15 @@ export default function EvenementsPage() {
           </span>
         </div>
 
+        {e.capacity != null && (
+          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className={cn('h-full rounded-full transition-all', isFull ? 'bg-amber-500' : 'bg-primary')}
+              style={{ width: `${Math.min((e.registrations_count / e.capacity) * 100, 100)}%` }}
+            />
+          </div>
+        )}
+
         {e.description && (
           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{e.description}</p>
         )}
