@@ -287,7 +287,7 @@ export default function MembresPage() {
     setPage(1)
   }
 
-  const colCount = isAdmin ? 5 : 3
+  const colCount = isAdmin ? 6 : 3
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-6">
@@ -757,6 +757,7 @@ export default function MembresPage() {
                   <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden md:table-cell">Email</th>
                   <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden lg:table-cell">Téléphone</th>
                   <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Inscrit le</th>
+                  <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden lg:table-cell">Dernière connexion</th>
                 </>
               ) : (
                 <th className="text-left px-5 py-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hidden sm:table-cell">Fonction</th>
@@ -824,6 +825,14 @@ export default function MembresPage() {
                       </td>
                       <td className="px-5 py-3.5 text-muted-foreground hidden sm:table-cell">
                         <Link href={`/membres/${m.id}`} className="block">{fmtDate(m.joined_at)}</Link>
+                      </td>
+                      <td className="px-5 py-3.5 hidden lg:table-cell">
+                        <Link href={`/membres/${m.id}`} className="block">
+                          {m.last_login_at
+                            ? <span className="text-muted-foreground">{fmtDate(m.last_login_at)}</span>
+                            : <span className="text-warning font-medium">Jamais</span>
+                          }
+                        </Link>
                       </td>
                     </>
                   ) : (

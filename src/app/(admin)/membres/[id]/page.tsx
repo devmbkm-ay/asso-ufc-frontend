@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import {
   Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
-  CheckCircle2, XCircle, Circle, Info,
+  CheckCircle2, XCircle, Circle, Info, LogIn,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
@@ -295,6 +295,16 @@ export default function MembrePage() {
               <span className="text-muted-foreground">
                 Membre depuis le <span className="text-foreground">{fmtDate(member.joined_at)}</span>
               </span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <LogIn size={14} className="text-primary shrink-0" />
+              {member.last_login_at ? (
+                <span className="text-muted-foreground">
+                  Dernière connexion le <span className="text-foreground">{fmtDate(member.last_login_at)}</span>
+                </span>
+              ) : (
+                <span className="text-warning font-medium">Jamais connecté</span>
+              )}
             </div>
           </div>
         </div>
