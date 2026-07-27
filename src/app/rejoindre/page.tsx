@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { auth, joinCode, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Footer } from '@/components/Footer'
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
 
 const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
@@ -81,7 +82,8 @@ function RejoindreCodeForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
+    <div className="min-h-screen flex flex-col brand-bg">
+      <div className="flex-1 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
 
@@ -203,6 +205,8 @@ function RejoindreCodeForm() {
 
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   )
 }

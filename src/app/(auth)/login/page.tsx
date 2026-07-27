@@ -8,6 +8,7 @@ import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toast } from '@/components/ui/toast'
+import { Footer } from '@/components/Footer'
 
 function LoginForm() {
   const { login } = useAuth()
@@ -40,7 +41,8 @@ function LoginForm() {
   const inputCls = 'bg-card border-border text-card-foreground placeholder:text-muted-foreground focus:border-primary'
 
   return (
-    <div className="min-h-screen flex items-center justify-center brand-bg px-4">
+    <div className="min-h-screen flex flex-col brand-bg">
+      <div className="flex-1 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl shadow-md border border-border p-8 space-y-6">
           <div className="text-center">
@@ -116,6 +118,8 @@ function LoginForm() {
           </p>
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   )
 }

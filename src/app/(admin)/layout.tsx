@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Sidebar } from '@/components/admin/Sidebar'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { PageTransition } from '@/components/PageTransition'
+import { Footer } from '@/components/Footer'
 import { Menu } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -68,8 +69,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SheetContent>
       </Sheet>
 
-      <main className="flex-1 overflow-y-auto pt-14 md:pt-0 bg-background">
-        <PageTransition>{children}</PageTransition>
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0 bg-background flex flex-col">
+        <div className="flex-1">
+          <PageTransition>{children}</PageTransition>
+        </div>
+        <Footer />
       </main>
     </div>
   )
