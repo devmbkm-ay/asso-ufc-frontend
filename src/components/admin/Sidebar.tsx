@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   LayoutDashboard, Users, CreditCard, Calendar,
-  Bell, Download, Shield, Settings, LogOut, Heart, History,
+  Bell, Download, Shield, Settings, LogOut, Heart, History, UserPlus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -27,6 +27,7 @@ const NAV = [
     items: [
       { href: '/historique', label: 'Historique', icon: History },
       { href: '/notifications', label: 'Notifications', icon: Bell },
+      { href: '/beneficiaires', label: 'Bénéficiaires', icon: UserPlus },
       { href: '/exports', label: 'Exports', icon: Download },
     ],
   },

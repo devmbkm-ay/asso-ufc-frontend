@@ -7,6 +7,7 @@ import { Logo } from '@/components/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   LayoutDashboard, Users, Heart, Calendar, CreditCard, LogOut, Settings2, User,
+  UserPlus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +17,7 @@ const NAV = [
   { href: '/mon-espace/collectes', label: 'Collectes', icon: Heart },
   { href: '/mon-espace/evenements', label: 'Événements', icon: Calendar },
   { href: '/mon-espace/ma-cotisation', label: 'Ma cotisation', icon: CreditCard },
+  { href: '/mon-espace/beneficiaires', label: 'Mes bénéficiaires', icon: UserPlus },
   { href: '/mon-espace/parametres', label: 'Paramètres', icon: User },
 ]
 

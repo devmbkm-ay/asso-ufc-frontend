@@ -16,6 +16,20 @@ export interface Member {
   last_login_at?: string
 }
 
+export interface BeneficiaryDesignation {
+  id: string
+  member_id: string
+  member_name: string
+  full_name: string
+  relation: string
+  contact: string
+  status: 'pending' | 'validated' | 'rejected' | 'revoked'
+  validated_by?: string
+  validated_at?: string
+  active_from?: string
+  created_at: string
+}
+
 export interface PaginatedMembers {
   items: Member[]
   total: number

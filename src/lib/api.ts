@@ -422,6 +422,28 @@ export const invites = {
     apiRequest<{ email: string; valid: boolean }>(`/api/v1/invites/${token}`),
 }
 
+// ── Bénéficiaires désignés ───────────────────────────────────────────────────
+
+export const beneficiaries = {
+  mine: () => apiRequest<import('./types').BeneficiaryDesignation[]>('/api/v1/beneficiaries/me'),
+  create: (data: { full_name: string; relation: string; contact: string }) =>
+    apiRequest<import('./types').BeneficiaryDesignation>('/api/v1/beneficiaries/me', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  revoke: (id: string) =>
+    apiRequest<void>(`/api/v1/beneficiaries/me/${id}`, { method: 'DELETE' }),
+  list: (status?: string) => {
+    const q = new URLSearchParams()
+    if (status) q.set('status', status)
+    return apiRequest<import('./types').BeneficiaryDesignation[]>(`/api/v1/beneficiaries?${q}`)
+  },
+  validate: (id: string) =>
+    apiRequest<import('./types').BeneficiaryDesignation>(`/api/v1/beneficiaries/${id}/validate`, { method: 'PATCH' }),
+  reject: (id: string) =>
+    apiRequest<import('./types').BeneficiaryDesignation>(`/api/v1/beneficiaries/${id}/reject`, { method: 'PATCH' }),
+}
+
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
 
 export const joinCode = {
