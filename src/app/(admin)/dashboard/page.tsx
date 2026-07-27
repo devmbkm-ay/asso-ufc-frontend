@@ -155,6 +155,16 @@ export default function DashboardPage() {
           sub="paiements à confirmer"
           href="/cotisations"
         />
+        <KpiCard
+          label="Actifs (7 jours)"
+          value={kpis?.active_members_7d ?? '—'}
+          sub={`${kpis?.active_members_30d ?? '—'} sur 30 jours`}
+        />
+        <KpiCard
+          label="Jamais connectés"
+          value={kpis?.never_logged_in ?? '—'}
+          sub="à relancer"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -31,6 +31,9 @@ export interface TreasurerDashboard {
   revenue_this_month: number
   revenue_ytd: number
   pending_count: number
+  active_members_7d: number
+  active_members_30d: number
+  never_logged_in: number
 }
 
 export interface CotisationPlan {
