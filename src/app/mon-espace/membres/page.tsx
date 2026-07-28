@@ -1,13 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { members as membersApi } from '@/lib/api'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { members as membersApi, deathReports, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
-import { Search, Crown, BookOpen, Wallet, User } from 'lucide-react'
+import { Search, Crown, BookOpen, Wallet, User, HeartCrack } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Toast } from '@/components/ui/toast'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
 import { cn, avatarColor } from '@/lib/utils'
+import type { Member } from '@/lib/types'
 
 const ROLE_META: Record<string, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
   super_admin: { label: 'Admin', icon: Crown, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20' },
@@ -23,10 +29,25 @@ function fmtDate(iso: string) {
 export default function MembresPage() {
   const { user } = useAuth()
   const [search, setSearch] = useState('')
+  const [reportTarget, setReportTarget] = useState<Member | null>(null)
+  const [note, setNote] = useState('')
+  const [toast, setToast] = useState<{ variant: 'success' | 'error'; message: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['members-list-public'],
     queryFn: () => membersApi.list({ size: 500, status: 'active' }),
+  })
+
+  const { mutate: reportDeath, isPending: isReporting } = useMutation({
+    mutationFn: () => deathReports.reportMember(reportTarget!.id, note || undefined),
+    onSuccess: () => {
+      setToast({ variant: 'success', message: 'Signalement transmis aux responsables.' })
+      setReportTarget(null)
+      setNote('')
+    },
+    onError: (err: unknown) => {
+      setToast({ variant: 'error', message: err instanceof ApiError ? err.message : 'Erreur inattendue' })
+    },
   })
 
   const filtered = (data?.items ?? []).filter(m => {
@@ -142,12 +163,83 @@ export default function MembresPage() {
                     )}
                   </div>
 
+                  {!isSelf && (
+                    <button
+                      type="button"
+                      onClick={() => setReportTarget(m)}
+                      title="Signaler le décès de ce membre"
+                      className="shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-error hover:bg-error/10 transition-colors"
+                    >
+                      <HeartCrack size={14} />
+                    </button>
+                  )}
+
                 </li>
               )
             })}
           </ul>
         )}
       </div>
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm">
+          <Toast variant={toast.variant} description={toast.message} closeable onClose={() => setToast(null)} />
+        </div>
+      )}
+
+      <Dialog open={!!reportTarget} onOpenChange={next => { if (!next) { setReportTarget(null); setNote('') } }}>
+        <DialogContent className="bg-card border-primary/15 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Signaler un décès</DialogTitle>
+          </DialogHeader>
+
+          {reportTarget && (
+            <form
+              onSubmit={e => { e.preventDefault(); reportDeath() }}
+              className="space-y-4 mt-1"
+            >
+              <p className="text-sm text-foreground">
+                Vous êtes sur le point de signaler le décès de{' '}
+                <span className="font-medium">{reportTarget.first_name} {reportTarget.last_name}</span> aux
+                responsables de l&apos;association. Assurez-vous d&apos;avoir déjà informé un responsable par un autre
+                moyen si la situation est urgente — ce signalement sera vérifié humainement avant toute action.
+              </p>
+
+              <div className="space-y-1.5">
+                <label htmlFor="death-report-note" className="text-xs text-muted-foreground">
+                  Précisions <span className="text-muted-foreground">(optionnel)</span>
+                </label>
+                <textarea
+                  id="death-report-note"
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                  rows={3}
+                  placeholder="Comment avez-vous été informé ? Contact de la famille…"
+                  className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                />
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setReportTarget(null); setNote('') }}
+                  className="border-border text-muted-foreground bg-transparent"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isReporting}
+                  className="bg-error hover:bg-error/80 text-white"
+                >
+                  {isReporting ? 'Envoi…' : 'Signaler'}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

@@ -433,15 +433,40 @@ export const beneficiaries = {
     }),
   revoke: (id: string) =>
     apiRequest<void>(`/api/v1/beneficiaries/me/${id}`, { method: 'DELETE' }),
-  list: (status?: string) => {
+  list: (status?: string, memberId?: string) => {
     const q = new URLSearchParams()
     if (status) q.set('status', status)
+    if (memberId) q.set('member_id', memberId)
     return apiRequest<import('./types').BeneficiaryDesignation[]>(`/api/v1/beneficiaries?${q}`)
   },
   validate: (id: string) =>
     apiRequest<import('./types').BeneficiaryDesignation>(`/api/v1/beneficiaries/${id}/validate`, { method: 'PATCH' }),
   reject: (id: string) =>
     apiRequest<import('./types').BeneficiaryDesignation>(`/api/v1/beneficiaries/${id}/reject`, { method: 'PATCH' }),
+}
+
+// ── Signalements de décès ────────────────────────────────────────────────────
+
+export const deathReports = {
+  reportMember: (memberId: string, note?: string) =>
+    apiRequest<import('./types').DeathReport>('/api/v1/death-reports', {
+      method: 'POST',
+      body: JSON.stringify({ member_id: memberId, note }),
+    }),
+  reportDesignation: (designationId: string, note?: string) =>
+    apiRequest<import('./types').DeathReport>('/api/v1/death-reports', {
+      method: 'POST',
+      body: JSON.stringify({ designation_id: designationId, note }),
+    }),
+  list: (status?: string) => {
+    const q = new URLSearchParams()
+    if (status) q.set('status', status)
+    return apiRequest<import('./types').DeathReport[]>(`/api/v1/death-reports?${q}`)
+  },
+  confirm: (id: string) =>
+    apiRequest<import('./types').DeathReport>(`/api/v1/death-reports/${id}/confirm`, { method: 'PATCH' }),
+  dismiss: (id: string) =>
+    apiRequest<import('./types').DeathReport>(`/api/v1/death-reports/${id}/dismiss`, { method: 'PATCH' }),
 }
 
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
@@ -482,6 +507,7 @@ export const collectes = {
     goal_amount?: number
     start_date: string
     category?: string
+    beneficiary_designation_id?: string
   }) => apiRequest<import('./types').CollecteRead>('/api/v1/collectes', {
     method: 'POST',
     body: JSON.stringify(data),

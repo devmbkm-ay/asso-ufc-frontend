@@ -30,6 +30,20 @@ export interface BeneficiaryDesignation {
   created_at: string
 }
 
+export interface DeathReport {
+  id: string
+  member_id?: string
+  designation_id?: string
+  target_label: string
+  reported_by: string
+  reporter_name: string
+  note?: string
+  status: 'pending' | 'confirmed' | 'dismissed'
+  reviewed_by?: string
+  reviewed_at?: string
+  created_at: string
+}
+
 export interface PaginatedMembers {
   items: Member[]
   total: number

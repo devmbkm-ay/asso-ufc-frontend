@@ -2,13 +2,18 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { beneficiaries, ApiError } from '@/lib/api'
+import { beneficiaries, deathReports, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
-import { UserPlus, Clock, CheckCircle2, XCircle, X, Heart } from 'lucide-react'
+import { Toast } from '@/components/ui/toast'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
+import { UserPlus, Clock, CheckCircle2, XCircle, X, Heart, HeartCrack } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { BeneficiaryDesignation } from '@/lib/types'
 
 const MAX_BENEFICIARIES = 2
 
@@ -28,6 +33,9 @@ export default function BeneficiairesPage() {
   const queryClient = useQueryClient()
   const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState<string | null>(null)
+  const [reportTarget, setReportTarget] = useState<BeneficiaryDesignation | null>(null)
+  const [note, setNote] = useState('')
+  const [toast, setToast] = useState<{ variant: 'success' | 'error'; message: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['beneficiaries', 'me'],
@@ -53,6 +61,18 @@ export default function BeneficiairesPage() {
     mutationFn: beneficiaries.revoke,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['beneficiaries', 'me'] })
+    },
+  })
+
+  const { mutate: reportDeath, isPending: isReporting } = useMutation({
+    mutationFn: () => deathReports.reportDesignation(reportTarget!.id, note || undefined),
+    onSuccess: () => {
+      setToast({ variant: 'success', message: 'Signalement transmis aux responsables.' })
+      setReportTarget(null)
+      setNote('')
+    },
+    onError: (err: unknown) => {
+      setToast({ variant: 'error', message: err instanceof ApiError ? err.message : 'Erreur inattendue' })
     },
   })
 
@@ -186,6 +206,15 @@ export default function BeneficiairesPage() {
                       {meta.icon}
                       {meta.label}
                     </span>
+                    {b.status === 'validated' && (
+                      <button
+                        onClick={() => setReportTarget(b)}
+                        className="text-muted-foreground hover:text-error transition-colors"
+                        title="Signaler le décès de cette personne"
+                      >
+                        <HeartCrack size={14} />
+                      </button>
+                    )}
                     {b.status !== 'rejected' && (
                       <button
                         onClick={() => revoke(b.id)}
@@ -202,6 +231,65 @@ export default function BeneficiairesPage() {
           </ul>
         )}
       </div>
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm">
+          <Toast variant={toast.variant} description={toast.message} closeable onClose={() => setToast(null)} />
+        </div>
+      )}
+
+      <Dialog open={!!reportTarget} onOpenChange={next => { if (!next) { setReportTarget(null); setNote('') } }}>
+        <DialogContent className="bg-card border-primary/15 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Signaler un décès</DialogTitle>
+          </DialogHeader>
+
+          {reportTarget && (
+            <form
+              onSubmit={e => { e.preventDefault(); reportDeath() }}
+              className="space-y-4 mt-1"
+            >
+              <p className="text-sm text-foreground">
+                Vous êtes sur le point de signaler le décès de{' '}
+                <span className="font-medium">{reportTarget.full_name}</span> ({reportTarget.relation}) aux
+                responsables de l&apos;association. Ce signalement sera vérifié humainement avant toute action.
+              </p>
+
+              <div className="space-y-1.5">
+                <label htmlFor="death-report-note-designation" className="text-xs text-muted-foreground">
+                  Précisions <span className="text-muted-foreground">(optionnel)</span>
+                </label>
+                <textarea
+                  id="death-report-note-designation"
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                  rows={3}
+                  placeholder="Circonstances, contact de la famille…"
+                  className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+                />
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setReportTarget(null); setNote('') }}
+                  className="border-border text-muted-foreground bg-transparent"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isReporting}
+                  className="bg-error hover:bg-error/80 text-white"
+                >
+                  {isReporting ? 'Envoi…' : 'Signaler'}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

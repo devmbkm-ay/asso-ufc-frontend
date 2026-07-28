@@ -1,8 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { collectes, upload, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
@@ -54,19 +55,42 @@ const EMPTY_FORM = {
 const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
 export default function CollectesPage() {
+  return (
+    <Suspense fallback={null}>
+      <CollectesPageInner />
+    </Suspense>
+  )
+}
+
+function CollectesPageInner() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
+  const searchParams = useSearchParams()
 
-  const [open, setOpen] = useState(false)
-  const [form, setForm] = useState(EMPTY_FORM)
+  const canCreate = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
+
+  // Pré-remplissage depuis un signalement de décès confirmé
+  // (cf. (admin)/signalements-deces) : ?prefill_name=...&prefill_category=deces&prefill_designation=...
+  // Lu une seule fois à l'initialisation (lazy initial state) plutôt que
+  // synchronisé via un effet, puisque ces query params ne changent pas
+  // pendant la vie du composant.
+  const prefillName = searchParams.get('prefill_name')
+
+  const [open, setOpen] = useState(() => canCreate && !!prefillName)
+  const [form, setForm] = useState(() => prefillName ? {
+    ...EMPTY_FORM,
+    beneficiary_name: prefillName,
+    category: searchParams.get('prefill_category') || '',
+  } : EMPTY_FORM)
   const [scheduleLater, setScheduleLater] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
-
-  const canCreate = user?.roles.some(r => ['super_admin', 'secretary', 'president'].includes(r))
+  const [prefillDesignationId, setPrefillDesignationId] = useState(
+    () => searchParams.get('prefill_designation') || undefined,
+  )
 
   const { data, isLoading } = useQuery({
     queryKey: ['collectes'],
@@ -91,6 +115,7 @@ export default function CollectesPage() {
     setPhotoFile(null)
     setPhotoPreview(null)
     setFormError(null)
+    setPrefillDesignationId(undefined)
   }
 
   function field(key: keyof typeof EMPTY_FORM) {
@@ -138,6 +163,7 @@ export default function CollectesPage() {
       goal_amount: form.goal_amount ? Number(form.goal_amount) : undefined,
       start_date: scheduleLater ? form.start_date : today(),
       category: form.category || undefined,
+      beneficiary_designation_id: prefillDesignationId,
     })
   }
 
