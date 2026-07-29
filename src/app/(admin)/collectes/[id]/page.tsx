@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import {
   Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle,
-  CheckCircle2, Circle, XCircle, UserCheck,
+  CheckCircle2, Circle, XCircle, UserCheck, Copy, Check,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 import { categoryLabel, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
@@ -67,6 +67,8 @@ export default function CollecteDetailPage() {
   const [method, setMethod] = useState('cash')
   const [contribError, setContribError] = useState<string | null>(null)
   const [decidingId, setDecidingId] = useState<string | null>(null)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const [copiedRef, setCopiedRef] = useState<string | null>(null)
 
   // ── Admin actions state ───────────────────────────────────────────────────
   const [closeOpen, setCloseOpen] = useState(false)
@@ -111,6 +113,17 @@ export default function CollecteDetailPage() {
     onError: (err: unknown) => {
       setContribError(err instanceof ApiError ? err.message : 'Erreur inattendue')
     },
+  })
+
+  // ── Le contributeur déclare avoir réglé sa propre contribution ────────────
+  const { mutate: confirmContribution } = useMutation({
+    mutationFn: (contributionId: string) => collectes.confirmContribution(id, contributionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collecte', id] })
+      queryClient.invalidateQueries({ queryKey: ['collecte-contributions', id] })
+      setConfirmingId(null)
+    },
+    onError: () => setConfirmingId(null),
   })
 
   // ── Validation trésorier des contributions déclarées ─────────────────────
@@ -257,6 +270,12 @@ export default function CollecteDetailPage() {
     setContribError(null)
   }
 
+  function copyReference(reference: string) {
+    navigator.clipboard.writeText(reference)
+    setCopiedRef(reference)
+    setTimeout(() => setCopiedRef(null), 2000)
+  }
+
   // ── Render ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
@@ -270,6 +289,7 @@ export default function CollecteDetailPage() {
 
   const remaining = daysLeft(collecte.end_date)
   const declaredContribs = contributions?.filter(c => c.status === 'declared') ?? []
+  const myPending = contributions?.filter(c => c.member_id === user?.id && c.status === 'pending') ?? []
 
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
@@ -474,6 +494,55 @@ export default function CollecteDetailPage() {
             </form>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Ma contribution en attente de règlement */}
+      {myPending.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={15} className="text-amber-700" />
+            <h2 className="text-sm font-semibold text-amber-800">
+              {myPending.length} contribution{myPending.length > 1 ? 's' : ''} à régler
+            </h2>
+          </div>
+          <p className="text-xs text-amber-700">
+            Envoyez le montant en indiquant la référence dans la note du virement, puis cliquez sur &quot;J&apos;ai réglé&quot;.
+          </p>
+          <div className="space-y-2">
+            {myPending.map(c => (
+              <div key={c.id} className="bg-card border border-amber-200 rounded-lg px-4 py-3 space-y-2.5">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <p className="text-sm font-medium text-foreground">{fmtEur(c.amount)}</p>
+                  <Button
+                    size="sm"
+                    onClick={() => { setConfirmingId(c.id); confirmContribution(c.id) }}
+                    disabled={confirmingId === c.id}
+                    className="bg-primary hover:bg-primary/80 text-primary-foreground gap-1.5 shrink-0"
+                  >
+                    <CheckCircle2 size={13} />
+                    {confirmingId === c.id ? 'En cours…' : "J'ai réglé"}
+                  </Button>
+                </div>
+                {c.reference && (
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-border bg-muted text-muted-foreground font-mono truncate">
+                      {c.reference}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => copyReference(c.reference!)}
+                      className="border-border text-muted-foreground gap-1.5 shrink-0"
+                    >
+                      {copiedRef === c.reference ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                      {copiedRef === c.reference ? 'Copié !' : 'Copier'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Modal édition */}
