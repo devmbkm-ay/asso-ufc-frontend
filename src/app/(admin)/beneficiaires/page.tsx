@@ -7,7 +7,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { SkeletonTableRow } from '@/components/ui/skeleton'
-import { UserCheck, UserX, Clock, CheckCircle2, XCircle, Lock } from 'lucide-react'
+import { UserCheck, UserX, Clock, CheckCircle2, XCircle, Lock, Ban } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
 const STATUS_TABS = [
@@ -15,12 +15,14 @@ const STATUS_TABS = [
   { value: 'pending', label: 'En attente' },
   { value: 'validated', label: 'Validées' },
   { value: 'rejected', label: 'Rejetées' },
+  { value: 'revoked', label: 'Révoquées' },
 ]
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
   pending: { label: 'En attente', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', icon: <Clock size={11} /> },
   validated: { label: 'Validé', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: <CheckCircle2 size={11} /> },
   rejected: { label: 'Rejeté', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', icon: <XCircle size={11} /> },
+  revoked: { label: 'Révoquée', color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border', icon: <Ban size={11} /> },
 }
 
 function fmtDate(iso: string) {
