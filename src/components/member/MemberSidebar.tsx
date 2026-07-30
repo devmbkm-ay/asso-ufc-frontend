@@ -3,13 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
+import { useMemberNotifications } from '@/hooks/useMemberNotifications'
 import { Logo } from '@/components/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   LayoutDashboard, Users, Heart, Calendar, CreditCard, LogOut, Settings2, User,
-  UserPlus,
+  UserPlus, Bell,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const NOTIFICATIONS_HREF = '/mon-espace/notifications'
 
 const NAV = [
   { href: '/mon-espace', label: 'Mon espace', icon: LayoutDashboard, exact: true },
@@ -18,12 +21,15 @@ const NAV = [
   { href: '/mon-espace/evenements', label: 'Événements', icon: Calendar },
   { href: '/mon-espace/ma-cotisation', label: 'Ma cotisation', icon: CreditCard },
   { href: '/mon-espace/beneficiaires', label: 'Mes bénéficiaires', icon: UserPlus },
+  { href: NOTIFICATIONS_HREF, label: 'Notifications', icon: Bell },
   { href: '/mon-espace/parametres', label: 'Paramètres', icon: User },
 ]
 
 export function MemberSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
+  const { data: notifications } = useMemberNotifications()
+  const unreadCount = notifications?.filter(n => !n.read).length ?? 0
 
   const isElevated = user?.roles.some(r =>
     ['super_admin', 'president', 'treasurer', 'secretary'].includes(r),
@@ -58,6 +64,11 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
             >
               <Icon size={15} />
               {label}
+              {href === NOTIFICATIONS_HREF && unreadCount > 0 && (
+                <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </Link>
           )
         })}

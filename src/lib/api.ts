@@ -469,6 +469,16 @@ export const deathReports = {
     apiRequest<import('./types').DeathReport>(`/api/v1/death-reports/${id}/dismiss`, { method: 'PATCH' }),
 }
 
+// ── Mes notifications ────────────────────────────────────────────────────────
+
+export const memberNotifications = {
+  mine: () => apiRequest<import('./types').MemberNotification[]>('/api/v1/notifications/me'),
+  markRead: (id: string) =>
+    apiRequest<import('./types').MemberNotification>(`/api/v1/notifications/me/${id}/read`, { method: 'PATCH' }),
+  markAllRead: () =>
+    apiRequest<void>('/api/v1/notifications/me/read-all', { method: 'POST' }),
+}
+
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
 
 export const joinCode = {

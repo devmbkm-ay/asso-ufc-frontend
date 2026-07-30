@@ -44,6 +44,15 @@ export interface DeathReport {
   created_at: string
 }
 
+export interface MemberNotification {
+  id: string
+  type: string
+  message: string
+  link?: string
+  read: boolean
+  created_at: string
+}
+
 export interface PaginatedMembers {
   items: Member[]
   total: number
