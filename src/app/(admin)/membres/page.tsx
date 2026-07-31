@@ -13,7 +13,7 @@ import { SkeletonTableRow } from '@/components/ui/skeleton'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
-import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock, CheckCircle2, XCircle, Circle, Info, Link2, RotateCw, Power, UserCheck, UserX } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus, Mail, Copy, Check, Trash2, Clock, CheckCircle2, XCircle, Circle, Info, Link2, RotateCw, Power, UserCheck, UserX, HeartCrack } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
 
 const ADMIN_ROLES = ['super_admin', 'admin', 'treasurer', 'president', 'secretary', 'vice_president']
@@ -24,6 +24,7 @@ const STATUS_TABS = [
   { value: 'inactive', label: 'Inactifs' },
   { value: 'suspended', label: 'Suspendus' },
   { value: 'honorary', label: 'Honoraires' },
+  { value: 'deceased', label: 'Décédés' },
 ]
 
 const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
@@ -32,6 +33,7 @@ const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['st
   suspended: { label: 'Suspendu', status: 'cancelled', icon: <XCircle size={11} /> },
   honorary: { label: 'Honoraire', status: 'info', icon: <Info size={11} /> },
   pending: { label: 'En attente', status: 'pending', icon: <Clock size={11} /> },
+  deceased: { label: 'Décédé', status: 'inactive', icon: <HeartCrack size={11} /> },
 }
 
 const ROLE_LABEL: Record<string, string> = {

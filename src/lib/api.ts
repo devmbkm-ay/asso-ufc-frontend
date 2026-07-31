@@ -479,6 +479,12 @@ export const memberNotifications = {
     apiRequest<void>('/api/v1/notifications/me/read-all', { method: 'POST' }),
 }
 
+// ── Vue d'ensemble admin ─────────────────────────────────────────────────────
+
+export const adminOverview = {
+  pendingCounts: () => apiRequest<import('./types').AdminPendingCounts>('/api/v1/admin/pending-counts'),
+}
+
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
 
 export const joinCode = {

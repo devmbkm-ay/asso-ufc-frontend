@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
+import { useAdminPendingCounts } from '@/hooks/useAdminPendingCounts'
 import { Logo } from '@/components/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import {
@@ -10,6 +11,16 @@ import {
   Bell, Download, Shield, Settings, LogOut, Heart, History, UserPlus, HeartCrack,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { AdminPendingCounts } from '@/lib/types'
+
+// Associe chaque onglet concerné à son compteur d'éléments en attente
+// d'instruction (état courant, pas un historique — cf. useAdminPendingCounts).
+const BADGE_COUNT_KEY: Partial<Record<string, keyof AdminPendingCounts>> = {
+  '/cotisations': 'cotisations',
+  '/collectes': 'collectes',
+  '/beneficiaires': 'beneficiaries',
+  '/signalements-deces': 'death_reports',
+}
 
 const NAV = [
   {
@@ -44,6 +55,7 @@ const NAV = [
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
+  const { data: pendingCounts } = useAdminPendingCounts()
 
   return (
     <aside className="flex flex-col w-56 h-full bg-sidebar border-r border-sidebar-border shrink-0">
@@ -66,6 +78,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             <ul className="space-y-0.5">
               {items.map(({ href, label, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(href + '/')
+                const countKey = BADGE_COUNT_KEY[href]
+                const count = countKey ? pendingCounts?.[countKey] ?? 0 : 0
                 return (
                   <li key={href}>
                     <Link
@@ -80,6 +94,11 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     >
                       <Icon size={15} />
                       {label}
+                      {count > 0 && (
+                        <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                          {count > 9 ? '9+' : count}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 )

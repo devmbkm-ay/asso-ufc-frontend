@@ -16,6 +16,7 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   suspended: { label: 'Suspendu', className: 'bg-red-50 text-red-600 border-red-200' },
   honorary: { label: 'Honoraire', className: 'bg-purple-50 text-purple-600 border-purple-200' },
   pending: { label: 'En attente', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  deceased: { label: 'Décédé', className: 'bg-muted text-muted-foreground border-border' },
 }
 
 const MONTH_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc']

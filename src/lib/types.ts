@@ -9,7 +9,7 @@ export interface Member {
   address?: string
   birth_date?: string
   joined_at: string
-  status: 'active' | 'inactive' | 'suspended' | 'honorary' | 'pending'
+  status: 'active' | 'inactive' | 'suspended' | 'honorary' | 'pending' | 'deceased'
   roles: string[]
   created_at: string
   updated_at: string
@@ -51,6 +51,13 @@ export interface MemberNotification {
   link?: string
   read: boolean
   created_at: string
+}
+
+export interface AdminPendingCounts {
+  beneficiaries: number
+  death_reports: number
+  cotisations: number
+  collectes: number
 }
 
 export interface PaginatedMembers {

@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import {
   Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
-  CheckCircle2, XCircle, Circle, Info, LogIn,
+  CheckCircle2, XCircle, Circle, Info, LogIn, HeartCrack,
 } from 'lucide-react'
 import { avatarColor } from '@/lib/utils'
 
@@ -39,6 +39,7 @@ const STATUS_LABEL: Record<string, { label: string; status: StatusBadgeProps['st
   inactive: { label: 'Inactif', status: 'inactive', icon: <Circle size={11} /> },
   suspended: { label: 'Suspendu', status: 'cancelled', icon: <XCircle size={11} /> },
   honorary: { label: 'Honoraire', status: 'info', icon: <Info size={11} /> },
+  deceased: { label: 'Décédé', status: 'inactive', icon: <HeartCrack size={11} /> },
 }
 
 const PAYMENT_STATUS: Record<string, { label: string; status: StatusBadgeProps['status']; icon: React.ReactNode }> = {
