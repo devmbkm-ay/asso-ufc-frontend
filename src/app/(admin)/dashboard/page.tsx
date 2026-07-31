@@ -5,6 +5,7 @@ import { dashboard, members, events } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
 import { Badge } from '@/components/ui/badge'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertTriangle, CalendarDays, Users, MapPin, ChevronRight } from 'lucide-react'
@@ -182,15 +183,16 @@ export default function DashboardPage() {
             {membersData?.items.map(m => {
               const st = STATUS_LABEL[m.status]
               return (
-                <li key={m.id} className="flex items-center gap-3">
+                <li key={m.id} className={cn('flex items-center gap-3', m.status === 'deceased' && 'opacity-60')}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(m.first_name + m.last_name)}`}>
                     <span className="text-xs font-semibold">
                       {m.first_name[0]}{m.last_name[0]}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                    <p className="text-sm font-medium text-foreground truncate flex items-center gap-1.5">
                       {m.first_name} {m.last_name}
+                      {m.status === 'deceased' && <DeceasedBadge />}
                     </p>
                     <p className="text-xs text-muted-foreground">Inscrit le {fmtDate(m.joined_at)}</p>
                   </div>

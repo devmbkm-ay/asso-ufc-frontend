@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { SkeletonTableRow } from '@/components/ui/skeleton'
 import { UserCheck, UserX, Clock, CheckCircle2, XCircle, Lock, Ban } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 
 const STATUS_TABS = [
   { value: '', label: 'Toutes' },
@@ -115,7 +116,10 @@ export default function BeneficiairesAdminPage() {
             {data.map(b => {
               const meta = STATUS_META[b.status] ?? STATUS_META.pending
               return (
-                <li key={b.id} className="px-5 py-3.5 flex items-center gap-4 flex-wrap hover:bg-muted">
+                <li key={b.id} className={cn(
+                  'px-5 py-3.5 flex items-center gap-4 flex-wrap hover:bg-muted',
+                  b.person_deceased && 'opacity-60',
+                )}>
                   <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', avatarColor(b.member_name))}>
                     <span className="text-[11px] font-bold">
                       {b.member_name.split(' ').map(p => p[0]).slice(0, 2).join('')}
@@ -123,11 +127,14 @@ export default function BeneficiairesAdminPage() {
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-medium text-foreground flex items-center gap-1.5 flex-wrap">
                       {b.full_name} <span className="text-muted-foreground font-normal">({b.relation})</span>
+                      {b.person_deceased && <DeceasedBadge />}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Désigné par {b.member_name} · {b.contact} · le {fmtDate(b.created_at)}
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                      Désigné par {b.member_name}
+                      {b.member_deceased && <DeceasedBadge />}
+                      · {b.contact} · le {fmtDate(b.created_at)}
                     </p>
                     {b.status === 'validated' && b.active_from && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">

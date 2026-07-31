@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Plus, ToggleLeft, Zap, UserCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { PAYMENT_METHOD_LABELS as METHOD_LABELS } from '@/lib/payment-methods'
 
 const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
@@ -368,10 +369,16 @@ export default function CotisationsPage() {
             {declaredPayments.items.map(p => (
               <div
                 key={p.id}
-                className="flex items-center justify-between gap-3 bg-card border border-blue-100 rounded-lg px-4 py-2.5"
+                className={cn(
+                  'flex items-center justify-between gap-3 bg-card border border-blue-100 rounded-lg px-4 py-2.5',
+                  p.member_deceased && 'opacity-60',
+                )}
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{p.member_name}</p>
+                  <p className="text-sm font-medium text-foreground truncate flex items-center gap-1.5">
+                    {p.member_name}
+                    {p.member_deceased && <DeceasedBadge />}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {p.plan_label} · {periodLabel(p)} · {fmtEur(p.amount)}
                   </p>

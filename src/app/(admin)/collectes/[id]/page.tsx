@@ -18,7 +18,8 @@ import {
   Heart, Users, Clock, HandCoins, Pencil, ImagePlus, X, Archive, Lock, AlertTriangle,
   CheckCircle2, Circle, XCircle, UserCheck, Copy, Check,
 } from 'lucide-react'
-import { avatarColor } from '@/lib/utils'
+import { avatarColor, cn } from '@/lib/utils'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { categoryLabel, categoryFieldLabel, categoryPlaceholder, categoryPrefix } from '@/lib/collecte-categories'
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHOD_OPTIONS } from '@/lib/payment-methods'
 
@@ -722,7 +723,10 @@ export default function CollecteDetailPage() {
             {declaredContribs.map(c => (
               <div key={c.id} className="bg-card border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
                 <div>
-                  <p className="text-sm font-medium text-foreground">{c.member_name} · {fmtEur(c.amount)}</p>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5 flex-wrap">
+                    {c.member_name} · {fmtEur(c.amount)}
+                    {c.member_deceased && <DeceasedBadge />}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {PAYMENT_METHOD_LABELS[c.method] ?? c.method}
                     {c.reference && <> · <span className="font-mono">{c.reference}</span></>}
@@ -779,14 +783,17 @@ export default function CollecteDetailPage() {
         {contributions && contributions.length > 0 && (
           <ul className="divide-y divide-border">
             {contributions.map(c => (
-              <li key={c.id} className="px-5 py-3.5 flex items-center gap-3">
+              <li key={c.id} className={cn('px-5 py-3.5 flex items-center gap-3', c.member_deceased && 'opacity-60')}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarColor(c.member_name)}`}>
                   <span className="text-xs font-semibold">
                     {c.member_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{c.member_name}</p>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                    {c.member_name}
+                    {c.member_deceased && <DeceasedBadge />}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {fmtDateTime(c.contributed_at)} · {PAYMENT_METHOD_LABELS[c.method] ?? c.method}
                     {c.reference && <> · <span className="font-mono">{c.reference}</span></>}

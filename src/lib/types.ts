@@ -20,9 +20,11 @@ export interface BeneficiaryDesignation {
   id: string
   member_id: string
   member_name: string
+  member_deceased?: boolean
   full_name: string
   relation: string
   contact: string
+  person_deceased?: boolean
   status: 'pending' | 'validated' | 'rejected' | 'revoked'
   validated_by?: string
   validated_at?: string
@@ -95,6 +97,7 @@ export interface Payment {
   id: string
   member_id: string
   member_name: string
+  member_deceased?: boolean
   cotisation_plan_id: string
   plan_label: string
   amount: number
@@ -194,6 +197,7 @@ export interface ContributionRead {
   // l'auteur ni un admin
   member_id: string | null
   member_name: string
+  member_deceased?: boolean
   amount: number
   is_anonymous: boolean
   method: PaymentMethodValue

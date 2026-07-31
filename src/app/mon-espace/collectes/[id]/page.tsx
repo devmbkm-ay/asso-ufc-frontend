@@ -14,6 +14,7 @@ import {
   Heart, Users, EyeOff, Eye, AlertCircle, CheckCircle2, UserCheck, Copy, Check, MessageCircle,
 } from 'lucide-react'
 import { cn, avatarColor } from '@/lib/utils'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { categoryLabel } from '@/lib/collecte-categories'
 import { PAYMENT_METHOD_OPTIONS } from '@/lib/payment-methods'
 import { buildWhatsAppShareUrl, buildContributionShareMessage } from '@/lib/whatsapp'
@@ -455,6 +456,7 @@ export default function CollecteDetailPage() {
                 <li key={c.id} className={cn(
                   'flex items-center gap-4 px-5 py-3.5',
                   isMe && 'bg-primary/5',
+                  c.member_deceased && 'opacity-60',
                 )}>
                   {/* Position */}
                   <span className="text-[11px] text-muted-foreground w-5 text-right shrink-0">{i + 1}</span>
@@ -471,9 +473,10 @@ export default function CollecteDetailPage() {
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                    <p className="text-sm font-medium text-foreground truncate flex items-center gap-1.5">
                       {c.member_name}
                       {isMe && <span className="ml-1.5 text-[11px] text-primary font-normal">(vous)</span>}
+                      {c.member_deceased && <DeceasedBadge />}
                     </p>
                     <p className="text-[10px] text-muted-foreground">{fmtTime(c.contributed_at)}</p>
                   </div>

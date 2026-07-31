@@ -18,7 +18,7 @@ import {
   Mail, Phone, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Pencil,
   CheckCircle2, XCircle, Circle, Info, LogIn, HeartCrack,
 } from 'lucide-react'
-import { avatarColor } from '@/lib/utils'
+import { avatarColor, cn } from '@/lib/utils'
 
 const FIELD = 'bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary'
 
@@ -163,7 +163,7 @@ export default function MembrePage() {
       />
 
       {/* Identity */}
-      <div className="flex items-start gap-4">
+      <div className={cn('flex items-start gap-4', member.status === 'deceased' && 'opacity-60')}>
         <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${avatarColor(member.first_name + member.last_name)}`}>
           <span className="text-lg font-bold">
             {member.first_name[0]}{member.last_name[0]}

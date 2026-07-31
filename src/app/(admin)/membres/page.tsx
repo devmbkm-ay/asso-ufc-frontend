@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { members, invites, joinCode, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { StatusBadge, type StatusBadgeProps } from '@/components/ui/status-badge'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -799,7 +800,7 @@ export default function MembresPage() {
                 </div>
               )
               return (
-                <tr key={m.id} className="hover:bg-muted transition-colors group">
+                <tr key={m.id} className={cn('hover:bg-muted transition-colors group', m.status === 'deceased' && 'opacity-60')}>
                   <td className="px-5 py-3.5">
                     {isAdmin ? (
                       <Link href={`/membres/${m.id}`} className="flex items-center gap-3">
@@ -807,6 +808,7 @@ export default function MembresPage() {
                         <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                           {m.first_name} {m.last_name}
                         </span>
+                        {m.status === 'deceased' && <DeceasedBadge />}
                       </Link>
                     ) : (
                       <div className="flex items-center gap-3">
@@ -814,6 +816,7 @@ export default function MembresPage() {
                         <span className="font-medium text-foreground">
                           {m.first_name} {m.last_name}
                         </span>
+                        {m.status === 'deceased' && <DeceasedBadge />}
                       </div>
                     )}
                   </td>

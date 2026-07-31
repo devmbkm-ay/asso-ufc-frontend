@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { UserPlus, Clock, CheckCircle2, XCircle, X, Heart, HeartCrack } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import type { BeneficiaryDesignation } from '@/lib/types'
 
 const MAX_BENEFICIARIES = 2
@@ -188,9 +189,15 @@ export default function BeneficiairesPage() {
             {data.map(b => {
               const meta = STATUS_META[b.status] ?? STATUS_META.pending
               return (
-                <li key={b.id} className="px-5 py-3.5 flex items-center justify-between gap-3 flex-wrap">
+                <li key={b.id} className={cn(
+                  'px-5 py-3.5 flex items-center justify-between gap-3 flex-wrap',
+                  b.person_deceased && 'opacity-60',
+                )}>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{b.full_name}</p>
+                    <p className="text-sm font-medium text-foreground truncate flex items-center gap-1.5">
+                      {b.full_name}
+                      {b.person_deceased && <DeceasedBadge />}
+                    </p>
                     <p className="text-xs text-muted-foreground">{b.relation} · {b.contact}</p>
                     {b.status === 'validated' && b.active_from && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -206,7 +213,7 @@ export default function BeneficiairesPage() {
                       {meta.icon}
                       {meta.label}
                     </span>
-                    {b.status === 'validated' && (
+                    {b.status === 'validated' && !b.person_deceased && (
                       <button
                         onClick={() => setReportTarget(b)}
                         className="text-muted-foreground hover:text-error transition-colors"
