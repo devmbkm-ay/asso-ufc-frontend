@@ -253,6 +253,7 @@ export const members = {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     }),
+  statusCounts: () => apiRequest<import('./types').MemberStatusCounts>('/api/v1/members/status-counts'),
 }
 
 // ── Notifications ─────────────────────────────────────────────────────────────

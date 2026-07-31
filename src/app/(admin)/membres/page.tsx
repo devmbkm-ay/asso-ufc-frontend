@@ -112,6 +112,12 @@ export default function MembresPage() {
     }),
   })
 
+  const { data: statusCounts } = useQuery({
+    queryKey: ['members', 'status-counts'],
+    queryFn: members.statusCounts,
+    enabled: isAdmin,
+  })
+
   const { data: pendingInvites } = useQuery({
     queryKey: ['invites'],
     queryFn: invites.list,
@@ -732,20 +738,35 @@ export default function MembresPage() {
           />
         </div>
         <div className="flex gap-1 bg-muted border border-border rounded-lg p-1 overflow-x-auto">
-          {STATUS_TABS.map(t => (
-            <button
-              key={t.value}
-              onClick={() => handleStatus(t.value)}
-              className={cn(
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-colors shrink-0 whitespace-nowrap',
-                status === t.value
-                  ? 'bg-primary/15 text-primary'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+          {STATUS_TABS.map(t => {
+            const count = statusCounts
+              ? (t.value === ''
+                ? Object.values(statusCounts).reduce((sum, n) => sum + n, 0)
+                : statusCounts[t.value as keyof typeof statusCounts])
+              : undefined
+            return (
+              <button
+                key={t.value}
+                onClick={() => handleStatus(t.value)}
+                className={cn(
+                  'px-3 py-1.5 rounded-md text-xs font-medium transition-colors shrink-0 whitespace-nowrap',
+                  status === t.value
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {t.label}
+                {count !== undefined && (
+                  <span className={cn(
+                    'ml-1.5 tabular-nums',
+                    status === t.value ? 'text-primary/70' : 'text-muted-foreground/70',
+                  )}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
         </div>
       </div>
 

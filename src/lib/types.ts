@@ -62,6 +62,15 @@ export interface AdminPendingCounts {
   collectes: number
 }
 
+export interface MemberStatusCounts {
+  active: number
+  inactive: number
+  suspended: number
+  honorary: number
+  pending: number
+  deceased: number
+}
+
 export interface PaginatedMembers {
   items: Member[]
   total: number
