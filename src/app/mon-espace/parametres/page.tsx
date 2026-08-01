@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/providers/AuthProvider'
 import { members, ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { CheckCircle2, AlertCircle, User, Phone, MapPin, KeyRound } from 'lucide-react'
+import { CheckCircle2, AlertCircle, User, Phone, MapPin, KeyRound, Bell } from 'lucide-react'
+import { getCurrentPushSubscription, isPushSupported, subscribeToPush, unsubscribeFromPush } from '@/lib/push'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
@@ -23,6 +24,32 @@ export default function MemberParametresPage() {
   })
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+
+  const [pushSubscribed, setPushSubscribed] = useState(false)
+  const [pushLoading, setPushLoading] = useState(false)
+  const [pushError, setPushError] = useState('')
+
+  useEffect(() => {
+    getCurrentPushSubscription().then(sub => setPushSubscribed(!!sub))
+  }, [])
+
+  async function handleTogglePush() {
+    setPushLoading(true)
+    setPushError('')
+    try {
+      if (pushSubscribed) {
+        await unsubscribeFromPush()
+        setPushSubscribed(false)
+      } else {
+        await subscribeToPush()
+        setPushSubscribed(true)
+      }
+    } catch (err) {
+      setPushError(err instanceof Error ? err.message : 'Erreur inattendue.')
+    } finally {
+      setPushLoading(false)
+    }
+  }
 
   function set(field: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -141,6 +168,38 @@ export default function MemberParametresPage() {
           Changer
         </Link>
       </div>
+
+      {isPushSupported() && (
+        <div className="bg-card border border-primary/15 rounded-xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Bell size={15} className="text-primary" />
+              <div>
+                <p className="text-sm font-medium text-foreground">Notifications push</p>
+                <p className="text-xs text-muted-foreground">
+                  Soyez alerté directement sur cet appareil (cotisations, désignations, signalements…).
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant={pushSubscribed ? 'outline' : 'default'}
+              disabled={pushLoading}
+              onClick={handleTogglePush}
+              className={pushSubscribed ? 'border-border text-muted-foreground shrink-0' : 'bg-primary hover:bg-primary/80 text-primary-foreground shrink-0'}
+            >
+              {pushLoading ? '…' : pushSubscribed ? 'Désactiver' : 'Activer'}
+            </Button>
+          </div>
+          {pushError && (
+            <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <AlertCircle size={13} />
+              {pushError}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

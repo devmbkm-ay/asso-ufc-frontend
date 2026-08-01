@@ -480,6 +480,22 @@ export const memberNotifications = {
     apiRequest<void>('/api/v1/notifications/me/read-all', { method: 'POST' }),
 }
 
+// ── Notifications push ───────────────────────────────────────────────────────
+
+export const pushSubscriptions = {
+  vapidPublicKey: () => apiRequest<{ public_key: string }>('/api/v1/push/vapid-public-key'),
+  subscribe: (sub: PushSubscriptionJSON) =>
+    apiRequest<void>('/api/v1/push/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(sub),
+    }),
+  unsubscribe: (endpoint: string) =>
+    apiRequest<void>('/api/v1/push/subscriptions', {
+      method: 'DELETE',
+      body: JSON.stringify({ endpoint }),
+    }),
+}
+
 // ── Vue d'ensemble admin ─────────────────────────────────────────────────────
 
 export const adminOverview = {
