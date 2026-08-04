@@ -80,6 +80,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 const active = pathname === href || pathname.startsWith(href + '/')
                 const countKey = BADGE_COUNT_KEY[href]
                 const count = countKey ? pendingCounts?.[countKey] ?? 0 : 0
+                const isNotifications = href === '/notifications'
                 return (
                   <li key={href}>
                     <Link
@@ -92,7 +93,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                           : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/8 border-l-2 border-transparent',
                       )}
                     >
-                      <Icon size={15} />
+                      <span className="relative flex shrink-0">
+                        <Icon size={15} className={isNotifications && !active ? 'text-info' : undefined} />
+                        {isNotifications && (
+                          <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-info ring-1 ring-sidebar" />
+                        )}
+                      </span>
                       {label}
                       {count > 0 && (
                         <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">

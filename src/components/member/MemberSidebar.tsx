@@ -50,6 +50,7 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
+          const isNotifications = href === NOTIFICATIONS_HREF
           return (
             <Link
               key={href}
@@ -62,7 +63,12 @@ export function MemberSidebar({ onClose }: { onClose?: () => void }) {
                   : 'text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-foreground/8',
               )}
             >
-              <Icon size={15} />
+              <span className="relative flex shrink-0">
+                <Icon size={15} className={isNotifications && !active ? 'text-info' : undefined} />
+                {isNotifications && unreadCount === 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-info ring-1 ring-sidebar" />
+                )}
+              </span>
               {label}
               {href === NOTIFICATIONS_HREF && unreadCount > 0 && (
                 <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
