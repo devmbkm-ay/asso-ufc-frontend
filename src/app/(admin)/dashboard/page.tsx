@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { dashboard, members, events } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
 import { KpiCard } from '@/components/admin/KpiCard'
+import { RevenueTrendChart } from '@/components/admin/RevenueTrendChart'
+import { MemberStatusChart } from '@/components/admin/MemberStatusChart'
 import { Badge } from '@/components/ui/badge'
 import { DeceasedBadge } from '@/components/ui/deceased-badge'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -167,6 +169,13 @@ export default function DashboardPage() {
           value={kpis?.never_logged_in ?? '—'}
           sub="à relancer"
         />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RevenueTrendChart />
+        </div>
+        <MemberStatusChart />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
