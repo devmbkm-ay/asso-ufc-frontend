@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { useAdminPendingCounts } from '@/hooks/useAdminPendingCounts'
 import { Logo } from '@/components/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { GlobalSearch } from '@/components/admin/GlobalSearch'
 import {
   LayoutDashboard, Users, CreditCard, Calendar,
   Bell, Download, Shield, Settings, LogOut, Heart, History, UserPlus, HeartCrack,
@@ -66,6 +67,11 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <p className="text-sm font-semibold text-sidebar-foreground truncate">Météo Assistance</p>
           <p className="text-xs text-sidebar-foreground/55 truncate">{user?.roles?.[0] ?? 'Membre'}</p>
         </div>
+      </div>
+
+      {/* Recherche globale */}
+      <div className="px-3 pt-3">
+        <GlobalSearch />
       </div>
 
       {/* Nav */}

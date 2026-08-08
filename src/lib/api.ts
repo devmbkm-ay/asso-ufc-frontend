@@ -502,6 +502,13 @@ export const adminOverview = {
   pendingCounts: () => apiRequest<import('./types').AdminPendingCounts>('/api/v1/admin/pending-counts'),
 }
 
+// ── Recherche globale ─────────────────────────────────────────────────────────
+
+export const search = {
+  global: (q: string) =>
+    apiRequest<import('./types').SearchResultItem[]>(`/api/v1/search?q=${encodeURIComponent(q)}`),
+}
+
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
 
 export const joinCode = {

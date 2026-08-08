@@ -62,6 +62,14 @@ export interface AdminPendingCounts {
   collectes: number
 }
 
+export interface SearchResultItem {
+  type: 'member' | 'event' | 'collecte'
+  id: string
+  title: string
+  subtitle: string | null
+  href: string
+}
+
 export interface MemberStatusCounts {
   active: number
   inactive: number
