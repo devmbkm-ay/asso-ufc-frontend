@@ -381,6 +381,11 @@ export default function CotisationsPage() {
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {p.plan_label} · {periodLabel(p)} · {fmtEur(p.amount)}
+                    {p.proof_url && (
+                      <> · <a href={p.proof_url} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                        Voir la preuve
+                      </a></>
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">

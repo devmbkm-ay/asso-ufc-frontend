@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cotisations } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
+import { ProofUpload } from '@/components/member/ProofUpload'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -66,6 +67,14 @@ export default function MaCotisationPage() {
       setConfirmingId(null)
     },
     onError: () => setConfirmingId(null),
+  })
+
+  const { mutateAsync: uploadProof } = useMutation({
+    mutationFn: ({ id, file }: { id: string; file: File }) => cotisations.uploadProof(id, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-payments-year', user?.id, year] })
+      queryClient.invalidateQueries({ queryKey: ['my-payments-all', user?.id] })
+    },
   })
 
   const allPayments = allData?.items ?? []
@@ -131,9 +140,12 @@ export default function MaCotisationPage() {
                 key={p.id}
                 className="flex items-center justify-between gap-3 bg-card border border-amber-200 rounded-lg px-4 py-3"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground">{p.plan_label}</p>
                   <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <div className="mt-1">
+                    <ProofUpload proofUrl={p.proof_url} onUpload={(file) => uploadProof({ id: p.id, file })} />
+                  </div>
                 </div>
                 <Button
                   size="sm"
@@ -168,9 +180,12 @@ export default function MaCotisationPage() {
                 key={p.id}
                 className="flex items-center justify-between gap-3 bg-card border border-blue-200 rounded-lg px-4 py-3"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground">{p.plan_label}</p>
                   <p className="text-xs text-muted-foreground">{periodLabel(p)} · {fmtAmount(Number(p.amount))}</p>
+                  <div className="mt-1">
+                    <ProofUpload proofUrl={p.proof_url} onUpload={(file) => uploadProof({ id: p.id, file })} />
+                  </div>
                 </div>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
                   En vérification

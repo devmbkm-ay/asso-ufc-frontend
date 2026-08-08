@@ -730,6 +730,11 @@ export default function CollecteDetailPage() {
                   <p className="text-xs text-muted-foreground">
                     {PAYMENT_METHOD_LABELS[c.method] ?? c.method}
                     {c.reference && <> · <span className="font-mono">{c.reference}</span></>}
+                    {c.proof_url && (
+                      <> · <a href={c.proof_url} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                        Voir la preuve
+                      </a></>
+                    )}
                   </p>
                 </div>
                 <div className="flex gap-2">

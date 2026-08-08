@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { collectes, ApiError } from '@/lib/api'
+import { collectes, config, ApiError } from '@/lib/api'
 import { useAuth } from '@/providers/AuthProvider'
+import { ProofUpload } from '@/components/member/ProofUpload'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -55,6 +56,17 @@ export default function CollecteDetailPage() {
     queryKey: ['contributions', id],
     queryFn: () => collectes.contributions(id),
     enabled: !!id,
+  })
+
+  const { data: paymentInfo } = useQuery({
+    queryKey: ['payment-info'],
+    queryFn: () => config.paymentInfo(),
+  })
+
+  const { mutateAsync: uploadProof } = useMutation({
+    mutationFn: ({ contributionId, file }: { contributionId: string; file: File }) =>
+      collectes.uploadContributionProof(id, contributionId, file),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contributions', id] }),
   })
 
   const { mutate: contribute, isPending } = useMutation({
@@ -335,8 +347,8 @@ export default function CollecteDetailPage() {
             </h2>
           </div>
           <p className="text-xs text-amber-700">
-            Envoyez le montant via {method === 'wero' ? 'Wero' : 'le moyen choisi'} en indiquant la référence
-            dans la note du virement, puis cliquez sur "J'ai réglé".
+            Envoyez le montant selon le moyen choisi en indiquant la référence dans la note,
+            puis cliquez sur "J'ai réglé".
           </p>
           <div className="space-y-3">
             {myPending.map(c => (
@@ -353,6 +365,14 @@ export default function CollecteDetailPage() {
                     {confirmingId === c.id ? 'En cours…' : "J'ai réglé"}
                   </Button>
                 </div>
+                {c.method === 'paypal' && (
+                  <p className="text-xs text-muted-foreground">
+                    {paymentInfo?.paypal_recipient
+                      ? <>Envoyer à <span className="font-medium text-foreground">{paymentInfo.paypal_recipient}</span> via PayPal.</>
+                      : 'Le trésorier vous communiquera l’adresse PayPal.'}
+                  </p>
+                )}
+                <ProofUpload proofUrl={c.proof_url} onUpload={(file) => uploadProof({ contributionId: c.id, file })} />
                 {c.reference && (
                   <div className="flex items-center gap-2">
                     <code className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-border bg-muted text-muted-foreground font-mono truncate">
@@ -405,11 +425,14 @@ export default function CollecteDetailPage() {
                 key={c.id}
                 className="flex items-center justify-between gap-3 bg-card border border-blue-200 rounded-lg px-4 py-3"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground">{fmtAmount(c.amount)}</p>
                   {c.reference && (
                     <p className="text-xs text-muted-foreground font-mono">{c.reference}</p>
                   )}
+                  <div className="mt-1">
+                    <ProofUpload proofUrl={c.proof_url} onUpload={(file) => uploadProof({ contributionId: c.id, file })} />
+                  </div>
                 </div>
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full border text-blue-700 bg-blue-50 border-blue-200 shrink-0">
                   En vérification

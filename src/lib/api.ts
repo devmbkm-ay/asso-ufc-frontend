@@ -121,7 +121,7 @@ export async function apiRequest<T>(
   return res.json()
 }
 
-export async function apiUpload(path: string, file: File): Promise<{ url: string }> {
+async function apiUploadFile<T>(path: string, file: File): Promise<T> {
   const token = getToken()
   const form = new FormData()
   form.append('file', file)
@@ -141,6 +141,10 @@ export async function apiUpload(path: string, file: File): Promise<{ url: string
     throw new ApiError(res.status, extractErrorMessage(body, `HTTP ${res.status}`))
   }
   return res.json()
+}
+
+export function apiUpload(path: string, file: File): Promise<{ url: string }> {
+  return apiUploadFile<{ url: string }>(path, file)
 }
 
 export async function apiDownload(path: string, filename: string): Promise<void> {
@@ -342,6 +346,8 @@ export const cotisations = {
     apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/confirm`, {
       method: 'POST',
     }),
+  uploadProof: (id: string, file: File) =>
+    apiUploadFile<import('./types').Payment>(`/api/v1/payments/${id}/proof`, file),
   validatePayment: (id: string) =>
     apiRequest<import('./types').Payment>(`/api/v1/payments/${id}/validate`, {
       method: 'POST',
@@ -509,6 +515,12 @@ export const search = {
     apiRequest<import('./types').SearchResultItem[]>(`/api/v1/search?q=${encodeURIComponent(q)}`),
 }
 
+// ── Configuration ─────────────────────────────────────────────────────────────
+
+export const config = {
+  paymentInfo: () => apiRequest<import('./types').PaymentInfo>('/api/v1/config/payment-info'),
+}
+
 // ── Code d'adhésion ─────────────────────────────────────────────────────────
 
 export const joinCode = {
@@ -563,6 +575,10 @@ export const collectes = {
     apiRequest<import('./types').ContributionRead>(
       `/api/v1/collectes/${collecteId}/contributions/${contributionId}/confirm`,
       { method: 'POST' },
+    ),
+  uploadContributionProof: (collecteId: string, contributionId: string, file: File) =>
+    apiUploadFile<import('./types').ContributionRead>(
+      `/api/v1/collectes/${collecteId}/contributions/${contributionId}/proof`, file,
     ),
   validateContribution: (collecteId: string, contributionId: string) =>
     apiRequest<import('./types').ContributionRead>(

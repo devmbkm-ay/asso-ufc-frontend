@@ -62,6 +62,10 @@ export interface AdminPendingCounts {
   collectes: number
 }
 
+export interface PaymentInfo {
+  paypal_recipient: string | null
+}
+
 export interface SearchResultItem {
   type: 'member' | 'event' | 'collecte'
   id: string
@@ -124,6 +128,7 @@ export interface Payment {
   method: PaymentMethodValue
   status: PaymentStatusValue
   reference?: string
+  proof_url?: string | null
   notes?: string
 }
 
@@ -221,6 +226,7 @@ export interface ContributionRead {
   status: PaymentStatusValue
   // null quand la contribution est anonyme et masquée (même règle que member_id)
   reference: string | null
+  proof_url: string | null
   contributed_at: string
 }
 

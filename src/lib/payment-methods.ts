@@ -1,4 +1,4 @@
-export type PaymentMethodValue = 'cash' | 'bank_transfer' | 'lydia' | 'sumeria' | 'wero' | 'other'
+export type PaymentMethodValue = 'cash' | 'bank_transfer' | 'lydia' | 'sumeria' | 'wero' | 'paypal' | 'other'
 export type PaymentStatusValue = 'pending' | 'declared' | 'confirmed' | 'cancelled'
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethodValue, string> = {
@@ -7,6 +7,7 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethodValue, string> = {
   lydia: 'Lydia',
   sumeria: 'Sumeria',
   wero: 'Wero',
+  paypal: 'PayPal',
   other: 'Autre',
 }
 
